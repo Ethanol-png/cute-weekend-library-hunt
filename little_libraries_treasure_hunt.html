@@ -19,6 +19,16 @@
 <!-- Real road map for the Map view: Leaflet + free OpenStreetMap tiles (no API key needed, unlike Google Maps tiles). -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  /* Apply the saved vibe (peony/monstera) before first paint, so the page never flashes the wrong
+     theme on load. Kept tiny and dependency-free on purpose — everything else theme-related lives
+     in the main script further down. */
+  try{
+    if(localStorage.getItem('llth_theme_v1') === 'monstera'){
+      document.documentElement.setAttribute('data-theme', 'monstera');
+    }
+  }catch(e){}
+</script>
 <style>
   :root{
     --pink-1:#ffd9e8; --pink-2:#ffb6d5; --pink-3:#ff8fc3; --pink-deep:#c93f82;
@@ -35,7 +45,90 @@
   @keyframes bgShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
   h1{ font-family:'Fredoka',sans-serif; text-align:center; color:var(--pink-deep); font-size:clamp(1.4rem,5vw,2.1rem); margin:0 0 4px; text-shadow:0 2px 0 #fff;}
   .sub{ text-align:center; opacity:.75; max-width:520px; margin:0 auto 22px; font-size:.9rem; }
-  .wrap{ max-width:640px; margin:0 auto; }
+  .wrap{ max-width:640px; margin:0 auto; position:relative; z-index:1; }
+
+  /* ================= vibe: peony (default) vs sage-green monstera ================= */
+  :root[data-theme="monstera"]{
+    --pink-1:#e6efdc; --pink-2:#c3dcae; --pink-3:#8fb877; --pink-deep:#3d6b3f;
+    --lav-1:#dce8d6; --lav-2:#a9c99a; --lav-deep:#2f5233;
+    --text:#33402f; --good:#4a9d6e;
+  }
+  :root[data-theme="monstera"] body{
+    background:linear-gradient(-45deg,#eaf2e0,#dcebcb,#c9e0c2,#e6edd0);
+    background-size:400% 400%;
+  }
+
+  /* ---- toggle, pinned to the very bottom of the page ---- */
+  .theme-toggle-row{ display:flex; justify-content:center; margin:28px 0 6px; }
+  .theme-toggle-btn{
+    display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.85);
+    border:none; border-radius:999px; padding:8px 16px 8px 8px; cursor:pointer;
+    box-shadow:0 6px 16px rgba(201,63,130,.18); font-family:'Quicksand',sans-serif;
+    font-weight:600; color:var(--text); transition:box-shadow .2s ease, background .5s ease;
+  }
+  .theme-toggle-btn:active{ transform:scale(.97); }
+  .theme-toggle-track{
+    position:relative; width:52px; height:28px; border-radius:999px; flex-shrink:0;
+    background:linear-gradient(90deg,var(--pink-2),var(--lav-2)); transition:background .6s ease;
+  }
+  .theme-toggle-thumb{
+    position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%;
+    background:#fff; display:flex; align-items:center; justify-content:center; font-size:14px;
+    box-shadow:0 2px 5px rgba(0,0,0,.22); transition:left .45s cubic-bezier(.5,-.3,.5,1.3);
+  }
+  :root[data-theme="monstera"] .theme-toggle-thumb{ left:26px; }
+  .theme-toggle-label{ font-size:.85rem; opacity:.85; }
+
+  /* ---- full-viewport overlay the transition animations play inside ---- */
+  #themeTransitionOverlay{
+    position:fixed; inset:0; pointer-events:none; z-index:9000; overflow:hidden;
+    opacity:0; visibility:hidden;
+  }
+  #themeTransitionOverlay.show{ opacity:1; visibility:visible; }
+  .tt-vine{ position:fixed; bottom:0; width:74px; height:100vh; z-index:9001; }
+  .tt-vine.left{ left:-8px; }
+  .tt-vine.right{ right:-8px; }
+  .tt-vine.right svg{ transform:scaleX(-1); }
+  .tt-vine path{ fill:none; stroke:#4a7c4f; stroke-width:4.5; stroke-linecap:round; stroke-dasharray:900; stroke-dashoffset:900; animation:ttVineGrow 1.6s ease forwards; }
+  @keyframes ttVineGrow{ to{ stroke-dashoffset:0; } }
+  .tt-leaf{ position:absolute; font-size:22px; opacity:0; transform:scale(.4) rotate(-20deg); animation:ttLeafPop .5s ease forwards; }
+  @keyframes ttLeafPop{ 0%{opacity:0; transform:scale(.2) rotate(-20deg);} 60%{opacity:1; transform:scale(1.15) rotate(8deg);} 100%{opacity:1; transform:scale(1) rotate(0deg);} }
+  .tt-tree{
+    position:fixed; left:50%; bottom:-2vh; transform:translateX(-50%) scale(.5) translateY(40px);
+    opacity:0; font-size:min(38vw,280px); z-index:8999;
+    filter:drop-shadow(0 10px 18px rgba(0,0,0,.15)); animation:ttTreeIn 1.5s ease forwards;
+  }
+  @keyframes ttTreeIn{ 0%{opacity:0; transform:translateX(-50%) scale(.5) translateY(40px);} 100%{opacity:.9; transform:translateX(-50%) scale(1) translateY(0);} }
+  .tt-fall-leaf{ position:fixed; top:-40px; z-index:9002; will-change:transform,opacity; animation-name:ttLeafFall; animation-timing-function:linear; animation-fill-mode:forwards; }
+  @keyframes ttLeafFall{
+    0%{ transform:translate(0,0) rotate(0deg); opacity:0; }
+    8%{ opacity:1; }
+    100%{ transform:translate(var(--drift,40px), 118vh) rotate(var(--spin,320deg)); opacity:.9; }
+  }
+  .tt-wave-band{
+    position:fixed; left:0; width:100%; height:46vh; top:-50vh; z-index:9003;
+    background:linear-gradient(180deg, rgba(255,182,213,0) 0%, rgba(255,182,213,.92) 35%, rgba(255,143,195,.96) 70%, rgba(255,182,213,0) 100%);
+    display:flex; align-items:center; justify-content:space-evenly; font-size:min(9vw,50px);
+    animation:ttWaveSweep 1.5s cubic-bezier(.4,0,.3,1) forwards;
+  }
+  @keyframes ttWaveSweep{ 0%{ top:-50vh; } 100%{ top:106vh; } }
+  .tt-fall-petal{ position:fixed; top:-30px; z-index:9002; will-change:transform,opacity; animation-name:ttPetalFall; animation-timing-function:ease-in; animation-fill-mode:forwards; }
+  @keyframes ttPetalFall{
+    0%{ transform:translate(0,0) rotate(0deg); opacity:0; }
+    10%{ opacity:1; }
+    100%{ transform:translate(var(--drift,30px), 114vh) rotate(var(--spin,260deg)); opacity:0; }
+  }
+
+  /* ---- persistent decorative peony bunches / vine shrubbery, reactive to scroll + touch ---- */
+  #bgDecor{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .decor-peony, .decor-monstera{ position:absolute; inset:0; transition:opacity .7s ease; pointer-events:none; }
+  :root[data-theme="monstera"] .decor-peony{ opacity:0; }
+  :root:not([data-theme="monstera"]) .decor-monstera{ opacity:0; }
+  .decor-layer{
+    position:absolute; font-size:min(13vw,84px); line-height:1; opacity:.5; user-select:none;
+    pointer-events:none; filter:drop-shadow(0 4px 7px rgba(201,63,130,.14)); will-change:transform;
+  }
+  @media (max-width:480px){ .decor-layer{ opacity:.4; } }
 
   .panel{
     background:rgba(255,255,255,.85); backdrop-filter:blur(6px); border-radius:24px;
@@ -413,6 +506,25 @@
 </style>
 </head>
 <body>
+<div id="bgDecor" aria-hidden="true">
+  <div class="decor-peony" id="decorPeony">
+    <div class="decor-layer" data-depth="0.025" style="top:-5vh; left:-5vw;">🌸🌺</div>
+    <div class="decor-layer" data-depth="0.04" style="top:-3vh; right:-6vw;">🌷🌸</div>
+    <div class="decor-layer" data-depth="0.055" style="bottom:-4vh; left:-5vw;">🌷🌸🌺</div>
+    <div class="decor-layer" data-depth="0.065" style="bottom:-5vh; right:-5vw;">🌺🌸</div>
+    <div class="decor-layer" data-depth="0.03" style="top:36vh; left:-7vw; font-size:min(8vw,56px);">🌸</div>
+    <div class="decor-layer" data-depth="0.045" style="top:58vh; right:-7vw; font-size:min(8vw,56px);">🌸</div>
+  </div>
+  <div class="decor-monstera" id="decorMonstera">
+    <div class="decor-layer" data-depth="0.025" style="top:-5vh; left:-5vw;">🌿🍃</div>
+    <div class="decor-layer" data-depth="0.04" style="top:-3vh; right:-6vw;">🍃🌿</div>
+    <div class="decor-layer" data-depth="0.055" style="bottom:-4vh; left:-5vw;">🍃🌿🍃</div>
+    <div class="decor-layer" data-depth="0.065" style="bottom:-5vh; right:-5vw;">🌿🍃</div>
+    <div class="decor-layer" data-depth="0.03" style="top:36vh; left:-7vw; font-size:min(8vw,56px);">🌿</div>
+    <div class="decor-layer" data-depth="0.045" style="top:58vh; right:-7vw; font-size:min(8vw,56px);">🌿</div>
+  </div>
+</div>
+<div id="themeTransitionOverlay"></div>
 <canvas id="confettiCanvas"></canvas>
 <button id="soundToggle" title="Toggle sound & haptics" aria-label="Toggle sound and haptics">🔊</button>
 <div class="update-banner" id="updateBanner">
@@ -568,6 +680,13 @@
   </div>
 
   <footer>GPS-guided · geocoded once via OpenStreetMap and cached on this device · photos pulled from streetlibrary.org.au · progress saves to this browser only<br>📱 tip: "Add to Home Screen" from your browser menu so this opens like an app, full-screen</footer>
+
+  <div class="theme-toggle-row">
+    <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Switch between the peony and monstera vibe">
+      <span class="theme-toggle-track"><span class="theme-toggle-thumb" id="themeToggleThumb">🌸</span></span>
+      <span class="theme-toggle-label" id="themeToggleLabel">Peony vibe</span>
+    </button>
+  </div>
 </div>
 
 <!-- Photo lightbox: view any captured photo full-size, download it, or (iOS) press-and-hold it to save to Photos -->
@@ -861,6 +980,151 @@ function animateDistance(targetM){
 }
 
 /* ================= confetti burst (canvas particles, no external assets) ================= */
+/* ================= vibe toggle: peony <-> monstera, with a "gorgeous" transition ================= */
+const THEME_KEY = 'llth_theme_v1';
+let themeTransitioning = false;
+
+function getTheme(){
+  return document.documentElement.getAttribute('data-theme') === 'monstera' ? 'monstera' : 'peony';
+}
+function updateThemeToggleUI(theme){
+  const label = $('themeToggleLabel'), thumb = $('themeToggleThumb');
+  if(label) label.textContent = theme === 'monstera' ? 'Monstera vibe' : 'Peony vibe';
+  if(thumb) thumb.textContent = theme === 'monstera' ? '🌿' : '🌸';
+}
+function setThemeAttr(theme){
+  if(theme === 'monstera') document.documentElement.setAttribute('data-theme', 'monstera');
+  else document.documentElement.removeAttribute('data-theme');
+  try{ localStorage.setItem(THEME_KEY, theme); }catch(e){}
+  updateThemeToggleUI(theme);
+}
+
+function buildVine(side, overlay){
+  const wrap = document.createElement('div');
+  wrap.className = 'tt-vine ' + side;
+  wrap.innerHTML = '<svg viewBox="0 0 100 300" preserveAspectRatio="none" width="74" height="100%"><path d="M50 300 C20 280 80 260 50 230 C20 200 80 170 50 140 C20 110 80 80 50 50 C30 30 60 10 50 0"/></svg>';
+  overlay.appendChild(wrap);
+  const spots = [[90,'🍃'],[76,'🌿'],[60,'🍃'],[44,'🌿'],[28,'🍃'],[12,'🌿']];
+  spots.forEach(([topPct, emoji], i) => {
+    const leaf = document.createElement('span');
+    leaf.className = 'tt-leaf';
+    leaf.textContent = emoji;
+    leaf.style.top = topPct + '%';
+    if(side === 'left') leaf.style.left = '20px'; else leaf.style.right = '20px';
+    leaf.style.animationDelay = (0.35 + i * 0.16) + 's';
+    wrap.appendChild(leaf);
+  });
+}
+function spawnTree(overlay){
+  const tree = document.createElement('div');
+  tree.className = 'tt-tree';
+  tree.textContent = '🌳';
+  overlay.appendChild(tree);
+}
+function spawnFallingLeaves(overlay, count){
+  const emojis = ['🌿', '🍃'];
+  for(let i = 0; i < count; i++){
+    const leaf = document.createElement('span');
+    leaf.className = 'tt-fall-leaf';
+    leaf.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    leaf.style.left = (Math.random() * 100) + 'vw';
+    leaf.style.fontSize = (16 + Math.random() * 14) + 'px';
+    leaf.style.setProperty('--drift', (Math.random() * 160 - 80) + 'px');
+    leaf.style.setProperty('--spin', (Math.random() * 480 - 240) + 'deg');
+    const dur = 2.6 + Math.random() * 1.8, delay = Math.random() * 1.2;
+    leaf.style.animationDuration = dur + 's';
+    leaf.style.animationDelay = delay + 's';
+    overlay.appendChild(leaf);
+    setTimeout(() => leaf.remove(), (dur + delay) * 1000 + 200);
+  }
+}
+function spawnWaveBand(overlay){
+  const band = document.createElement('div');
+  band.className = 'tt-wave-band';
+  band.innerHTML = ['🌸','🌷','🌸','🌺','🌸'].map(f => `<span>${f}</span>`).join('');
+  overlay.appendChild(band);
+}
+function spawnFallingPetals(overlay, count){
+  const emojis = ['🌸', '🌷'];
+  for(let i = 0; i < count; i++){
+    const petal = document.createElement('span');
+    petal.className = 'tt-fall-petal';
+    petal.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    petal.style.left = (Math.random() * 100) + 'vw';
+    petal.style.fontSize = (14 + Math.random() * 16) + 'px';
+    petal.style.setProperty('--drift', (Math.random() * 180 - 90) + 'px');
+    petal.style.setProperty('--spin', (Math.random() * 400 - 200) + 'deg');
+    const dur = 2.2 + Math.random() * 1.6, delay = 0.4 + Math.random() * 1.1;
+    petal.style.animationDuration = dur + 's';
+    petal.style.animationDelay = delay + 's';
+    overlay.appendChild(petal);
+    setTimeout(() => petal.remove(), (dur + delay) * 1000 + 200);
+  }
+}
+
+function playPeonyToMonstera(overlay){
+  buildVine('left', overlay);
+  buildVine('right', overlay);
+  spawnTree(overlay);
+  spawnFallingLeaves(overlay, 30);
+  setTimeout(() => setThemeAttr('monstera'), 900);
+  setTimeout(() => { overlay.classList.remove('show'); overlay.innerHTML = ''; themeTransitioning = false; }, 3000);
+}
+function playMonsteraToPeony(overlay){
+  spawnWaveBand(overlay);
+  spawnFallingPetals(overlay, 34);
+  setTimeout(() => setThemeAttr('peony'), 750);
+  setTimeout(() => { overlay.classList.remove('show'); overlay.innerHTML = ''; themeTransitioning = false; }, 2900);
+}
+function playThemeTransition(toTheme){
+  if(themeTransitioning) return;
+  const overlay = $('themeTransitionOverlay');
+  if(!overlay){ setThemeAttr(toTheme); return; }
+  themeTransitioning = true;
+  overlay.innerHTML = '';
+  overlay.classList.add('show');
+  if(toTheme === 'monstera') playPeonyToMonstera(overlay);
+  else playMonsteraToPeony(overlay);
+}
+
+updateThemeToggleUI(getTheme());
+$('themeToggleBtn')?.addEventListener('click', () => {
+  playThemeTransition(getTheme() === 'monstera' ? 'peony' : 'monstera');
+});
+
+/* ---- decorative peony bunches / vine shrubbery: parallax on scroll + touch/pointer position ---- */
+(function initBgParallax(){
+  const layers = Array.from(document.querySelectorAll('.decor-layer'));
+  if(!layers.length) return;
+  let pointerX = 0, pointerY = 0, ticking = false;
+  function updatePointer(x, y){
+    pointerX = (x / innerWidth - 0.5) * 2;
+    pointerY = (y / innerHeight - 0.5) * 2;
+    requestTick();
+  }
+  window.addEventListener('mousemove', (e) => updatePointer(e.clientX, e.clientY), { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if(e.touches && e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  window.addEventListener('scroll', requestTick, { passive: true });
+  function requestTick(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(applyParallax);
+  }
+  function applyParallax(){
+    const scrollY = window.scrollY || 0;
+    layers.forEach(layer => {
+      const depth = parseFloat(layer.dataset.depth) || 0.03;
+      const px = pointerX * depth * 220;
+      const py = pointerY * depth * 120 + scrollY * depth * 0.6;
+      layer.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0)`;
+    });
+    ticking = false;
+  }
+  requestTick();
+})();
+
 function burstConfetti(){
   const canvas = $('confettiCanvas');
   if(!canvas) return;
@@ -1916,11 +2180,11 @@ async function captureGateSlot(slotKey, slotId, label, file, visitFlag){
       ev.preventDefault(); ev.stopPropagation();
       openLightbox(dataUrl, `${libName} — ${slotLabel}`, autoFilename);
     };
-    // Auto-save straight to the phone as soon as it's captured, on top of the manual 💾 button —
-    // best-effort: some browsers throttle several automatic downloads fired close together
-    // (e.g. the paragraph prompt's 3 photos), in which case the 💾 button on the photo is the
-    // reliable fallback.
-    downloadDataUrl(dataUrl, autoFilename);
+    // No auto-download here on purpose: firing a synthetic download after an `await` loses the
+    // original tap's user-gesture context on mobile Safari, which can make the tab try to
+    // navigate to the raw photo data instead of saving it — precisely what looked like the
+    // camera "getting stuck". Saving is a deliberate tap on 💾 instead, which always has a live
+    // gesture behind it.
     if(gateLib){
       await putPhoto('lib_' + idFor(gateLib) + '_' + slotKey, dataUrl);
       setVisitField(gateLib, visitFlag, true);
@@ -2220,20 +2484,9 @@ function renderTrophyGrid(){
 function safeFileSlug(s){
   return String(s||'photo').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40) || 'photo';
 }
-function downloadDataUrl(dataUrl, filename){
-  try{
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }catch(e){ console.warn('[save] download failed', e); }
-}
-/* Same idea as downloadDataUrl but for a Blob (used for the larger PNG canvases, where a Blob
-   is cheaper than a giant base64 data: URL). Every download in the app uses a "LibraryHuntPhotos/"
-   filename prefix — Chrome on desktop and Android turns that into an actual subfolder under
-   Downloads; other browsers just keep it as a clearly-named flat file. */
+/* Every download in the app uses a "LibraryHuntPhotos/" filename prefix — Chrome on desktop and
+   Android turns that into an actual subfolder under Downloads; other browsers just keep it as a
+   clearly-named flat file. */
 const PHOTO_FOLDER = 'LibraryHuntPhotos';
 function downloadBlobFile(blob, filename){
   try{
@@ -2243,6 +2496,24 @@ function downloadBlobFile(blob, filename){
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }catch(e){ console.warn('[save] blob download failed', e); }
+}
+function dataUrlToBlob(dataUrl){
+  const [header, base64] = dataUrl.split(',');
+  const mime = (header.match(/data:(.*?);base64/) || [])[1] || 'image/jpeg';
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for(let i=0; i<binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+/* A data: URL anchor with a `download` attribute is unreliable on mobile Safari in particular —
+   it can silently do nothing, or (worse) try to navigate the whole tab to the giant base64
+   string instead of downloading it, which looks exactly like the page freezing. Converting to a
+   Blob URL first is the well-known, much more reliable fix — every single-photo save (the 💾
+   button, the lightbox, the gallery) goes through this. */
+function downloadDataUrl(dataUrl, filename){
+  try{
+    downloadBlobFile(dataUrlToBlob(dataUrl), filename);
+  }catch(e){ console.warn('[save] download failed', e); }
 }
 let lightboxCurrent = null;
 function openLightbox(dataUrl, caption, filename){
@@ -2458,7 +2729,6 @@ async function handleWayStopPhotoPick(ev){
       ev.preventDefault(); ev.stopPropagation();
       openLightbox(wayStopPendingPhoto, 'A sweet find along the way', autoFilename);
     };
-    downloadDataUrl(wayStopPendingPhoto, autoFilename); // auto-save straight to the phone, same as library photos
     playPopSound(); vibrate(15);
   }catch(e){ console.warn('[waystop] photo failed', e); }
 }
