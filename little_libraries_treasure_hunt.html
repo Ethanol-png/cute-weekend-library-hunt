@@ -711,8 +711,8 @@
     <p style="font-size:.85rem; opacity:.75; margin-top:-6px;">Jot down a cafe, shop or anything sweet you spotted on the way — it'll show up as a pin on your trail map.</p>
     <textarea id="wayStopNote" placeholder="e.g. 'That gorgeous little coffee cart on Moggill Rd'"></textarea>
     <label class="photo-slot" id="wayStopPhotoSlot">
-      📷 Add a photo (optional)
-      <input type="file" accept="image/*" capture="environment" id="wayStopPhotoInput">
+      📷 Add a photo (optional) — camera or your gallery
+      <input type="file" accept="image/*" id="wayStopPhotoInput">
     </label>
     <div class="modal-btn-row">
       <button class="btn ghost" id="wayStopCancelBtn" type="button">Cancel</button>
@@ -911,8 +911,8 @@
     </div>
     <div class="photo-gate" id="photoGate">
       <label class="photo-slot" id="slotSelfie">
-        📷 Selfie or a photo of the library, relating to the prompt
-        <input type="file" accept="image/*" capture="user" id="fileSelfie">
+        📷 Selfie or a photo of the library, relating to the prompt — camera or gallery
+        <input type="file" accept="image/*" id="fileSelfie">
       </label>
       <div class="pg-paragraph" id="pgParagraph" style="display:none;">
         <input type="text" class="pg-book-input" id="bookTitleInput" placeholder="Which book? (title)">
@@ -920,16 +920,16 @@
           <div class="pg-person-label">ETHAN</div>
           <input type="text" class="pg-page-input" id="ethanPageInput" placeholder="page #">
           <label class="photo-slot" id="slotEthan">
-            📷 Photo of the paragraph Ethan reads
-            <input type="file" accept="image/*" capture="environment" id="fileEthan">
+            📷 Photo of the paragraph Ethan reads — camera or gallery
+            <input type="file" accept="image/*" id="fileEthan">
           </label>
         </div>
         <div class="pg-person">
           <div class="pg-person-label">VANESSA</div>
           <input type="text" class="pg-page-input" id="vanessaPageInput" placeholder="page #">
           <label class="photo-slot" id="slotVanessa">
-            📷 Photo of the paragraph Vanessa reads
-            <input type="file" accept="image/*" capture="environment" id="fileVanessa">
+            📷 Photo of the paragraph Vanessa reads — camera or gallery
+            <input type="file" accept="image/*" id="fileVanessa">
           </label>
         </div>
       </div>
@@ -3894,10 +3894,14 @@ $('hintBtn').onclick = () => { $('hintPhoto').classList.toggle('show'); vibrate(
 let capturedPhotos = {}; // slot key -> compressed data URL, held for the CURRENT arrival only
 let gateLib = null; // the library the open photo gate belongs to
 
-function resetGateSlot(slotId, inputId, label, capture){
+function resetGateSlot(slotId, inputId, label){
+  // No `capture` attribute on purpose: it forces straight into the camera app on some phones
+  // with no way back to an existing photo, and on some Android browsers/webviews that flow can
+  // fail to hand the picture back to the page at all. Leaving it off shows the normal native
+  // picker (camera AND photo library), which is both more reliable and gives a real choice.
   const el = $(slotId);
   el.classList.remove('has-photo');
-  el.innerHTML = `${label}<input type="file" accept="image/*" capture="${capture}" id="${inputId}">`;
+  el.innerHTML = `${label}<input type="file" accept="image/*" id="${inputId}">`;
 }
 async function captureGateSlot(slotKey, slotId, label, file, visitFlag){
   try{
@@ -3938,12 +3942,12 @@ function setVisitField(lib, field, value){
   saveState();
 }
 function wireGateSlots(){
-  resetGateSlot('slotSelfie', 'fileSelfie', '📷 Selfie or a photo of the library, relating to the prompt', 'user');
-  $('fileSelfie').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('selfie','slotSelfie','📷 Selfie or a photo of the library, relating to the prompt', f, 'hasSelfie'); };
-  resetGateSlot('slotEthan', 'fileEthan', '📷 Photo of the paragraph Ethan reads', 'environment');
-  $('fileEthan').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('ethanParagraph','slotEthan','📷 Photo of the paragraph Ethan reads', f, 'hasEthanPhoto'); };
-  resetGateSlot('slotVanessa', 'fileVanessa', '📷 Photo of the paragraph Vanessa reads', 'environment');
-  $('fileVanessa').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('vanessaParagraph','slotVanessa','📷 Photo of the paragraph Vanessa reads', f, 'hasVanessaPhoto'); };
+  resetGateSlot('slotSelfie', 'fileSelfie', '📷 Selfie or a photo of the library, relating to the prompt — camera or gallery');
+  $('fileSelfie').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('selfie','slotSelfie','📷 Selfie or a photo of the library, relating to the prompt — camera or gallery', f, 'hasSelfie'); };
+  resetGateSlot('slotEthan', 'fileEthan', '📷 Photo of the paragraph Ethan reads — camera or gallery');
+  $('fileEthan').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('ethanParagraph','slotEthan','📷 Photo of the paragraph Ethan reads — camera or gallery', f, 'hasEthanPhoto'); };
+  resetGateSlot('slotVanessa', 'fileVanessa', '📷 Photo of the paragraph Vanessa reads — camera or gallery');
+  $('fileVanessa').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('vanessaParagraph','slotVanessa','📷 Photo of the paragraph Vanessa reads — camera or gallery', f, 'hasVanessaPhoto'); };
 }
 function photoGateSatisfied(){
   if(currentPromptType === 'paragraph') return !!capturedPhotos.selfie && !!capturedPhotos.ethanParagraph && !!capturedPhotos.vanessaParagraph;
@@ -4458,7 +4462,7 @@ function openWayStopModal(){
   wayStopPendingPhoto = null;
   const slot = $('wayStopPhotoSlot');
   slot.classList.remove('has-photo');
-  slot.innerHTML = `📷 Add a photo (optional)<input type="file" accept="image/*" capture="environment" id="wayStopPhotoInput">`;
+  slot.innerHTML = `📷 Add a photo (optional) — camera or your gallery<input type="file" accept="image/*" id="wayStopPhotoInput">`;
   $('wayStopPhotoInput').onchange = handleWayStopPhotoPick;
   $('wayStopOverlay').classList.add('show');
 }
