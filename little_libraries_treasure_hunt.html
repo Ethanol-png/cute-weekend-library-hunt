@@ -1625,9 +1625,13 @@ const Motion = (() => {
    written to --jy (a registered, non-inheriting property feeding `translate`), so it composes
    with hover lifts and press springs, and never touches layout. */
 const Jelly = (() => {
+  /* Deliberately structural only — whole panels/rows-as-a-unit, never individual list rows.
+     A fully-populated checklist can have 40-50+ .list-item rows; giving each one its own
+     spring + per-frame style write was the actual cause of the scroll jank on real phones
+     (prior perf benchmarking never scrolled the list with it populated, so this was missed). */
   const SEL = ['.wrap > h1', '.wrap > .sub', '.wrap > .panel', '.wrap > .theme-toggle-row', '.wrap > footer',
                '#targetPanel .dial-wrap', '#targetPanel .action-row > *', '#targetPanel .arrived-manual', '.view-switch', '.tally',
-               '.list-item', '.trophy', '.gallery-card', '#finalePanel .recap-stat', '#finalePanel .btn', '#checklistPanel > div:last-child .btn'];
+               '#finalePanel .recap-stat', '#finalePanel .btn', '#checklistPanel > div:last-child .btn'];
   const FIXED = ['#pointsChip', '#soundToggle', '#logStopFab', '#endHuntFab'];
   let items = [], dirty = true, running = false, lastY = 0, vel = 0, grabY = 0, lastT = 0;
   function collect(){
@@ -2588,8 +2592,18 @@ async function LLBoot(){
     addEventListener('resize', () => Motion.positionPill(false), { passive:true });
     // One tap sound for every button in the app (a few buttons opt out with data-sound="none"
     // because they have their own sound — the vibe switch plays the startup chime, etc.)
+    // `label.photo-slot` is deliberately EXCLUDED here: its native job on tap is to hand off to
+    // the OS camera/photo picker, and this used to also be in this list. Sound.play() resumes
+    // the AudioContext synchronously when it isn't already running, and doing that from a
+    // *capturing* click handler on the very element whose default action opens a native
+    // camera/file picker is a known source of exactly the "took a photo, nothing happened"
+    // failure on real phones (Safari and some Android WebViews only grant one privileged,
+    // gesture-consuming action per tap, and audio resume + native picker can end up racing for
+    // it) — likely why photo capture regressed after the tap-sound system was added. The photo
+    // slots already get their own confirmation sound in captureGateSlot()/setWayStopPhoto() once
+    // a photo actually lands, so no feedback is lost — it's just moved off the risky gesture.
     document.addEventListener('click', (e) => {
-      const el = e.target.closest('button, a.drive-btn, label.photo-slot');
+      const el = e.target.closest('button, a.drive-btn');
       if(!el || el.disabled || el.closest('[data-sound="none"]')) return;
       Sound.play('button');
     }, true);
@@ -2666,25 +2680,80 @@ async function getPhoto(key){
    in-app collages/keepsakes and keeps storage + memory use sane over a whole day of stops. */
 function compressPhotoFile(file, maxDim, quality){
   maxDim = maxDim || 640; quality = quality || 0.62;
+  // A phone camera photo can be 10-50MB+ at 12-48MP. The old path read it into a base64
+  // string (~33% bigger than the file) via FileReader, then decoded the FULL-RESOLUTION
+  // image into an uncompressed bitmap (a 4032x3024 photo alone is ~48MB as RGBA) before ever
+  // scaling it down — a huge, avoidable memory spike at exactly the moment a low-memory phone
+  // is also juggling the camera app switch. createImageBitmap's resize options let the browser
+  // decode straight to the small target size without ever holding the full-res bitmap in JS
+  // memory, so we prefer that path and only fall back to the old one where it's unsupported.
+  if(window.createImageBitmap){
+    return (async () => {
+      let bitmap;
+      try{
+        // First probe the source size cheaply so we pick a sane target box (createImageBitmap's
+        // resize is a "fit inside" box, not a max-dimension clamp).
+        const probe = await createImageBitmap(file);
+        const iw = probe.width, ih = probe.height;
+        probe.close && probe.close();
+        let w = iw, h = ih;
+        if(w > h && w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; }
+        else if(h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; }
+        bitmap = await createImageBitmap(file, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' });
+        const canvas = document.createElement('canvas');
+        canvas.width = bitmap.width; canvas.height = bitmap.height;
+        canvas.getContext('2d').drawImage(bitmap, 0, 0);
+        bitmap.close && bitmap.close();
+        return canvas.toDataURL('image/jpeg', quality);
+      }catch(e){
+        if(bitmap && bitmap.close) bitmap.close();
+        return compressPhotoFileLegacy(file, maxDim, quality);
+      }
+    })();
+  }
+  return compressPhotoFileLegacy(file, maxDim, quality);
+}
+function compressPhotoFileLegacy(file, maxDim, quality){
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onerror = () => { URL.revokeObjectURL(url); readFileRawDataURL(file).then(resolve, () => resolve(null)); };
+    img.onload = () => {
+      let w = img.naturalWidth, h = img.naturalHeight;
+      if(w > h && w > maxDim){ h = Math.round(h * maxDim/w); w = maxDim; }
+      else if(h > maxDim){ w = Math.round(w * maxDim/h); h = maxDim; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = url;
+  });
+}
+/* Last-resort fallback: if the browser can't decode/resize the photo at all (an unusual format,
+   a decoder crash, whatever), still hand back SOMETHING rather than let the capture vanish with
+   nothing to show for it — a full-size data URL is worse for storage but visibly "worked". */
+function readFileRawDataURL(file){
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(reader.error);
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('bad image'));
-      img.onload = () => {
-        let w = img.naturalWidth, h = img.naturalHeight;
-        if(w > h && w > maxDim){ h = Math.round(h * maxDim/w); w = maxDim; }
-        else if(h > maxDim){ w = Math.round(w * maxDim/h); h = maxDim; }
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.src = reader.result;
-    };
+    reader.onload = () => resolve(reader.result);
     reader.readAsDataURL(file);
   });
+}
+/* A capture/pick that fails is otherwise silent — console.warn only, nothing on screen — which
+   looks exactly like "I took a photo and nothing happened". Show a small recoverable message in
+   the slot instead so a real failure is visible and the person knows to try again. */
+function showPhotoCaptureError(slotEl, retryFn){
+  if(!slotEl) return;
+  slotEl.classList.remove('has-photo');
+  slotEl.innerHTML = `<span style="color:#b8395f;font-weight:600">Photo didn't save — tap to try again</span>`;
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.style.cssText = 'position:absolute;inset:0;opacity:0;cursor:pointer';
+  input.onchange = retryFn;
+  slotEl.appendChild(input);
 }
 
 /* ================= geo math ================= */
@@ -3833,6 +3902,7 @@ function resetGateSlot(slotId, inputId, label, capture){
 async function captureGateSlot(slotKey, slotId, label, file, visitFlag){
   try{
     const dataUrl = await compressPhotoFile(file, 640, 0.62);
+    if(!dataUrl) throw new Error('no data url produced');
     capturedPhotos[slotKey] = dataUrl;
     const el = $(slotId);
     el.classList.add('has-photo');
@@ -3855,7 +3925,10 @@ async function captureGateSlot(slotKey, slotId, label, file, visitFlag){
     }
     Sound.play('button', { gain:0.75, rate:1.12 }); vibrate(15);
     updateGateUI();
-  }catch(e){ console.warn('[gate] photo failed', e); }
+  }catch(e){
+    console.warn('[gate] photo failed', e);
+    showPhotoCaptureError($(slotId), (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot(slotKey, slotId, label, f, visitFlag); });
+  }
 }
 function setVisitField(lib, field, value){
   if(!lib) return;
@@ -4394,6 +4467,7 @@ async function handleWayStopPhotoPick(ev){
   if(!file) return;
   try{
     wayStopPendingPhoto = await compressPhotoFile(file, 640, 0.62);
+    if(!wayStopPendingPhoto) throw new Error('no data url produced');
     const slot = $('wayStopPhotoSlot');
     slot.classList.add('has-photo');
     slot.innerHTML = `<img src="${wayStopPendingPhoto}" alt="photo of the stop"><button type="button" class="photo-save-btn" title="Save to your phone">💾</button>`;
@@ -4403,7 +4477,11 @@ async function handleWayStopPhotoPick(ev){
       openLightbox(wayStopPendingPhoto, 'A sweet find along the way', autoFilename);
     };
     Sound.play('button', { gain:0.75, rate:1.12 }); vibrate(15);
-  }catch(e){ console.warn('[waystop] photo failed', e); }
+  }catch(e){
+    console.warn('[waystop] photo failed', e);
+    wayStopPendingPhoto = null;
+    showPhotoCaptureError($('wayStopPhotoSlot'), handleWayStopPhotoPick);
+  }
 }
 $('logStopFab').onclick = () => { openWayStopModal(); vibrate(12); };
 $('wayStopCancelBtn').onclick = () => { $('wayStopOverlay').classList.remove('show'); };
