@@ -327,6 +327,7 @@ let lastFixAt = null;
 let watchId = null;
 let arrivalLock = false;
 let deviceHeading = null;
+let lastArrowRotation = 0, lastRingRotation = 0;
 let compassActive = false;
 
 const $ = (id) => document.getElementById(id);
@@ -670,7 +671,16 @@ function smoothHeading(prev, next, blend){
   const y = Math.sin(rad(prev))*(1-blend) + Math.sin(rad(next))*blend;
   return deg(Math.atan2(y,x));
 }
+/* Picks the equivalent of targetDeg (mod 360) that's numerically closest to fromDeg, e.g.
+   fromDeg=358, targetDeg=2 -> 362 (not 2). Without this, a CSS `rotate()` transition between
+   358deg and 2deg animates the LONG way around (358 -> 180 -> 2) instead of the short 4deg hop
+   — that's the "spaz" / sudden full-circle spin whenever the heading crosses the 0/360 seam. */
+function nearestEquivalentAngle(targetDeg, fromDeg){
+  const delta = ((targetDeg - fromDeg + 180) % 360 + 360) % 360 - 180;
+  return fromDeg + delta;
+}
 function setCompassStatus(text){ const el = $('compassStatus'); if(el) el.textContent = text; }
+let lastOrientationRenderAt = 0;
 function handleOrientation(e){
   let heading = null, isTrue = false;
   if(typeof e.webkitCompassHeading === 'number'){ heading = e.webkitCompassHeading; isTrue = true; } // iOS
@@ -679,7 +689,14 @@ function handleOrientation(e){
   else { return; } // already have a true reading flowing — ignore noisy relative-only events
 
   if(isTrue && !hasTrueCompass){ hasTrueCompass = true; setCompassStatus('🧭 live compass active'); }
-  deviceHeading = smoothHeading(deviceHeading, heading, 0.25);
+  deviceHeading = smoothHeading(deviceHeading, heading, 0.18);
+
+  // Sensors can fire up to ~60x/sec; re-rendering (DOM writes + CSS transition restarts) that
+  // often is both wasteful and makes the arrow look jittery/janky. ~12fps is plenty smooth for
+  // a compass dial and gives the CSS transition room to actually finish each step.
+  const now = performance.now();
+  if(now - lastOrientationRenderAt < 80) return;
+  lastOrientationRenderAt = now;
   renderTarget();
 }
 $('compassBtn').onclick = async () => {
@@ -720,9 +737,13 @@ function renderTarget(){
     bearing = bearingDeg(currentPosition.lat, currentPosition.lon, lib.lat, lib.lon);
     animateDistance(dist);
     $('compassLabel').textContent = 'head ' + compassLabel(bearing);
-    const arrowRotation = (deviceHeading != null) ? (bearing - deviceHeading + 360) % 360 : bearing;
+    const rawArrowRotation = (deviceHeading != null) ? (bearing - deviceHeading + 360) % 360 : bearing;
+    const arrowRotation = nearestEquivalentAngle(rawArrowRotation, lastArrowRotation);
+    lastArrowRotation = arrowRotation;
     $('arrowSvg').style.transform = `rotate(${arrowRotation}deg)`;
-    const ringRotation = (deviceHeading != null) ? (-deviceHeading + 360) % 360 : 0;
+    const rawRingRotation = (deviceHeading != null) ? (-deviceHeading + 360) % 360 : 0;
+    const ringRotation = nearestEquivalentAngle(rawRingRotation, lastRingRotation);
+    lastRingRotation = ringRotation;
     $('compassRing').style.transform = `rotate(${ringRotation}deg)`;
   } else {
     $('distReadout').textContent = '— away';
