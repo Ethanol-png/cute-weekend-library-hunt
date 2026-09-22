@@ -141,6 +141,27 @@
   }
   .trophy.revealed{ animation:trophyPop .5s cubic-bezier(.34,1.56,.64,1); }
   @keyframes trophyPop{ 0%{ transform:scale(.3) rotate(-8deg); opacity:0;} 60%{ transform:scale(1.08) rotate(2deg); opacity:1;} 100%{ transform:scale(1) rotate(0);} }
+
+  /* map view */
+  .map-view{ text-align:center; }
+  .map-svg{
+    width:100%; max-width:340px; aspect-ratio:1; background:linear-gradient(135deg,#fff,var(--pink-1));
+    border-radius:20px; box-shadow:inset 0 0 0 2px #fff, 0 4px 12px rgba(201,63,130,.15);
+  }
+  .map-dot-lib{ transition:r .2s ease; }
+  .map-dot-lib.locked{ fill:#d9c9d3; }
+  .map-dot-lib.visited{ fill:var(--pink-3); }
+  .map-dot-lib.current{ fill:var(--pink-deep); animation:mapPulse 1.4s ease-in-out infinite; }
+  @keyframes mapPulse{ 0%,100%{ r:6; opacity:1;} 50%{ r:9; opacity:.6;} }
+  .map-trail-path{ fill:none; stroke:var(--lav-deep); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:.55; stroke-dasharray:1 5; }
+  .map-you-dot{ fill:#fff; stroke:var(--lav-deep); stroke-width:2.5; }
+  .map-legend{ display:flex; flex-wrap:wrap; gap:10px 14px; justify-content:center; margin-top:10px; font-size:.7rem; opacity:.75; }
+  .map-legend span{ display:inline-flex; align-items:center; gap:4px; }
+  .map-dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .map-dot-visited{ background:var(--pink-3); }
+  .map-dot-locked{ background:#d9c9d3; }
+  .map-dot-current{ background:var(--pink-deep); }
+  .map-trail-swatch{ width:14px; height:0; border-top:2px dashed var(--lav-deep); display:inline-block; }
   .list-item{
     display:flex; align-items:center; gap:10px; padding:10px 6px; border-bottom:1px dashed rgba(201,63,130,.15);
     font-size:.86rem; transition:opacity .3s ease;
@@ -171,6 +192,12 @@
   .modal h2{ font-family:'Fredoka',sans-serif; color:var(--pink-deep); margin:6px 0; }
   .confetti-emoji{ font-size:2.4rem; }
   .modal .polaroid{ margin:14px 0; }
+  .prompt-card{
+    background:linear-gradient(135deg,var(--lav-1),#fff); border:1.5px dashed var(--lav-2); border-radius:16px;
+    padding:14px 16px; margin:14px 0; text-align:left; animation:popIn .4s ease;
+  }
+  .prompt-label{ font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--lav-deep); opacity:.8; margin-bottom:4px; }
+  .prompt-text{ font-size:.92rem; color:var(--text); font-weight:600; line-height:1.35; }
   .direction-cards{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
   .dir-card{
     display:flex; align-items:center; gap:12px; background:#fff; border:2px solid var(--pink-1);
@@ -191,6 +218,14 @@
   /* finale */
   #finalePanel{ display:none; text-align:center; }
   .big-emoji{ font-size:3rem; }
+  .recap-stats{ display:flex; justify-content:center; gap:22px; margin:16px 0; flex-wrap:wrap; }
+  .recap-stat .num{ font-family:'Fredoka',sans-serif; font-size:1.5rem; color:var(--pink-deep); font-weight:700; line-height:1.1; }
+  .recap-stat .lbl{ font-size:.68rem; opacity:.65; }
+  .recap-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(70px,1fr)); gap:8px;
+    margin:14px 0; max-height:340px; overflow-y:auto; padding:4px;
+  }
+  .recap-grid img{ width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; box-shadow:0 3px 8px rgba(201,63,130,.2); }
 
   footer{ text-align:center; font-size:.72rem; opacity:.55; margin-top:20px; }
 
@@ -201,12 +236,65 @@
     transition:transform .15s ease;
   }
   #soundToggle:active{ transform:scale(.9); }
+
+  /* points tracker */
+  .points-chip{
+    position:fixed; top:14px; left:14px; z-index:55; display:flex; align-items:center; gap:5px;
+    background:#fff; border:2px solid var(--pink-2); border-radius:20px; padding:8px 14px;
+    box-shadow:0 6px 16px rgba(201,63,130,.22); font-family:'Fredoka',sans-serif; font-weight:700;
+    color:var(--pink-deep); font-size:.95rem; transition:transform .2s ease;
+  }
+  .points-chip.bump{ transform:scale(1.15); }
+  .points-flower{ font-size:1rem; }
+  .points-label{ font-size:.68rem; opacity:.6; font-weight:600; margin-left:1px; }
+  .points-pop{
+    position:fixed; z-index:56; font-family:'Fredoka',sans-serif; font-weight:700; color:var(--pink-deep);
+    font-size:1.1rem; pointer-events:none; animation:pointsFloat 1.1s ease-out forwards;
+  }
+  @keyframes pointsFloat{ 0%{ opacity:0; transform:translateY(0) scale(.8);} 15%{ opacity:1; transform:translateY(-6px) scale(1.1);} 100%{ opacity:0; transform:translateY(-46px) scale(1);} }
+
+  /* update-available banner */
+  .update-banner{
+    position:fixed; left:50%; bottom:-80px; transform:translateX(-50%); z-index:80;
+    display:flex; align-items:center; gap:10px; background:#fff; border:2px solid var(--pink-2);
+    border-radius:18px; padding:10px 14px; box-shadow:0 8px 22px rgba(201,63,130,.28);
+    font-family:'Fredoka',sans-serif; transition:bottom .4s cubic-bezier(.34,1.56,.64,1); max-width:92vw;
+  }
+  .update-banner.show{ bottom:16px; }
+  .update-banner span{ font-size:.85rem; color:var(--pink-deep); font-weight:600; white-space:nowrap; }
+  .update-banner button{
+    font-family:'Fredoka',sans-serif; font-weight:700; font-size:.82rem; border:none; border-radius:12px;
+    padding:7px 12px; cursor:pointer; white-space:nowrap;
+  }
+  .update-banner .btn-refresh{ background:var(--pink-deep); color:#fff; }
+  .update-banner .btn-dismiss{ background:transparent; color:var(--pink-deep); opacity:.6; padding:7px 8px; }
+
+  /* milestone peony bloom */
+  .milestone-modal{ text-align:center; }
+  .milestone-petal-float{ font-size:2.4rem; display:inline-block; animation:petalRise 1.4s ease-in forwards; }
+  @keyframes petalRise{ 0%{ transform:translateY(40px) rotate(0deg); opacity:0;} 20%{ opacity:1;} 100%{ transform:translateY(-10px) rotate(160deg); opacity:0;} }
+  .milestone-petal-shape{ fill:#e6dde0; transition:fill .5s ease; }
+  .milestone-petal-shape.bloomed[data-ring="0"]{ fill:var(--pink-2); }
+  .milestone-petal-shape.bloomed[data-ring="1"]{ fill:var(--pink-3); }
+  .milestone-petal-shape.bloomed[data-ring="2"]{ fill:var(--pink-deep); }
+  .milestone-center-shape{ fill:#e6dde0; transition:fill .5s ease; }
+  .milestone-center-shape.bloomed{ fill:#ffdf7a; }
+  .milestone-modal h2{ font-family:'Fredoka',sans-serif; color:var(--pink-deep); margin:8px 0 4px; }
+  .milestone-sub{ font-size:.85rem; opacity:.7; margin-bottom:6px; }
 </style>
 </head>
 <body>
 <canvas id="confettiCanvas"></canvas>
 <button id="soundToggle" title="Toggle sound & haptics" aria-label="Toggle sound and haptics">🔊</button>
+<div class="update-banner" id="updateBanner">
+  <span>🌸 A fresh update is ready</span>
+  <button class="btn-refresh" id="updateRefreshBtn">Refresh</button>
+  <button class="btn-dismiss" id="updateDismissBtn">Later</button>
+</div>
 <div class="wrap">
+  <div class="points-chip" id="pointsChip" title="Points earned by choosing bolder directions">
+    <span class="points-flower">🌸</span><span id="pointsValue">0</span><span class="points-label">pts</span>
+  </div>
   <h1>🌸 Little Library Treasure Hunt</h1>
   <p class="sub">Each stop is a mystery until you arrive — follow the arrow, use a hint if you're stuck, and watch the trail fill in.</p>
 
@@ -270,11 +358,21 @@
       <div class="view-toggle-btns">
         <button class="vt-btn active" id="viewListBtn" type="button">List</button>
         <button class="vt-btn" id="viewTrophyBtn" type="button">🏆 Trophies</button>
+        <button class="vt-btn" id="viewMapBtn" type="button">🗺️ Map</button>
       </div>
     </div>
     <div class="tally" id="tally">0 of 0 visited</div>
     <div id="listContainer"></div>
     <div id="trophyGrid" class="trophy-grid" style="display:none;"></div>
+    <div id="mapView" class="map-view" style="display:none;">
+      <svg id="mapSvg" viewBox="0 0 300 300" class="map-svg"></svg>
+      <div class="map-legend">
+        <span><i class="map-dot map-dot-visited"></i> visited</span>
+        <span><i class="map-dot map-dot-locked"></i> not yet</span>
+        <span><i class="map-dot map-dot-current"></i> current stop</span>
+        <span><i class="map-trail-swatch"></i> ground covered</span>
+      </div>
+    </div>
     <div style="text-align:center; margin-top:16px;">
       <button class="btn ghost" id="resetBtn">Reset hunt</button>
     </div>
@@ -284,10 +382,24 @@
     <div class="big-emoji">🎉🌸🎉</div>
     <h2>You found every little library!</h2>
     <p>All of them, ticked off, one cute bookish adventure at a time.</p>
+    <div class="recap-stats" id="recapStats"></div>
+    <div class="recap-grid" id="recapGrid"></div>
+    <button class="btn secondary" id="saveKeepsakeBtn">💾 Save a keepsake</button>
     <button class="btn" id="resetBtn2">Start a new hunt</button>
   </div>
 
   <footer>GPS-guided · geocoded once via OpenStreetMap and cached on this device · photos pulled from streetlibrary.org.au · progress saves to this browser only<br>📱 tip: "Add to Home Screen" from your browser menu so this opens like an app, full-screen</footer>
+</div>
+
+<!-- Points milestone: peony bloom celebration -->
+<div class="modal-overlay" id="milestoneOverlay">
+  <div class="modal milestone-modal">
+    <div id="milestonePetalWrap"></div>
+    <svg id="milestonePeony" viewBox="0 0 200 200" width="170" height="170"></svg>
+    <h2 id="milestoneTitle">80 points!</h2>
+    <p class="milestone-sub" id="milestoneSub">A whole peony bloomed from your adventures today 🌸</p>
+    <button class="btn" id="milestoneCloseBtn">Keep going</button>
+  </div>
 </div>
 
 <!-- Arrival + direction modal -->
@@ -298,6 +410,10 @@
     <p id="modalSub" style="font-size:.88rem; opacity:.8;"></p>
     <div class="polaroid" id="modalPolaroid" style="display:none;">
       <img id="modalImg" alt="Photo of the library you just found">
+    </div>
+    <div class="prompt-card" id="promptCard">
+      <div class="prompt-label">🌸 Before you go...</div>
+      <div class="prompt-text" id="promptText"></div>
     </div>
     <div id="directionSection" style="display:none;">
       <p style="font-size:.85rem; font-weight:700; margin-top:18px;">Which way do you want to go next?</p>
@@ -322,8 +438,15 @@ const EMBEDDED_LIBRARIES = [{"name": "Moggill Rd Street Library", "address": "20
 let libraries = [];
 let visitedIds = new Set();
 let currentTargetId = null;
+let points = 0;
+let milestonesCelebrated = 0;
+const MILESTONE_INTERVAL = 80;
+const DIRECTION_POINTS = [4, 8, 10]; // closest, middle, furthest of the 3 offered next-stop choices
 let currentPosition = null;
 let lastFixAt = null;
+let trailPoints = []; // breadcrumb of ground covered today, for the map view
+const TRAIL_MIN_MOVE_M = 15;   // only record a new breadcrumb point after moving at least this far
+const TRAIL_MAX_POINTS = 600;  // cap so localStorage / the SVG don't grow unbounded over a long day
 let watchId = null;
 let arrivalLock = false;
 let deviceHeading = null;
@@ -354,6 +477,36 @@ function fmtDist(m){
   return (m/1000).toFixed(1) + ' km';
 }
 function idFor(lib){ return lib.source_url || (lib.name + lib.address); }
+
+/* ================= cute couple prompts (shown at every arrival) ================= */
+const COUPLE_PROMPTS = [
+  "Read each other a paragraph — or even just a sentence — from a book near you that makes you think of the other person.",
+  "Swap a favorite childhood book memory. Who read it to you, or where were you when you read it?",
+  "Pick a random book title you can see right now and make up a one-sentence plot for it together.",
+  "Tell each other about a character from a book, show, or movie you secretly relate to.",
+  "What's a book (or story) you'd want to live inside for a day, and why?",
+  "Take one photo together here, just because — no reason needed.",
+  "Trade compliments: one thing about today, and one thing about each other, that you're grateful for right now.",
+  "If this library had a hidden note inside it just for you two, what would it say?",
+  "Describe today's adventure so far in exactly five words each.",
+  "What's a small thing about the other person you noticed today that you love?",
+  "Guess: what book would the other person leave in a library like this one, and why?",
+  "Share the last really good sentence you remember reading anywhere.",
+  "Hold hands for the walk to the next stop. No phones until you're both there.",
+  "What's one thing you want to read, watch, or make together sometime soon?",
+];
+let couplePromptBag = [];
+function pickCouplePrompt(){
+  if(couplePromptBag.length === 0){
+    couplePromptBag = COUPLE_PROMPTS.map((_, i) => i);
+    for(let i = couplePromptBag.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [couplePromptBag[i], couplePromptBag[j]] = [couplePromptBag[j], couplePromptBag[i]];
+    }
+  }
+  const idx = couplePromptBag.pop();
+  return COUPLE_PROMPTS[idx];
+}
 
 /* ================= compass rose ring (tick marks around the dial) ================= */
 function buildCompassRing(){
@@ -561,35 +714,168 @@ async function ensureGeocoded(libs){
 
 /* ================= persisted hunt state ================= */
 function loadState(){ try{ return JSON.parse(localStorage.getItem(STATE_KEY) || '{}'); }catch(e){ return {}; } }
-function saveState(){ localStorage.setItem(STATE_KEY, JSON.stringify({ visited: Array.from(visitedIds), currentTargetId })); }
+function saveState(){ localStorage.setItem(STATE_KEY, JSON.stringify({ visited: Array.from(visitedIds), currentTargetId, points, milestonesCelebrated, trailPoints })); }
 
-/* ================= geolocation ================= */
-function startWatchingPosition(){
-  if(!('geolocation' in navigator)){ handleNoGPS('This browser has no geolocation support.'); return; }
-  const onOk = pos => {
+/* ================= points + peony milestone ================= */
+function renderPoints(bump){
+  $('pointsValue').textContent = points;
+  if(bump){
+    $('pointsChip').classList.remove('bump'); void $('pointsChip').offsetWidth; $('pointsChip').classList.add('bump');
+  }
+}
+function showPointsPop(amount){
+  const chip = $('pointsChip');
+  const rect = chip.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.className = 'points-pop';
+  pop.textContent = '+' + amount;
+  pop.style.left = (rect.left + rect.width/2 - 10) + 'px';
+  pop.style.top = (rect.bottom - 4) + 'px';
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 1200);
+}
+function awardPoints(amount){
+  points += amount;
+  const newMilestoneCount = Math.floor(points / MILESTONE_INTERVAL);
+  renderPoints(true);
+  showPointsPop(amount);
+  saveState();
+  if(newMilestoneCount > milestonesCelebrated){
+    milestonesCelebrated = newMilestoneCount;
+    saveState();
+    setTimeout(() => triggerPeonyMilestone(), 700); // let the points-pop/arrival settle first
+  }
+}
+function buildMilestonePeonySVG(){
+  const svg = $('milestonePeony');
+  if(svg.dataset.built) return;
+  svg.dataset.built = '1';
+  const cx = 100, cy = 100;
+  const rings = [
+    { radius: 34, len: 60, w: 34, n: 7, offset: 0,    ring: 0 },
+    { radius: 23, len: 42, w: 25, n: 7, offset: 25.7, ring: 1 },
+    { radius: 12, len: 26, w: 16, n: 6, offset: 15,   ring: 2 },
+  ];
+  const svgNS = 'http://www.w3.org/2000/svg';
+  rings.forEach(ring => {
+    for(let i=0; i<ring.n; i++){
+      const angle = ring.offset + (360/ring.n)*i;
+      const rad = (angle-90)*Math.PI/180;
+      const px = cx + ring.radius*Math.cos(rad), py = cy + ring.radius*Math.sin(rad);
+      const petal = document.createElementNS(svgNS, 'ellipse');
+      petal.setAttribute('cx', px); petal.setAttribute('cy', py);
+      petal.setAttribute('rx', ring.w/2); petal.setAttribute('ry', ring.len/2);
+      petal.setAttribute('transform', `rotate(${angle} ${px} ${py})`);
+      petal.setAttribute('class', 'milestone-petal-shape');
+      petal.setAttribute('data-ring', ring.ring);
+      svg.appendChild(petal);
+    }
+  });
+  const center = document.createElementNS(svgNS, 'circle');
+  center.setAttribute('cx', cx); center.setAttribute('cy', cy); center.setAttribute('r', 9);
+  center.setAttribute('class', 'milestone-center-shape');
+  svg.appendChild(center);
+}
+function triggerPeonyMilestone(){
+  buildMilestonePeonySVG();
+  document.querySelectorAll('.milestone-petal-shape, .milestone-center-shape').forEach(p => p.classList.remove('bloomed'));
+  $('milestoneTitle').textContent = `🌸 ${milestonesCelebrated * MILESTONE_INTERVAL} points!`;
+  $('milestonePetalWrap').innerHTML = '<span class="milestone-petal-float">🌸</span>';
+  $('milestoneOverlay').classList.add('show');
+  playArrivalSound(); vibrate([30,50,30,50,30,50,150]);
+  const petals = Array.from(document.querySelectorAll('.milestone-petal-shape'));
+  petals.forEach((p, i) => {
+    setTimeout(() => { p.classList.add('bloomed'); playPopSound(); }, 900 + i*80);
+  });
+  setTimeout(() => {
+    const center = document.querySelector('.milestone-center-shape');
+    if(center) center.classList.add('bloomed');
+    burstConfetti();
+  }, 900 + petals.length*80 + 250);
+}
+$('milestoneCloseBtn').onclick = () => { $('milestoneOverlay').classList.remove('show'); };
+
+/* ================= geolocation (battery-friendly adaptive polling) =================
+   Rather than a single watchPosition() firing at whatever cadence + accuracy the OS
+   picks (a real battery drain when the phone rides in a pocket for a stretch), we run
+   our own poll loop and adapt both the interval and enableHighAccuracy each time:
+     - close to the current target (< CLOSE_RADIUS_M): fast + precise, for arrival detection.
+     - hasn't moved more than STILL_MOVE_M in the last STILL_AFTER_MS: slow + coarse, since
+       nothing is changing and precise fixes just burn battery for no benefit.
+     - otherwise: a comfortable middle ground.
+   A tab returning to the foreground (visibilitychange) or the manual refresh button both
+   force an immediate high-accuracy fix and reset the backoff, so it never feels stale. */
+const GPS_CLOSE_RADIUS_M = 150;      // ramp up near the target
+const GPS_STILL_MOVE_M = 12;         // movement below this doesn't count as "moving"
+const GPS_STILL_AFTER_MS = 90000;    // this long without moving = back off
+const GPS_INTERVAL_CLOSE_MS = 4000;
+const GPS_INTERVAL_NORMAL_MS = 9000;
+const GPS_INTERVAL_STILL_MS = 25000;
+let gpsTimerId = null;
+let lastMovePosition = null;
+let lastMovedAt = Date.now();
+let gpsActive = false;
+
+function pickGPSPlan(){
+  let closeToTarget = false;
+  if(currentPosition && currentTargetId){
+    const lib = libraries.find(l => idFor(l) === currentTargetId);
+    if(lib && lib.lat != null){
+      const d = haversineMeters(currentPosition.lat, currentPosition.lon, lib.lat, lib.lon);
+      closeToTarget = d <= GPS_CLOSE_RADIUS_M;
+    }
+  }
+  if(closeToTarget) return { interval: GPS_INTERVAL_CLOSE_MS, highAccuracy: true };
+  const stillTooLong = (Date.now() - lastMovedAt) > GPS_STILL_AFTER_MS;
+  if(stillTooLong) return { interval: GPS_INTERVAL_STILL_MS, highAccuracy: false };
+  return { interval: GPS_INTERVAL_NORMAL_MS, highAccuracy: true };
+}
+function trackMovement(pos){
+  if(lastMovePosition){
+    const moved = haversineMeters(lastMovePosition.lat, lastMovePosition.lon, pos.lat, pos.lon);
+    if(moved >= GPS_STILL_MOVE_M){ lastMovedAt = Date.now(); lastMovePosition = pos; }
+  } else {
+    lastMovePosition = pos; lastMovedAt = Date.now();
+  }
+}
+function pollGPSOnce(){
+  if(!gpsActive || !('geolocation' in navigator)) return;
+  const plan = pickGPSPlan();
+  navigator.geolocation.getCurrentPosition(pos => {
     currentPosition = { lat: pos.coords.latitude, lon: pos.coords.longitude };
     lastFixAt = Date.now();
     $('gpsNote').style.display = 'none';
+    trackMovement(currentPosition);
     onPositionUpdate();
-  };
-  const onErr = err => {
+    if(gpsActive){ gpsTimerId = setTimeout(pollGPSOnce, pickGPSPlan().interval); }
+  }, err => {
     if(err.code === 1) handleNoGPS('Location permission was denied.');
     else if(!window.isSecureContext) handleNoGPS('insecure');
     else handleNoGPS('Could not get a GPS fix (' + err.message + ').');
-  };
-  watchId = navigator.geolocation.watchPosition(onOk, onErr, { enableHighAccuracy:true, maximumAge:0, timeout:20000 });
+    if(gpsActive){ gpsTimerId = setTimeout(pollGPSOnce, GPS_INTERVAL_NORMAL_MS); }
+  }, { enableHighAccuracy: plan.highAccuracy, maximumAge: 5000, timeout: 20000 });
+}
+function startWatchingPosition(){
+  if(!('geolocation' in navigator)){ handleNoGPS('This browser has no geolocation support.'); return; }
+  gpsActive = true;
+  clearTimeout(gpsTimerId);
+  pollGPSOnce();
 }
 function refreshPositionOnce(){
   if(!('geolocation' in navigator)) return;
   $('refreshBtn').textContent = '🔄 Locating…';
+  clearTimeout(gpsTimerId);
   navigator.geolocation.getCurrentPosition(pos => {
     currentPosition = { lat: pos.coords.latitude, lon: pos.coords.longitude };
     lastFixAt = Date.now();
+    trackMovement(currentPosition);
     $('refreshBtn').textContent = '🔄 Refresh location';
     onPositionUpdate();
+    if(gpsActive){ gpsTimerId = setTimeout(pollGPSOnce, pickGPSPlan().interval); }
   }, err => {
     $('refreshBtn').textContent = '🔄 Refresh location';
     handleNoGPS(err.code === 1 ? 'Location permission was denied.' : ('Could not get a fix (' + err.message + ').'));
+    if(gpsActive){ gpsTimerId = setTimeout(pollGPSOnce, GPS_INTERVAL_NORMAL_MS); }
   }, { enableHighAccuracy:true, maximumAge:0, timeout:20000 });
 }
 $('refreshBtn').onclick = refreshPositionOnce;
@@ -612,6 +898,8 @@ document.addEventListener('visibilitychange', () => {
   if(document.visibilityState === 'visible'){
     refreshPositionOnce();   // snap to an accurate fix the instant you come back to this tab
     requestWakeLock();
+  } else {
+    clearTimeout(gpsTimerId);   // don't keep polling GPS while the screen is off/backgrounded
   }
 });
 
@@ -763,8 +1051,20 @@ function renderTarget(){
 
   initCompassUI();
 }
+function recordTrailPoint(){
+  const last = trailPoints[trailPoints.length - 1];
+  if(last){
+    const moved = haversineMeters(last.lat, last.lon, currentPosition.lat, currentPosition.lon);
+    if(moved < TRAIL_MIN_MOVE_M) return;
+  }
+  trailPoints.push({ lat: currentPosition.lat, lon: currentPosition.lon });
+  if(trailPoints.length > TRAIL_MAX_POINTS) trailPoints.shift();
+  saveState();
+  if(currentView === 'map') renderMapView();
+}
 function onPositionUpdate(){
   renderTarget();
+  recordTrailPoint();
   const lib = libraries.find(l => idFor(l) === currentTargetId);
   if(!lib || lib.lat == null || arrivalLock) return;
   const d = haversineMeters(currentPosition.lat, currentPosition.lon, lib.lat, lib.lon);
@@ -790,6 +1090,7 @@ function showArrivalModal(lib){
   $('modalSub').textContent = `${lib.address}`;
   if(lib.photo){ $('modalImg').src = lib.photo; $('modalPolaroid').style.display = 'inline-block'; }
   else{ $('modalPolaroid').style.display = 'none'; }
+  $('promptText').textContent = pickCouplePrompt();
   $('modalActions').innerHTML = '';
 
   const remaining = unvisited();
@@ -812,13 +1113,15 @@ function showArrivalModal(lib){
   $('directionCards').innerHTML = '';
   options.forEach((opt, i) => {
     const card = document.createElement('div');
+    const rankLabel = i===0 ? 'closest' : (i===1 ? 'middle' : 'furthest');
+    const pts = DIRECTION_POINTS[i] != null ? DIRECTION_POINTS[i] : DIRECTION_POINTS[DIRECTION_POINTS.length-1];
     card.className = 'dir-card' + (i===0 ? ' recommended' : '');
     card.innerHTML = `
       <svg class="arrow-mini" viewBox="0 0 100 100" style="transform:rotate(${opt.bearing}deg)">
         <path d="M50 6 L78 62 L58 62 L58 94 L42 94 L42 62 L22 62 Z" fill="#c93f82"/>
       </svg>
       <div class="dinfo">
-        <div class="dname">Library #${opt.lib.number} ${i===0 ? '<span class="rec-tag">closest</span>' : ''}</div>
+        <div class="dname">Library #${opt.lib.number} <span class="rec-tag">${rankLabel} · +${pts}pts</span></div>
         <div class="ddist">${compassLabel(opt.bearing)} · ${fmtDist(opt.dist)} · near ${opt.lib.suburb || ''}</div>
         <div class="card-photo" id="cardPhoto${i}"><img src="${opt.lib.photo || ''}" alt="hint photo"></div>
       </div>
@@ -829,14 +1132,127 @@ function showArrivalModal(lib){
       $('cardPhoto'+i).classList.toggle('show');
       playPopSound(); vibrate(12);
     };
-    card.onclick = () => { playSelectSound(); vibrate(20); closeModal(); setTarget(opt.lib); arrivalLock = false; };
+    card.onclick = () => {
+      playSelectSound(); vibrate(20); closeModal();
+      awardPoints(pts);
+      setTarget(opt.lib); arrivalLock = false;
+    };
     $('directionCards').appendChild(card);
   });
 
   $('modalOverlay').classList.add('show');
 }
 function closeModal(){ $('modalOverlay').classList.remove('show'); }
-function showFinale(){ $('targetPanel').style.display = 'none'; $('checklistPanel').style.display = 'none'; $('finalePanel').style.display = 'block'; }
+function computeTrailKm(){
+  let total = 0;
+  for(let i=1; i<trailPoints.length; i++){
+    total += haversineMeters(trailPoints[i-1].lat, trailPoints[i-1].lon, trailPoints[i].lat, trailPoints[i].lon);
+  }
+  return total / 1000;
+}
+function renderRecap(){
+  const visitedLibs = libraries.filter(l => visitedIds.has(idFor(l)));
+  const km = computeTrailKm();
+  $('recapStats').innerHTML = `
+    <div class="recap-stat"><div class="num">${visitedLibs.length}</div><div class="lbl">libraries found</div></div>
+    <div class="recap-stat"><div class="num">${points}</div><div class="lbl">points earned</div></div>
+    <div class="recap-stat"><div class="num">${km.toFixed(1)}</div><div class="lbl">km covered</div></div>
+  `;
+  const grid = $('recapGrid');
+  grid.innerHTML = '';
+  visitedLibs.forEach(lib => {
+    if(!lib.photo) return;
+    const img = document.createElement('img');
+    img.src = lib.photo; img.alt = lib.name; img.loading = 'lazy'; img.title = lib.name;
+    grid.appendChild(img);
+  });
+}
+function showFinale(){
+  $('targetPanel').style.display = 'none'; $('checklistPanel').style.display = 'none'; $('finalePanel').style.display = 'block';
+  renderRecap();
+}
+
+/* ================= keepsake card (downloadable PNG) =================
+   Deliberately drawn entirely from shapes/text rather than the hotlinked library photos:
+   those photos live on streetlibrary.org.au without CORS headers, so drawing them onto a
+   <canvas> would "taint" it and make it permanently un-exportable (a browser security rule,
+   not a bug). A from-scratch peony + stats keepsake sidesteps that and always works. */
+function drawKeepsakePeony(ctx, cx, cy, scale){
+  const rings = [
+    { radius: 90*scale, len:150*scale, w:85*scale, n:7, offset:0,    color:'#ff9ac3' },
+    { radius: 58*scale, len:105*scale, w:62*scale, n:7, offset:25.7, color:'#ff78aa' },
+    { radius: 30*scale, len:65*scale,  w:40*scale, n:6, offset:15,   color:'#ec4885' },
+  ];
+  rings.forEach(ring => {
+    for(let i=0; i<ring.n; i++){
+      const angle = ring.offset + (360/ring.n)*i;
+      const rad = (angle-90)*Math.PI/180;
+      const px = cx + ring.radius*Math.cos(rad), py = cy + ring.radius*Math.sin(rad);
+      ctx.save();
+      ctx.translate(px, py); ctx.rotate(angle*Math.PI/180);
+      ctx.fillStyle = ring.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, ring.w/2, ring.len/2, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+  });
+  ctx.beginPath(); ctx.arc(cx, cy, 22*scale, 0, Math.PI*2); ctx.fillStyle = '#ffe078'; ctx.fill();
+}
+function drawKeepsakeCard(){
+  const W = 800, H = 1000, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const canvas = document.createElement('canvas');
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#ffe4f1'); grad.addColorStop(0.5, '#ffd3e8'); grad.addColorStop(1, '#e9d6ff');
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+
+  drawKeepsakePeony(ctx, W/2, 300, 1.0);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#c93f82';
+  ctx.font = "700 42px Georgia, 'Times New Roman', serif";
+  ctx.fillText('Our Little Library Adventure', W/2, 540);
+  ctx.font = "400 21px Georgia, 'Times New Roman', serif";
+  ctx.fillStyle = '#5a2e4a';
+  ctx.fillText(new Date().toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' }), W/2, 578);
+
+  const visitedLibs = libraries.filter(l => visitedIds.has(idFor(l)));
+  const km = computeTrailKm();
+  const stats = [
+    [String(visitedLibs.length), 'libraries found'],
+    [String(points), 'points earned'],
+    [km.toFixed(1), 'km covered'],
+  ];
+  const statW = W/3;
+  stats.forEach((s, i) => {
+    const scx = statW*i + statW/2;
+    ctx.font = "700 46px Georgia, 'Times New Roman', serif"; ctx.fillStyle = '#c93f82';
+    ctx.fillText(s[0], scx, 690);
+    ctx.font = "400 17px Georgia, 'Times New Roman', serif"; ctx.fillStyle = '#6c4aa3';
+    ctx.fillText(s[1], scx, 718);
+  });
+
+  ctx.font = "italic 20px Georgia, 'Times New Roman', serif"; ctx.fillStyle = '#5a2e4a';
+  ctx.fillText('🌸 a cute weekend treasure hunt 🌸', W/2, 820);
+
+  return canvas;
+}
+$('saveKeepsakeBtn').onclick = () => {
+  const canvas = drawKeepsakeCard();
+  canvas.toBlob((blob) => {
+    if(!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'our-little-library-adventure.png';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }, 'image/png');
+  playArrivalSound(); vibrate([20,40,20]);
+};
 
 /* ================= checklist ================= */
 function renderChecklist(){
@@ -861,12 +1277,16 @@ function renderChecklist(){
     $('listContainer').appendChild(row);
   });
   renderTrophyGrid();
+  if(currentView === 'map') renderMapView();
 }
 
 /* ================= trophy / scrapbook grid view ================= */
 const VIEW_KEY = 'llth_view_v1';
-let trophyView = false;
-try{ trophyView = localStorage.getItem(VIEW_KEY) === 'trophy'; }catch(e){}
+let currentView = 'list'; // 'list' | 'trophy' | 'map'
+try{
+  const savedView = localStorage.getItem(VIEW_KEY);
+  if(savedView === 'trophy' || savedView === 'map') currentView = savedView;
+}catch(e){}
 let prevVisitedIds = new Set();
 function renderTrophyGrid(){
   const grid = $('trophyGrid');
@@ -890,17 +1310,83 @@ function renderTrophyGrid(){
   });
   prevVisitedIds = new Set(visitedIds);
 }
-function setTrophyView(on){
-  trophyView = on;
-  try{ localStorage.setItem(VIEW_KEY, on ? 'trophy' : 'list'); }catch(e){}
-  $('listContainer').style.display = on ? 'none' : 'block';
-  $('trophyGrid').style.display = on ? 'grid' : 'none';
-  $('viewListBtn').classList.toggle('active', !on);
-  $('viewTrophyBtn').classList.toggle('active', on);
+
+/* Simple equirectangular-ish projection: no map tiles/API key needed, just spaces out
+   everything we know the lat/lon of (libraries + the breadcrumb trail + you) proportionally
+   within a square. Bounding box includes the trail so it never runs off the edge. */
+function renderMapView(){
+  const svg = $('mapSvg');
+  if(!svg) return;
+  const pts = libraries.filter(l => l.lat != null).map(l => ({lat:l.lat, lon:l.lon}));
+  trailPoints.forEach(p => pts.push(p));
+  if(currentPosition) pts.push(currentPosition);
+  if(pts.length === 0){ svg.innerHTML = ''; return; }
+
+  let minLat = Math.min(...pts.map(p=>p.lat)), maxLat = Math.max(...pts.map(p=>p.lat));
+  let minLon = Math.min(...pts.map(p=>p.lon)), maxLon = Math.max(...pts.map(p=>p.lon));
+  const padLat = Math.max((maxLat-minLat) * 0.08, 0.002), padLon = Math.max((maxLon-minLon) * 0.08, 0.002);
+  minLat -= padLat; maxLat += padLat; minLon -= padLon; maxLon += padLon;
+  const W = 300, H = 300;
+  const project = (lat, lon) => ({
+    x: ((lon - minLon) / (maxLon - minLon || 1)) * W,
+    y: H - ((lat - minLat) / (maxLat - minLat || 1)) * H, // flip: lat increases north, svg y increases down
+  });
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+
+  // breadcrumb trail
+  if(trailPoints.length > 1){
+    const d = trailPoints.map((p,i) => {
+      const {x,y} = project(p.lat, p.lon);
+      return (i===0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1);
+    }).join(' ');
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('class', 'map-trail-path');
+    svg.appendChild(path);
+  }
+
+  // library dots
+  libraries.filter(l => l.lat != null).forEach(lib => {
+    const {x,y} = project(lib.lat, lib.lon);
+    const isVisited = visitedIds.has(idFor(lib));
+    const isCurrent = idFor(lib) === currentTargetId;
+    const dot = document.createElementNS(svgNS, 'circle');
+    dot.setAttribute('cx', x.toFixed(1)); dot.setAttribute('cy', y.toFixed(1));
+    dot.setAttribute('r', isCurrent ? 6 : 5);
+    dot.setAttribute('class', 'map-dot-lib ' + (isCurrent ? 'current' : (isVisited ? 'visited' : 'locked')));
+    const title = document.createElementNS(svgNS, 'title');
+    title.textContent = isVisited ? `${lib.name} — visited` : `Library #${lib.number}`;
+    dot.appendChild(title);
+    svg.appendChild(dot);
+  });
+
+  // you are here
+  if(currentPosition){
+    const {x,y} = project(currentPosition.lat, currentPosition.lon);
+    const you = document.createElementNS(svgNS, 'circle');
+    you.setAttribute('cx', x.toFixed(1)); you.setAttribute('cy', y.toFixed(1));
+    you.setAttribute('r', 5); you.setAttribute('class', 'map-you-dot');
+    svg.appendChild(you);
+  }
 }
-$('viewListBtn').onclick = () => { setTrophyView(false); playSelectSound(); vibrate(12); };
-$('viewTrophyBtn').onclick = () => { setTrophyView(true); playSelectSound(); vibrate(12); };
-setTrophyView(trophyView);
+
+function setView(mode){
+  currentView = mode;
+  try{ localStorage.setItem(VIEW_KEY, mode); }catch(e){}
+  $('listContainer').style.display = mode === 'list' ? 'block' : 'none';
+  $('trophyGrid').style.display = mode === 'trophy' ? 'grid' : 'none';
+  $('mapView').style.display = mode === 'map' ? 'block' : 'none';
+  $('viewListBtn').classList.toggle('active', mode === 'list');
+  $('viewTrophyBtn').classList.toggle('active', mode === 'trophy');
+  $('viewMapBtn').classList.toggle('active', mode === 'map');
+  if(mode === 'map') renderMapView();
+}
+$('viewListBtn').onclick = () => { setView('list'); playSelectSound(); vibrate(12); };
+$('viewTrophyBtn').onclick = () => { setView('trophy'); playSelectSound(); vibrate(12); };
+$('viewMapBtn').onclick = () => { setView('map'); playSelectSound(); vibrate(12); };
+setView(currentView);
 
 /* ================= manual controls ================= */
 $('manualArriveBtn').onclick = () => {
@@ -908,7 +1394,9 @@ $('manualArriveBtn').onclick = () => {
   if(lib && !arrivalLock) triggerArrival(lib);
 };
 function resetHunt(){
-  visitedIds = new Set(); currentTargetId = null; localStorage.removeItem(STATE_KEY);
+  visitedIds = new Set(); currentTargetId = null; points = 0; milestonesCelebrated = 0;
+  localStorage.removeItem(STATE_KEY);
+  renderPoints(false);
   $('finalePanel').style.display = 'none'; arrivalLock = false; beginHunt();
 }
 $('resetBtn').onclick = resetHunt;
@@ -931,6 +1419,10 @@ async function init(){
   const saved = loadState();
   if(saved.visited) visitedIds = new Set(saved.visited);
   if(saved.currentTargetId) currentTargetId = saved.currentTargetId;
+  if(saved.points) points = saved.points;
+  if(saved.milestonesCelebrated) milestonesCelebrated = saved.milestonesCelebrated;
+  if(Array.isArray(saved.trailPoints)) trailPoints = saved.trailPoints.slice(-TRAIL_MAX_POINTS);
+  renderPoints(false);
 
   setStatus('Mapping out the trail…', 0);
   await ensureGeocoded(libraries);
@@ -952,11 +1444,43 @@ async function init(){
 }
 init();
 
-// --- Installable app: register service worker for offline app-shell + photo caching ---
+// --- Installable app: register service worker for offline app-shell + photo caching,
+//     and surface a "fresh update ready" banner instead of silently swapping content
+//     under you mid-hunt. The new worker installs but waits; tapping Refresh tells it
+//     to take over and we reload once it does. ---
+function showUpdateBanner(reg){
+  $('updateBanner').classList.add('show');
+  $('updateRefreshBtn').onclick = () => {
+    if(reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+  };
+  $('updateDismissBtn').onclick = () => { $('updateBanner').classList.remove('show'); };
+}
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch((err) => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      if(reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg);
+      reg.addEventListener('updatefound', () => {
+        const installing = reg.installing;
+        if(!installing) return;
+        installing.addEventListener('statechange', () => {
+          if(installing.state === 'installed' && navigator.serviceWorker.controller){
+            showUpdateBanner(reg);
+          }
+        });
+      });
+      // Catch updates that shipped while this tab was closed/backgrounded a while.
+      document.addEventListener('visibilitychange', () => {
+        if(document.visibilityState === 'visible') reg.update().catch(()=>{});
+      });
+      setInterval(() => reg.update().catch(()=>{}), 10 * 60 * 1000);
+    }).catch((err) => {
       console.warn('Service worker registration failed', err);
+    });
+    let refreshedOnce = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if(refreshedOnce) return;
+      refreshedOnce = true;
+      window.location.reload();
     });
   });
 }

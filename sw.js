@@ -1,6 +1,6 @@
 // Little Library Treasure Hunt - Service Worker
 // Bump CACHE_VERSION whenever the app shell changes so old caches get cleared.
-const CACHE_VERSION = 'llth-v1';
+const CACHE_VERSION = 'llth-v2';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const PHOTO_CACHE = `${CACHE_VERSION}-photos`;
 
@@ -13,12 +13,19 @@ const APP_SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
+  // Note: no self.skipWaiting() here on purpose. A new worker installs and then waits
+  // so the page can show an "update ready" banner and let you choose when to switch —
+  // otherwise content could swap out from under you mid-hunt. See the SKIP_WAITING
+  // message handler below, triggered by that banner's Refresh button.
   event.waitUntil(
     caches.open(SHELL_CACHE)
       .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
       .catch((err) => console.warn('[sw] precache failed', err))
   );
+});
+
+self.addEventListener('message', (event) => {
+  if(event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
