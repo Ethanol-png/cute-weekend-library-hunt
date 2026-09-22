@@ -64,10 +64,10 @@
     --tint: 201,63,130; --ink: 90,46,74; --lav-tint: 108,74,163;
     --modal-bg: #fff9fb;
     --bg-1:#ffe4f1; --bg-2:#ffd3e8; --bg-3:#e9d6ff; --bg-4:#ffe9d6;
-    transition: --pink-1 .9s ease, --pink-2 .9s ease, --pink-3 .9s ease, --pink-deep .9s ease,
-                --lav-1 .9s ease, --lav-2 .9s ease, --lav-deep .9s ease, --text .9s ease, --good .9s ease,
-                --bg-1 .9s ease, --bg-2 .9s ease, --bg-3 .9s ease, --bg-4 .9s ease;
+    --sprig-img: var(--sprig-peony);
   }
+  /* the vibe swaps in one go while the ink covers the screen — nothing crossfades underneath it */
+  :root.theme-instant, :root.theme-instant *, :root.theme-instant *::before{ transition:none !important; }
   @property --pink-1{ syntax:'<color>'; inherits:true; initial-value:#ffd9e8; }
   @property --pink-2{ syntax:'<color>'; inherits:true; initial-value:#ffb6d5; }
   @property --pink-3{ syntax:'<color>'; inherits:true; initial-value:#ff8fc3; }
@@ -92,24 +92,25 @@
     --bg-1:#eaf2e0; --bg-2:#d7e8c8; --bg-3:#c6dfbf; --bg-4:#e8eed2;
     --tint: 52,98,60; --ink: 34,56,38; --lav-tint: 60,104,70;
     --modal-bg: #f8fbf4;
+    --sprig-img: var(--sprig-vine);
   }
 
   /* Every tappable thing: spring press, spring hover lift, and the scroll-inertia offset. Scale
      and translate are the independent CSS properties (not `transform`), so they compose with any
      transform an element already has (a rotated polaroid, a pulsing button...) instead of fighting it. */
   .jelly, .btn, .drive-btn, .dir-card, .vt-btn, .points-chip, #soundToggle, #logStopFab, #endHuntFab,
-  .peek-btn, .photo-save-btn, .theme-toggle, .photo-slot, .photo-choice-btn, .update-banner button, .splash-go, .install-btn,
+  .peek-btn, .photo-save-btn, .theme-toggle, .photo-slot, .update-banner button, .splash-go, .install-btn,
   .arrived-manual{
     translate: 0 calc(var(--jy) + var(--lift));
   }
   .btn, .drive-btn, .dir-card, .vt-btn, .points-chip, #soundToggle, #logStopFab, #endHuntFab, .peek-btn,
-  .photo-save-btn, .theme-toggle, .photo-slot, .photo-choice-btn, .update-banner button, .splash-go, .install-btn, .arrived-manual{
+  .photo-save-btn, .theme-toggle, .photo-slot, .update-banner button, .splash-go, .install-btn, .arrived-manual{
     -webkit-tap-highlight-color: transparent;
     transition: scale var(--sp-press), --lift var(--sp-soft), box-shadow .35s ease, background-color .35s ease,
                 border-color .35s ease, color .35s ease, opacity .3s ease, filter .3s ease;
   }
   :is(.btn, .drive-btn, .vt-btn, .points-chip, #soundToggle, #logStopFab, #endHuntFab, .peek-btn, .photo-save-btn,
-      .theme-toggle, .update-banner button, .splash-go, .install-btn, .arrived-manual, .photo-choice-btn):active:not(:disabled){ scale:.94; }
+      .theme-toggle, .update-banner button, .splash-go, .install-btn, .arrived-manual):active:not(:disabled){ scale:.94; }
   :is(.dir-card, .photo-slot):active{ scale:.975; }
   @media (hover:hover){
     :is(.btn, .drive-btn, .points-chip, #soundToggle, #logStopFab, #endHuntFab, .theme-toggle, .splash-go, .install-btn):hover:not(:disabled){ --lift:-3px; }
@@ -117,7 +118,6 @@
   }
 
   /* modal choreography: backdrop fades, card springs up, contents cascade in */
-  .modal-overlay{ -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
   .modal-overlay.show, .modal-overlay.closing{ display:flex; }
   .modal-overlay.show{ animation: ovIn .32s ease both; }
   .modal-overlay.closing{ animation: ovOut .26s ease both; pointer-events:none; }
@@ -147,7 +147,7 @@
   .theme-toggle-row{ display:flex; flex-direction:column; align-items:center; gap:6px; margin:30px 0 8px; }
   .theme-toggle{
     position:relative; display:flex; align-items:center; gap:10px; border:none; cursor:pointer; font-family:'Fredoka',sans-serif;
-    background:rgba(255,255,255,.82); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+    background:rgba(255,255,255,.92);
     border-radius:999px; padding:7px 14px; box-shadow:0 8px 22px rgba(var(--tint),.2); color:var(--text);
   }
   .tt-opt{ font-size:.8rem; font-weight:600; opacity:.45; transition:opacity .4s ease, color .4s ease; }
@@ -169,21 +169,36 @@
   .theme-toggle-caption{ font-size:.7rem; opacity:.55; }
   .theme-toggle[aria-busy="true"]{ pointer-events:none; }
 
-  /* ---- background: var-driven gradient so it can crossfade between vibes ---- */
-  body{ background:linear-gradient(-45deg,var(--bg-1),var(--bg-2),var(--bg-3),var(--bg-4)) !important; background-size:400% 400% !important; }
-  #themeReveal{ position:fixed; inset:0; width:100vw; height:100vh; z-index:0; pointer-events:none; display:none; transition:opacity .5s ease; }
-  #fxCanvas{ position:fixed; inset:0; width:100vw; height:100vh; z-index:9600; pointer-events:none; display:none; }
+  /* ---- background ----
+     The old animated body gradient repainted the ENTIRE screen every frame, forever (the biggest
+     single cause of scroll lag on phones). Now the gradient is its own fixed GPU layer: static on
+     phones, gently drifting (a compositor-only transform) on computers. */
+  body{ background:var(--bg-1) !important; animation:none !important; }
+  #bgGrad{ position:fixed; inset:0; z-index:0; pointer-events:none; background:linear-gradient(-45deg,var(--bg-1),var(--bg-2),var(--bg-3),var(--bg-4)); }
+  @media (hover:hover) and (pointer:fine){
+    #bgGrad{ inset:-12%; will-change:transform; animation: bgDrift 28s ease-in-out infinite alternate; }
+    @keyframes bgDrift{ from{ transform: translate(-6%, 3%) rotate(-2deg); } to{ transform: translate(6%, -3%) rotate(2deg); } }
+  }
+  /* the ink that floods the screen on a vibe switch sits above everything */
+  #themeReveal{ position:fixed; inset:0; width:100vw; height:100vh; z-index:9500; pointer-events:none; display:none; }
+  /* on phones each card is its own GPU layer so the scroll-inertia offset never repaints it */
+  .jelly-layer{ will-change: translate; }
 
   /* ---- persistent botanical background: peony bunches / monstera leaves + hanging vines ---- */
   #bgDecor{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
   .decor-set{ position:absolute; inset:0; pointer-events:none; }
   :root[data-theme="monstera"] .decor-set.peony:not(.leaving):not(.entering),
-  :root:not([data-theme="monstera"]) .decor-set.monstera:not(.leaving):not(.entering){ visibility:hidden; }
+  :root:not([data-theme="monstera"]) .decor-set.monstera:not(.leaving):not(.entering){ display:none; }
   .decor-item{ position:absolute; pointer-events:none; will-change:translate; }
   .decor-enter{ width:100%; height:100%; }
-  .decor-sway{ width:100%; height:100%; animation: decorSway var(--sway-dur, 7s) ease-in-out infinite alternate; animation-delay: var(--sway-delay, 0s); }
+  /* fixed keyframe values (not var()) so the browser can run the sway entirely on the GPU —
+     keyframes that read a custom property force a main-thread style update every frame */
+  .decor-sway{ width:100%; height:100%; animation: decorSway2 var(--sway-dur, 7s) ease-in-out infinite alternate; animation-delay: var(--sway-delay, 0s); }
+  .decor-sway.sw1{ animation-name: decorSway1; } .decor-sway.sw3{ animation-name: decorSway3; }
+  @keyframes decorSway1{ from{ transform: rotate(-1.6deg); } to{ transform: rotate(1.6deg); } }
+  @keyframes decorSway2{ from{ transform: rotate(-2.6deg); } to{ transform: rotate(2.6deg); } }
+  @keyframes decorSway3{ from{ transform: rotate(-3.2deg); } to{ transform: rotate(3.2deg); } }
   .decor-sway > img{ width:100%; height:100%; display:block; user-select:none; -webkit-user-drag:none; }
-  @keyframes decorSway{ from{ transform: rotate(calc(var(--sway-amp, 2deg) * -1)); } to{ transform: rotate(var(--sway-amp, 2deg)); } }
   .decor-item.far{ opacity:.62; }   /* its blur + shadow are baked into the artwork */
 
   /* ---- vines growing over the UI (monstera vibe). Panels get real SVG vines (see UIVines);
@@ -192,25 +207,28 @@
   .ui-vine{ position:absolute; pointer-events:none; overflow:visible; z-index:3; }
   .ui-vine .uv-stem{ fill:none; stroke-linecap:round; }
   .ui-vine .uvl{ transform-box: view-box; }
+  .ui-vine.pending{ visibility:hidden; }
   .btn, .drive-btn, .theme-toggle{ position:relative; }
-  :root[data-theme="monstera"] :is(.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle)::before{
-    content:''; position:absolute; left:-10px; top:-13px; width:66px; height:32px; pointer-events:none; z-index:2;
+  /* every button wears a little sprig (vine or peony, per vibe) that grows in with the vibe and
+     bends when the button is pressed; on computers it also sways idly */
+  :is(.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle)::before{
+    content:''; position:absolute; left:-10px; top:-14px; width:66px; height:33px; pointer-events:none; z-index:2;
     background: var(--sprig-img) no-repeat left top / contain;
-    transform-origin: 10px 22px; animation: sprigSway 4.5s ease-in-out infinite alternate;
+    transform-origin: 10px 24px; transition: rotate var(--sp-press), scale var(--sp-press);
   }
-  :root[data-theme="monstera"] :is(.btn:nth-of-type(even), #logStopFab, .points-chip)::before{
-    left:auto; right:-10px; transform-origin: 56px 22px; scale:-1 1;
+  :is(.btn:nth-of-type(even), #logStopFab, .points-chip)::before{ left:auto; right:-10px; transform-origin: 56px 24px; scale:-1 1; }
+  :is(.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle):active::before{ rotate:-12deg; }
+  @media (hover:hover) and (pointer:fine){
+    :is(.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle)::before{ animation: sprigSway 4.5s ease-in-out infinite alternate; }
   }
-  :root.vines-growing[data-theme="monstera"] :is(.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle)::before{
-    animation: sprigGrow 1s cubic-bezier(.2,.8,.3,1) both, sprigSway 4.5s ease-in-out 1s infinite alternate;
-    animation-delay: var(--vd, 0s), calc(var(--vd, 0s) + 1s);
+  :root.intro-pending :is(.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle)::before{ opacity:0; }
+  :root.vines-growing :is(.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle)::before{
+    animation: sprigGrow 1s cubic-bezier(.2,.8,.3,1) both; animation-delay: var(--vd, 0s);
   }
   :root.vines-retracting :is(.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle)::before{
-    content:''; position:absolute; left:-10px; top:-13px; width:66px; height:32px; pointer-events:none; z-index:2;
-    background: var(--sprig-img) no-repeat left top / contain;
-    animation: sprigShrink .42s cubic-bezier(.5,0,.9,.4) both;
+    animation: sprigShrink .36s cubic-bezier(.5,0,.9,.4) both;
   }
-  @keyframes sprigGrow{ from{ clip-path: inset(0 100% 0 0); rotate:-14deg; } 60%{ clip-path: inset(0 0 0 0); } to{ clip-path: inset(0 0 0 0); rotate:0deg; } }
+  @keyframes sprigGrow{ from{ clip-path: inset(0 100% 0 0); opacity:0; } 15%{ opacity:1; } 70%{ clip-path: inset(0 0 0 0); } to{ clip-path: inset(0 0 0 0); } }
   @keyframes sprigShrink{ to{ clip-path: inset(0 100% 0 0); opacity:0; } }
   @keyframes sprigSway{ from{ rotate:-3deg; } to{ rotate:4deg; } }
 
@@ -222,30 +240,55 @@
   .peony-inline{ display:inline-block; width:1.05em; height:1.05em; vertical-align:-0.14em; }
   .peony-inline img{ width:100%; height:100%; display:block; }
 
-  /* ---- launch splash (the tap that unlocks sound on phones) ---- */
+  /* ---- startup screen: stays up while the trail loads, the title fills with liquid as it
+     does, then waits for a tap and gets washed away by a wave ---- */
   .splash{
     position:fixed; inset:0; z-index:9400; display:flex; flex-direction:column; align-items:center; justify-content:center;
     text-align:center; padding:24px; background:linear-gradient(-45deg,var(--bg-1),var(--bg-2),var(--bg-3),var(--bg-4));
-    background-size:400% 400%; animation: bgShift 20s ease infinite;
   }
   .splash[hidden]{ display:none; }
-  .splash-hero{ width:min(62vw, 280px); aspect-ratio:1; position:relative; animation: heroBreathe 4.8s ease-in-out infinite; }
+  /* failsafe: if the script never runs, don't leave anyone stuck on the startup screen */
+  :root:not(.booted) .splash{ animation: splashFailsafe 0s 12s forwards; }
+  @keyframes splashFailsafe{ to{ visibility:hidden; opacity:0; } }
+  .splash-hero{ width:min(46vw, 210px); aspect-ratio:1; position:relative; animation: heroBreathe 4.8s ease-in-out infinite; will-change:transform; }
   .splash-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
   .splash-hero .sh-leaf{ inset:-18%; opacity:.9; }
   @keyframes heroBreathe{ 0%,100%{ transform: rotate(-3deg) scale(1); } 50%{ transform: rotate(3deg) scale(1.035); } }
-  .splash-title{ font-family:'Fredoka',sans-serif; color:var(--pink-deep); font-size:clamp(1.7rem, 7vw, 2.5rem); line-height:1.1; margin:18px 0 6px; text-shadow:0 2px 0 #fff; }
-  .splash-sub{ font-family:'Caveat',cursive; font-size:1.35rem; color:var(--text); opacity:.75; margin:0 0 26px; }
+  .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  /* the title, filling up with liquid as the trail loads */
+  .splash-liquid{ width:min(88vw, 400px); height:auto; margin:14px 0 4px; overflow:visible; }
+  .splash-liquid text{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:44px; }
+  .splash-liquid .liq-bg text{ fill:rgba(255,255,255,.85); stroke:var(--pink-2); stroke-width:1.2px; }
+  .splash-liquid .liq-line text{ fill:none; stroke:var(--pink-deep); stroke-width:1.6px; stroke-linejoin:round; }
+  .liq-level{ transition: transform .9s cubic-bezier(.3,.7,.3,1); }
+  .liq-wave-a{ fill:url(#liqGrad); animation: liqSlide 2.6s linear infinite; }
+  .liq-wave-b{ fill:var(--pink-2); opacity:.75; animation: liqSlide 3.9s linear infinite reverse; }
+  @keyframes liqSlide{ from{ transform: translateX(0); } to{ transform: translateX(-320px); } }
+  .splash-sub{ font-family:'Caveat',cursive; font-size:1.35rem; color:var(--text); opacity:.75; margin:0 0 18px; }
+  .splash-load{ width:min(78vw, 300px); margin:0 0 18px; }
+  .splash-load .progress-track{ margin-top:8px; height:9px; background:rgba(255,255,255,.7); box-shadow:inset 0 1px 3px rgba(var(--ink),.12); }
+  .splash-status{ font-size:.82rem; font-weight:600; color:var(--text); min-height:1.2em; display:flex; justify-content:space-between; gap:10px; }
+  .splash-status #splashPct{ opacity:.6; font-variant-numeric:tabular-nums; }
+  .splash-note{ font-size:.72rem; opacity:.6; margin-top:6px; min-height:1em; }
+  .splash.is-ready .splash-status{ color:var(--pink-deep); }
+  .splash.is-ready .progress-fill{ background:linear-gradient(90deg,var(--good),var(--pink-3)); }
   .splash-go{
     border:none; border-radius:999px; padding:15px 34px; font-family:'Fredoka',sans-serif; font-weight:700; font-size:1.05rem;
     color:#fff; background:linear-gradient(135deg,var(--pink-3),var(--pink-deep)); box-shadow:0 12px 28px rgba(var(--tint),.35); cursor:pointer;
-    animation: goGlow 2.4s ease-in-out infinite;
+    transition: opacity .4s ease, scale var(--sp-pop), filter .4s ease;
   }
-  @keyframes goGlow{ 0%,100%{ box-shadow:0 12px 28px rgba(var(--tint),.35); } 50%{ box-shadow:0 12px 36px rgba(var(--tint),.55), 0 0 0 8px rgba(255,255,255,.35); } }
+  .splash-go:disabled{ opacity:.45; filter:saturate(.4); cursor:progress; scale:.96; }
+  .splash.is-ready .splash-go:not(:disabled){ animation: goReady .7s cubic-bezier(.3,1.6,.5,1) both, goBob 2.4s 0.7s ease-in-out infinite; }
+  @keyframes goReady{ from{ scale:.8; } }
+  @keyframes goBob{ 0%,100%{ translate:0 0; } 50%{ translate:0 -4px; } }
+  .splash-skip{ margin-top:12px; border:none; background:none; font-family:inherit; font-size:.76rem; color:var(--lav-deep); text-decoration:underline; opacity:.8; cursor:pointer; }
   .splash-hint{ font-size:.72rem; opacity:.5; margin-top:14px; }
   .splash.leaving{ pointer-events:none; }
+  #tideCanvas{ position:fixed; inset:0; width:100vw; height:100vh; z-index:9401; pointer-events:none; display:none; }
 
   /* the app waits invisibly behind the splash until the intro reveals it (with a failsafe) */
-  :root.intro-pending .wrap, :root.intro-pending #bgDecor, :root.intro-pending :is(#soundToggle, #logStopFab, #endHuntFab){ opacity:0; animation: introFailsafe 0s 9s forwards; }
+  :root.intro-pending .wrap, :root.intro-pending #bgDecor, :root.intro-pending :is(#soundToggle, #logStopFab, #endHuntFab){ opacity:0; }
+  :root.intro-pending:not(.booted) :is(.wrap, #bgDecor, #soundToggle, #logStopFab, #endHuntFab){ animation: introFailsafe 0s 12s forwards; }
   @keyframes introFailsafe{ to{ opacity:1; } }
 
   /* ---- "add to home screen" sheet ---- */
@@ -270,12 +313,12 @@
   .install-btn{ /* the native "Install" button when the browser offers one */ }
 
   @media (prefers-reduced-motion: reduce){
-    .decor-sway, .splash-hero, .splash-go{ animation:none !important; }
+    .decor-sway, .splash-hero, .splash-go, .liq-wave-a, .liq-wave-b{ animation:none !important; }
     .modal-overlay.show > .modal, .modal-overlay.show > .modal > *{ animation-duration:.01s !important; }
   }
 
   .panel{
-    background:rgba(255,255,255,.85); backdrop-filter:blur(6px); border-radius:24px;
+    background:rgba(255,255,255,.9); border-radius:24px;
     padding:22px; box-shadow:0 10px 28px rgba(var(--tint),.16); margin-bottom:18px;
   }
 
@@ -314,8 +357,11 @@
     box-shadow:0 10px 26px rgba(var(--tint),.25), inset 0 0 0 4px #fff;
     position:relative; display:flex; align-items:center; justify-content:center;
   }
-  .dial-wrap.near .dial{ animation:dialPulse 1.6s ease-in-out infinite; }
-  @keyframes dialPulse{ 0%,100%{ box-shadow:0 10px 26px rgba(var(--tint),.25), inset 0 0 0 4px #fff;} 50%{ box-shadow:0 14px 34px rgba(var(--tint),.4), inset 0 0 0 4px #fff;} }
+  /* "you're close" pulse: a soft glow ring fading in and out (opacity only, so it runs on the GPU —
+     animating the dial's own box-shadow repainted it every frame the whole time you were nearby) */
+  .dial::after{ content:''; position:absolute; inset:0; border-radius:50%; box-shadow:0 14px 34px rgba(var(--tint),.42); opacity:0; pointer-events:none; }
+  .dial-wrap.near .dial::after{ animation:dialPulse 1.6s ease-in-out infinite; will-change:opacity; }
+  @keyframes dialPulse{ 0%,100%{ opacity:0; } 50%{ opacity:1; } }
   .dial-n{ position:absolute; top:8px; left:50%; transform:translateX(-50%); font-size:.65rem; font-weight:700; color:var(--pink-3); opacity:.6; }
   .compass-ring{ position:absolute; inset:0; width:100%; height:100%; transition:transform .25s linear; pointer-events:none; }
   .compass-ring .tick{ stroke:var(--pink-3); opacity:.35; stroke-width:1.4; }
@@ -665,18 +711,50 @@
 </style>
 </head>
 <body>
-<canvas id="themeReveal" aria-hidden="true"></canvas>
+<div id="bgGrad" aria-hidden="true"></div>
 <div id="bgDecor" aria-hidden="true"></div>
-<canvas id="fxCanvas" aria-hidden="true"></canvas>
+<canvas id="themeReveal" aria-hidden="true"></canvas>
+<canvas id="tideCanvas" aria-hidden="true"></canvas>
 
 <!-- Launch splash: phones only allow sound after a tap, so the first tap here unlocks the
      startup chime and the intro plays in time with it. Skipped automatically when the browser
      already allows sound (e.g. an installed app on Android) or when sound is switched off. -->
-<div class="splash" id="splash" hidden>
+<div class="splash" id="splash">
   <div class="splash-hero" id="splashHero"></div>
-  <h1 class="splash-title">Little Library<br>Treasure Hunt</h1>
+  <h1 class="sr-only">Little Library Treasure Hunt</h1>
+  <svg class="splash-liquid" id="splashLiquid" viewBox="0 0 320 124" aria-hidden="true">
+    <defs>
+      <clipPath id="liqClip">
+        <text x="160" y="50" text-anchor="middle" textLength="292" lengthAdjust="spacingAndGlyphs">Little Library</text>
+        <text x="160" y="108" text-anchor="middle" textLength="292" lengthAdjust="spacingAndGlyphs">Treasure Hunt</text>
+      </clipPath>
+      <linearGradient id="liqGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--pink-3)"/><stop offset="1" stop-color="var(--pink-deep)"/>
+      </linearGradient>
+    </defs>
+    <g class="liq-bg">
+      <text x="160" y="50" text-anchor="middle" textLength="292" lengthAdjust="spacingAndGlyphs">Little Library</text>
+      <text x="160" y="108" text-anchor="middle" textLength="292" lengthAdjust="spacingAndGlyphs">Treasure Hunt</text>
+    </g>
+    <g clip-path="url(#liqClip)">
+      <g class="liq-level" id="liqLevel" style="transform:translateY(118px)">
+        <path class="liq-wave-b" id="liqWaveB" d="M0 0 H640 V180 H0 Z"/>
+        <path class="liq-wave-a" id="liqWaveA" d="M0 0 H640 V180 H0 Z" transform="translate(0 4)"/>
+      </g>
+    </g>
+    <g class="liq-line">
+      <text x="160" y="50" text-anchor="middle" textLength="292" lengthAdjust="spacingAndGlyphs">Little Library</text>
+      <text x="160" y="108" text-anchor="middle" textLength="292" lengthAdjust="spacingAndGlyphs">Treasure Hunt</text>
+    </g>
+  </svg>
   <p class="splash-sub">a cute weekend adventure, just for us</p>
-  <button class="splash-go" id="splashGo" type="button" data-sound="none">Tap to begin 🌸</button>
+  <div class="splash-load" role="status" aria-live="polite">
+    <div class="splash-status"><span id="splashStatus">Waking up the peonies…</span><span id="splashPct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="splash-note" id="splashNote"></div>
+  </div>
+  <button class="splash-go" id="splashGo" type="button" data-sound="none" disabled>Loading…</button>
+  <button class="splash-skip" id="splashSkip" type="button" data-sound="none" hidden>taking a while? start anyway →</button>
   <div class="splash-hint">sound on for the full bloom 🔊</div>
 </div>
 <canvas id="confettiCanvas"></canvas>
@@ -740,16 +818,6 @@
   </div>
   <h1>🌸 Little Library Treasure Hunt</h1>
   <p class="sub">Each stop is a mystery until you arrive — follow the arrow, use a hint if you're stuck, and watch the trail fill in.</p>
-
-  <div class="panel" id="statusPanel">
-    <div class="status-row">
-      <div class="spinner" id="statusSpinner"></div>
-      <div style="flex:1">
-        <div id="statusText">Waking up the peonies…</div>
-        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      </div>
-    </div>
-  </div>
 
   <div class="panel" id="targetPanel">
     <div class="stop-label" id="stopLabel">Next stop</div>
@@ -1294,6 +1362,7 @@ const LLArt = (() => {
    treasure-hunt logic above/below doesn't need to know any of it exists.
    ===================================================================================== */
 const REDUCED_MOTION = (() => { try{ return matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } })();
+const FINE = (() => { try{ return matchMedia('(hover: hover) and (pointer: fine)').matches; }catch(e){ return true; } })();   // mouse/trackpad, not a phone
 const LOW_POWER = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 2);
 
 /* ---------- springs → CSS linear() easings (the same visualDuration/bounce model Motion uses) ---------- */
@@ -1608,7 +1677,7 @@ const Motion = (() => {
       { opacity:0, translate:'0 34px', scale:.96, filter:'blur(6px)' },
       { opacity:1, translate:'0 0', scale:1, filter:'blur(0px)' },
     ], { duration: sp.duration, easing: sp.easing, fill:'backwards' });
-    setTimeout(() => UIVines.refresh(), 60);
+    setTimeout(() => UIGrowth.refresh(), 60);
   }
 
   function tweenNumber(el, to){
@@ -1652,15 +1721,18 @@ const Jelly = (() => {
      A fully-populated checklist can have 40-50+ .list-item rows; giving each one its own
      spring + per-frame style write was the actual cause of the scroll jank on real phones
      (prior perf benchmarking never scrolled the list with it populated, so this was missed). */
-  const SEL = ['.wrap > h1', '.wrap > .sub', '.wrap > .panel', '.wrap > .theme-toggle-row', '.wrap > footer',
+  /* On a phone only whole cards (and the heading) trail the scroll, and each is its own GPU layer
+     (.jelly-layer), so the per-frame offset is a pure compositor move: no repaint, no layout. */
+  const SEL = FINE ? ['.wrap > h1', '.wrap > .sub', '.wrap > .panel', '.wrap > .theme-toggle-row', '.wrap > footer',
                '#targetPanel .dial-wrap', '#targetPanel .action-row > *', '#targetPanel .arrived-manual', '.view-switch', '.tally',
-               '#finalePanel .recap-stat', '#finalePanel .btn', '#checklistPanel > div:last-child .btn'];
-  const FIXED = ['#pointsChip', '#soundToggle', '#logStopFab', '#endHuntFab'];
+               '#finalePanel .recap-stat', '#finalePanel .btn', '#checklistPanel > div:last-child .btn']
+             : ['.wrap > h1', '.wrap > .sub', '.wrap > .panel', '.wrap > .theme-toggle-row'];
+  const FIXED = FINE ? ['#pointsChip', '#soundToggle', '#logStopFab', '#endHuntFab'] : [];
   let items = [], dirty = true, running = false, lastY = 0, vel = 0, grabY = 0, lastT = 0;
   function collect(){
     const seen = new Set(); items = [];
     SEL.forEach(sel => document.querySelectorAll(sel).forEach(el => {
-      if(seen.has(el)) return; seen.add(el); el.classList.add('jelly');
+      if(seen.has(el)) return; seen.add(el); el.classList.add('jelly'); if(!FINE) el.classList.add('jelly-layer');
       items.push({ el, fixed:false, level: el.parentElement && el.parentElement.classList.contains('wrap') ? 0 : 1, s:{ x:0, v:0 }, y:0, hidden:false, rest:true });
     }));
     FIXED.forEach(sel => { const el = document.querySelector(sel); if(el) items.push({ el, fixed:true, level:1, s:{ x:0, v:0 }, y:0, hidden:false, rest:true }); });
@@ -1775,7 +1847,7 @@ const Decor = (() => {
     const el = document.createElement('div');
     el.className = 'decor-item ' + cls;
     el.style.cssText = style;
-    el.innerHTML = `<div class="decor-enter" style="transform-origin:${origin}"><div class="decor-sway" style="transform-origin:${origin};--sway-dur:${(5.5 + Math.random()*3).toFixed(1)}s;--sway-amp:${extra && extra.amp || 2}deg;--sway-delay:-${(Math.random()*4).toFixed(1)}s">${inner}</div></div>`;
+    el.innerHTML = `<div class="decor-enter" style="transform-origin:${origin}"><div class="decor-sway sw${(extra && extra.amp || 2) < 2 ? 1 : (extra && extra.amp || 2) < 3 ? 2 : 3}" style="transform-origin:${origin};--sway-dur:${(5.5 + Math.random()*3).toFixed(1)}s;--sway-amp:${extra && extra.amp || 2}deg;--sway-delay:-${(Math.random()*4).toFixed(1)}s">${inner}</div></div>`;
     return Object.assign({ el, enter: P(el, '.decor-enter'), sway: P(el, '.decor-sway'), depth, set,
       p:{ x:{x:0,v:0}, y:{x:0,v:0} }, rustle:{ x:0, v:0 }, cx:0, cy:0, rad:0 }, extra || {});
   }
@@ -1846,9 +1918,9 @@ const Decor = (() => {
       // dropped down into place from somewhere far behind the screen
       const sp = Springs.waapi(0.8, 0.3);
       animateEl(it.enter, [
-        { transform:'translateY(-46vh) scale(.26) rotate(-28deg)', opacity:0, filter:'blur(9px)' },
-        { opacity:1, filter:'blur(0px)', offset:.4 },
-        { transform:'none', opacity:1, filter:'blur(0px)' },
+        { transform:'translateY(-38vh) scale(.3) rotate(-26deg)', opacity:0 },
+        { opacity:1, offset:.35 },
+        { transform:'none', opacity:1 },
       ], { duration: sp.duration, easing: sp.easing, fill:'backwards' });
     }else if(it.hanging){
       // grows down from the top edge
@@ -1867,10 +1939,20 @@ const Decor = (() => {
     if(REDUCED_MOTION){ it.enter.style.opacity = '0'; return; }
     const holder = it.el.parentNode; if(holder) holder.classList.add('leaving');
     const frames = it.set === 'peony'
-      ? [{ transform:'none', opacity:1, filter:'blur(0px)' }, { transform:'translateY(7vh) scale(.5)', opacity:0, filter:'blur(7px)' }]
+      ? [{ transform:'none', opacity:1 }, { transform:'translateY(7vh) scale(.5)', opacity:0 }]
       : it.hanging ? [{ transform:'none', opacity:1 }, { transform:'scaleY(.2)', opacity:0 }]
       : [{ transform:'none', opacity:1 }, { transform:`rotate(${it.side * 34}deg) scale(.08)`, opacity:0 }];
     animateEl(it.enter, frames, { duration: it.set === 'peony' ? 470 : 420, easing:'cubic-bezier(.4,0,.75,.3)', fill:'forwards' });
+  }
+  /* Under the ink: the old set disappears at once, the new one waits (hidden) to grow in. */
+  function swapTo(to){
+    ['peony', 'monstera'].forEach(k => {
+      const holder = $(k === 'monstera' ? 'decorMonstera' : 'decorPeony');
+      if(holder){ holder.classList.remove('entering'); holder.classList.remove('leaving'); }
+      sets[k].forEach(it => { it.enter.getAnimations && it.enter.getAnimations().forEach(a => a.cancel()); it.enter.style.opacity = ''; });
+    });
+    prepare(to);
+    kick();
   }
   function finish(kind){           // after a transition: settle that set into its steady state
     const holder = $(kind === 'monstera' ? 'decorMonstera' : 'decorPeony');
@@ -1886,9 +1968,12 @@ const Decor = (() => {
   function kick(){ if(!loopOn && !REDUCED_MOTION){ loopOn = true; lastT = 0; requestAnimationFrame(loop); } }
   function loop(now){
     const dt = Math.min(0.034, Math.max(0.004, (now - (lastT || now - 16)) / 1000)); lastT = now;
-    const sc = Math.min(scrollY, 2600);
+    const sc = FINE ? Math.min(scrollY, 2600) : 0;
     let active = false;
-    for(const it of sets.peony.concat(sets.monstera)){
+    const th = getTheme(), live = [];
+    ['peony', 'monstera'].forEach(k => { const h = $(k === 'monstera' ? 'decorMonstera' : 'decorPeony');
+      if(k === th || (h && (h.classList.contains('entering') || h.classList.contains('leaving')))) live.push(...sets[k]); });
+    for(const it of live){
       const tx = ptr.x * it.depth * 300, ty = ptr.y * it.depth * 180 - sc * it.depth * 0.75;
       const a = springStep(it.p.x, tx, 55, 11, dt), b = springStep(it.p.y, Math.max(-110, ty), 55, 11, dt);
       const c = springStep(it.rustle, 0, 70, 5.5, dt);
@@ -1911,32 +1996,39 @@ const Decor = (() => {
         it.rustle.v += push * 8;
       }
     });
-    UIVines.rustleAt(x, y, strong);
+    if(strong) UIGrowth.rustleAt(x, y);
     kick();
   }
   function init(){
     if(REDUCED_MOTION) return;
-    addEventListener('pointermove', e => onPointer(e.clientX, e.clientY, false), { passive:true });
+    // Phones: only a tap rustles things — nothing runs per-frame while a finger scrolls the page.
+    // Mouse/trackpad: the botanicals also drift with the pointer and the scroll (parallax).
     addEventListener('pointerdown', e => onPointer(e.clientX, e.clientY, true), { passive:true });
-    addEventListener('touchmove', e => { const t = e.touches[0]; if(t) onPointer(t.clientX, t.clientY, false); }, { passive:true });
-    addEventListener('scroll', kick, { passive:true });
+    if(FINE){
+      addEventListener('pointermove', e => { if(e.pointerType === 'mouse') onPointer(e.clientX, e.clientY, false); }, { passive:true });
+      addEventListener('scroll', kick, { passive:true });
+    }
     let rt = null;
     addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { builtFor = ''; build(); }, 250); }, { passive:true });
   }
-  return { build, init, prepare, enter, exit, finish, sets, kick };
+  return { build, init, prepare, enter, exit, swapTo, finish, sets, kick };
 })();
 
-/* ================= VINES OVER THE UI (monstera vibe) =================
-   Each visible card gets a real, procedurally-routed vine: two twining stems that follow the
-   card's rounded border for part of its length, leaves alternating along them, a couple of curly
-   tendrils. They grow (stroke drawn along the path, leaves popping open as the growth passes),
-   rustle when touched, re-route when a card changes size, and retract when the peonies return.
-   Buttons get their own little sprig via CSS (::before), so it rides along with every press. */
-const UIVines = (() => {
-  const PAD = 34, R0 = 24;
-  const built = new Map();   // panel -> { svg, w, h, leaves:[{g, x, y}] }
+/* ================= GROWTH OVER THE UI: vines (monstera) / peony bushes (peony) =================
+   Each visible card gets something growing around its border, procedurally routed along the
+   card's rounded outline: in the monstera vibe two twining vine stems with alternating leaves and
+   curly tendrils; in the peony vibe a pair of peony bushes tucked into opposite corners — lobed
+   leaves, fat buds and a couple of real blooms — with stems running off along the edges. They grow
+   (stems drawn along their path, leaves/buds popping open and blooms unfurling as the growth
+   passes), wiggle when tapped near, re-route when a card resizes, and retract on a vibe switch.
+   Leaves/buds/blooms are <image>s of pre-rendered artwork — one picture each to the browser, not
+   hundreds of live paths — which is what keeps this cheap enough for a phone. */
+const UIGrowth = (() => {
+  const PAD = 46, R0 = 24;
+  const built = new Map();   // panel -> { svg, w, h, seed, kind }
   let ro = null;
   function panels(){ return Array.from(document.querySelectorAll('.wrap > .panel')).filter(p => p.offsetParent !== null && p.offsetHeight > 40); }
+  function kindFor(theme){ return theme === 'monstera' ? 'vine' : 'peony'; }
 
   function perimeter(w, h, R){
     const segs = [
@@ -1950,7 +2042,11 @@ const UIVines = (() => {
       { len: Math.PI*R/2, f: u => { const t = Math.PI + u*Math.PI/2; return [R + R*Math.cos(t), R + R*Math.sin(t), t + Math.PI/2]; } },
     ];
     const total = segs.reduce((a, s) => a + s.len, 0);
-    return { total, at(s){
+    // arc-length position of the middle of each rounded corner: TR, BR, BL, TL
+    const corners = [], acc = [];
+    let run = 0; segs.forEach(s => { acc.push(run); run += s.len; });
+    [1, 3, 5, 7].forEach(i => corners.push(acc[i] + segs[i].len / 2));
+    return { total, corners, at(s){
       s = ((s % total) + total) % total;
       for(const sg of segs){ if(s <= sg.len) { const [x, y, a] = sg.f(sg.len ? s / sg.len : 0); return { x, y, a }; } s -= sg.len; }
       const [x, y, a] = segs[0].f(0); return { x, y, a };
@@ -1965,12 +2061,35 @@ const UIVines = (() => {
     }
     return d;
   }
-  function leafMarkup(x, y, deg, size, sym, frac){
-    const h = size * 1.1;
-    return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${deg.toFixed(0)})"><g class="uvw"><g class="uvl" data-f="${frac.toFixed(3)}"><use href="#${sym}" x="${(-size/2).toFixed(1)}" y="${(-h*0.955).toFixed(1)}" width="${size.toFixed(1)}" height="${h.toFixed(1)}"/></g></g></g>`;
+  /* artwork as a single pre-rendered picture (blob URL, cached) */
+  const ART = {};
+  function art(name){
+    if(ART[name]) return ART[name];
+    const a = LLArt.get(name);
+    const [, , vw, vh] = a.viewBox.split(' ').map(Number);
+    const svg = LLArt.doc([name], `<use href="#${name}" xlink:href="#${name}" width="${vw}" height="${vh}"/>`, `0 0 ${vw} ${vh}`);
+    return (ART[name] = { url: LLArt.url('grow:' + name, svg), ratio: vh / vw });
   }
-  function buildFor(panel, seed){
-    const w = panel.offsetWidth, h = panel.offsetHeight;
+  /* A growable piece whose local (0,0) is its anchor: the base of a leaf/bud, the middle of a bloom. */
+  function piece(x, y, deg, name, size, frac, cls, anchorY){
+    const A = art(name), h = size * A.ratio;
+    return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${deg.toFixed(0)})"><g class="uvw"><g class="uvl ${cls || ''}" data-f="${frac.toFixed(3)}">`
+      + `<image href="${A.url}" x="${(-size/2).toFixed(1)}" y="${(-h * anchorY).toFixed(1)}" width="${size.toFixed(1)}" height="${h.toFixed(1)}"/></g></g></g>`;
+  }
+  const LEAF_BASE = { 'vine-leaf': 0.955, 'vine-leaf2': 0.955, 'peony-leaf': 0.976, 'peony-bud': 0.968, 'peony-bud2': 0.968 };
+
+  function svgFor(w, h, inner){
+    const W = w + PAD*2, H = h + PAD*2, svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'ui-vine'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('aria-hidden', 'true');
+    svg.style.left = -PAD + 'px'; svg.style.top = -PAD + 'px';
+    svg.innerHTML = inner;
+    return svg;
+  }
+
+  /* ---- monstera vibe: twining vines ---- */
+  function buildVine(w, h, seed){
     const r = mulberry(seed), per = perimeter(w, h, Math.min(R0, h/2 - 1, w/2 - 1));
     const P = per.total;
     const s0 = [0.02, 0.27, 0.52, 0.77][Math.floor(r()*4)] * P + r() * 30;
@@ -1979,13 +2098,12 @@ const UIVines = (() => {
     const main = [], twin = [];
     let leaves = '', extras = '';
     for(let s = 0; s <= len; s += 6){
-      const b = per.at(s0 + s), nx = Math.sin(b.a), ny = -Math.cos(b.a);   // outward normal of a clockwise perimeter
+      const b = per.at(s0 + s), nx = Math.sin(b.a), ny = -Math.cos(b.a);
       const wob = Math.sin(s / 21 + ph) * 4.2, wob2 = Math.sin(s / 7.3 + ph2) * 1.2;
       const o1 = 3 + wob + wob2, o2 = 3 - wob * 0.9;
       main.push([PAD + b.x + nx*o1, PAD + b.y + ny*o1]);
       if(s < len * 0.82) twin.push([PAD + b.x + nx*o2, PAD + b.y + ny*o2]);
     }
-    // leaves: mostly on the outside of the card, a few smaller ones tucked over the edge
     let s = 14 + r() * 10, i = 0;
     while(s < len - 6){
       const b = per.at(s0 + s), nx = Math.sin(b.a), ny = -Math.cos(b.a);
@@ -1994,11 +2112,11 @@ const UIVines = (() => {
       const o = 3 + Math.sin(s / 21 + ph) * 4.2;
       const x = PAD + b.x + nx*o, y = PAD + b.y + ny*o;
       const tangentDeg = b.a * 180 / Math.PI;
-      const deg = outward ? tangentDeg + (i % 2 ? 38 : -38) + (r() - 0.5) * 20 : tangentDeg + 180 + (r() - 0.5) * 40;   // rotate(0) = pointing straight out of the top edge
-      leaves += leafMarkup(x, y, deg, size, r() < 0.55 ? 'vine-leaf' : 'vine-leaf2', s / len);
+      const deg = outward ? tangentDeg + (i % 2 ? 38 : -38) + (r() - 0.5) * 20 : tangentDeg + 180 + (r() - 0.5) * 40;
+      const nm = r() < 0.55 ? 'vine-leaf' : 'vine-leaf2';
+      leaves += piece(x, y, deg, nm, size, s / len, '', LEAF_BASE[nm]);
       s += 22 + r() * 16; i++;
     }
-    // curly tendrils
     for(let k = 0; k < 2; k++){
       const sAt = len * (0.3 + k * 0.4 + r() * 0.1), b = per.at(s0 + sAt), nx = Math.sin(b.a), ny = -Math.cos(b.a);
       const bx = PAD + b.x + nx*4, by = PAD + b.y + ny*4, dir = r() < .5 ? 1 : -1;
@@ -2011,19 +2129,72 @@ const UIVines = (() => {
       }
       extras += `<path class="uv-stem uv-tendril" data-f="${(sAt/len).toFixed(3)}" d="${d}" pathLength="1" stroke="#6b9448" stroke-width="1.2"/>`;
     }
-    const W = w + PAD*2, H = h + PAD*2;
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('class', 'ui-vine'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    svg.setAttribute('aria-hidden', 'true');
-    svg.style.left = -PAD + 'px'; svg.style.top = -PAD + 'px';
     const md = smoothPath(main), td = smoothPath(twin);
-    svg.innerHTML = `
-      <path class="uv-stem" d="${td}" pathLength="1" stroke="#5d7f3a" stroke-width="2"/>
+    return `<path class="uv-stem" d="${td}" pathLength="1" stroke="#5d7f3a" stroke-width="2"/>
       <path class="uv-stem" d="${md}" pathLength="1" stroke="#3f6330" stroke-width="3.4"/>
-      <path class="uv-stem" d="${md}" pathLength="1" stroke="#90b96b" stroke-width="1.1" opacity=".75"/>
-      ${extras}${leaves}`;
-    return { svg, w, h, seed };
+      <path class="uv-stem" d="${md}" pathLength="1" stroke="#90b96b" stroke-width="1.1" opacity=".75"/>${extras}${leaves}`;
+  }
+
+  /* ---- peony vibe: two bushes in opposite corners, stems running off along the edges ---- */
+  function buildPeony(w, h, seed){
+    const r = mulberry(seed), per = perimeter(w, h, Math.min(R0, h/2 - 1, w/2 - 1));
+    const P = per.total;
+    const pair = r() < 0.5 ? [0, 2] : [1, 3];                     // TR+BL or BR+TL
+    const blooms = ['peony-a', 'peony-b', 'peony-c'];
+    let stems = '', parts = '', blooms2 = '';
+    const small = Math.min(w, h) < 160;
+    pair.forEach((ci, bi) => {
+      const sc = per.corners[ci], c = per.at(sc), nx = Math.sin(c.a), ny = -Math.cos(c.a);
+      const cx = PAD + c.x + nx * 4, cy = PAD + c.y + ny * 4;
+      const outDeg = Math.atan2(ny, nx) * 180 / Math.PI + 90;      // rotate() that points a piece straight out of the corner
+      // stems: one runs forward along the border, a shorter one runs back the other way
+      [[1, Math.min(P * 0.2, 170 + r() * 50)], [-1, Math.min(P * 0.1, 80 + r() * 30)]].forEach(([dir, len]) => {
+        const pts = [], ph = r() * 6;
+        for(let s = 0; s <= len; s += 6){
+          const b = per.at(sc + dir * s), bx = Math.sin(b.a), by = -Math.cos(b.a);
+          const o = 3 + Math.sin(s / 17 + ph) * 3 + Math.min(1, s / 30) * 1.5;
+          pts.push([PAD + b.x + bx * o, PAD + b.y + by * o]);
+        }
+        const d = smoothPath(pts);
+        stems += `<path class="uv-stem" d="${d}" pathLength="1" stroke="#3d6b3a" stroke-width="3"/><path class="uv-stem" d="${d}" pathLength="1" stroke="#8fbf7a" stroke-width="1" opacity=".7"/>`;
+        // leaves along the stem, alternating sides, a bud (or a small bloom) at the tip
+        let s = 22 + r() * 8, k = 0;
+        while(s < len - 14){
+          const b = per.at(sc + dir * s), bx = Math.sin(b.a), by = -Math.cos(b.a);
+          const o = 3 + Math.sin(s / 17 + ph) * 3 + 1.5;
+          const outward = (k % 3) !== 2;
+          const dd = outward ? (b.a * 180 / Math.PI) + (k % 2 ? 42 : -42) + (r() - 0.5) * 18 : (b.a * 180 / Math.PI) + 180 + (r() - 0.5) * 40;
+          parts += piece(PAD + b.x + bx * o, PAD + b.y + by * o, dd, 'peony-leaf', outward ? 22 + r() * 9 : 15 + r() * 4, bi * 0.5 + 0.2 + (s / len) * 0.25, '', LEAF_BASE['peony-leaf']);
+          s += 26 + r() * 14; k++;
+        }
+        const b = per.at(sc + dir * len), bx = Math.sin(b.a), by = -Math.cos(b.a);
+        const tipDeg = b.a * 180 / Math.PI + (dir > 0 ? 55 : -55);
+        if(dir > 0 && !small && r() < 0.6) blooms2 += piece(PAD + b.x + bx * 9, PAD + b.y + by * 9, r() * 360, blooms[Math.floor(r() * 3)], 24 + r() * 6, bi * 0.5 + 0.48, 'uvb', 0.5);
+        else parts += piece(PAD + b.x + bx * 3, PAD + b.y + by * 3, tipDeg, r() < 0.5 ? 'peony-bud' : 'peony-bud2', 15 + r() * 4, bi * 0.5 + 0.46, 'uvbud', LEAF_BASE['peony-bud']);
+      });
+      // the bush itself: a fan of big leaves out of the corner, buds, and blooms nestled in
+      const nL = small ? 3 : 5;
+      for(let j = 0; j < nL; j++){
+        const spread = (j - (nL - 1) / 2) * (small ? 34 : 27) + (r() - 0.5) * 12;
+        parts += piece(cx - nx * 3, cy - ny * 3, outDeg + spread, 'peony-leaf', (small ? 30 : 38) + r() * 12, bi * 0.5 + 0.02 + j * 0.02, '', LEAF_BASE['peony-leaf']);
+      }
+      for(let j = 0; j < 2; j++){
+        const a = outDeg + (j ? 1 : -1) * (48 + r() * 18);
+        parts += piece(cx, cy, a, j ? 'peony-bud2' : 'peony-bud', (small ? 15 : 19) + r() * 5, bi * 0.5 + 0.14 + j * 0.03, 'uvbud', LEAF_BASE['peony-bud']);
+      }
+      const main = small ? 34 : 44 + r() * 8;
+      blooms2 += piece(cx + nx * 6, cy + ny * 6, r() * 360, blooms[(bi + Math.floor(r() * 3)) % 3], main, bi * 0.5 + 0.2, 'uvb', 0.5);
+      if(!small){
+        const a = (outDeg - 90 + (r() < .5 ? 34 : -34)) * Math.PI / 180;
+        blooms2 += piece(cx + Math.cos(a) * 24 + nx * 2, cy + Math.sin(a) * 24 + ny * 2, r() * 360, blooms[(bi + 1 + Math.floor(r() * 2)) % 3], 28 + r() * 6, bi * 0.5 + 0.28, 'uvb', 0.5);
+      }
+    });
+    return stems + parts + blooms2;
+  }
+
+  function buildFor(panel, seed, kind){
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    return { svg: svgFor(w, h, kind === 'vine' ? buildVine(w, h, seed) : buildPeony(w, h, seed)), w, h, seed, kind };
   }
   function growSVG(svg, delayMs, durMs){
     if(REDUCED_MOTION) return;
@@ -2034,18 +2205,29 @@ const UIVines = (() => {
       const f = parseFloat(p.dataset.f) || 0;
       animateEl(p, [{ strokeDasharray:'1 1', strokeDashoffset:1 }, { strokeDasharray:'1 1', strokeDashoffset:0 }], { duration: 700, delay: delayMs + f * durMs * 0.85 + 150, easing:'ease-out', fill:'backwards' });
     });
-    const sp = Springs.waapi(0.42, 0.45);
+    const leaf = Springs.waapi(0.42, 0.45), bloom = Springs.waapi(0.7, 0.34);
     svg.querySelectorAll('.uvl').forEach(l => {
-      const f = parseFloat(l.dataset.f) || 0;
-      animateEl(l, [{ transform:'scale(0) rotate(-50deg)', opacity:0 }, { opacity:1, offset:.2 }, { transform:'none', opacity:1 }],
-        { duration: sp.duration, easing: sp.easing, delay: delayMs + Math.pow(f, 0.9) * durMs * 0.9, fill:'backwards' });
+      const f = parseFloat(l.dataset.f) || 0, at = delayMs + Math.pow(f, 0.9) * durMs * 0.9;
+      if(l.classList.contains('uvb')){
+        // a bloom opening: starts as a tight twisted knot and unfurls, overshooting a touch
+        animateEl(l, [{ transform:'scale(0) rotate(-120deg)', opacity:0 }, { opacity:1, offset:.15 }, { transform:'none', opacity:1 }], { duration: bloom.duration, easing: bloom.easing, delay: at + 120, fill:'backwards' });
+      }else{
+        animateEl(l, [{ transform:'scale(0) rotate(-50deg)', opacity:0 }, { opacity:1, offset:.2 }, { transform:'none', opacity:1 }], { duration: leaf.duration, easing: leaf.easing, delay: at, fill:'backwards' });
+      }
     });
   }
-  function add(panel, animate, delayMs, durMs){
+  function add(panel, kind, animate, delayMs, durMs){
     const old = built.get(panel);
+    // already built ahead of time (hidden) for exactly this card? just start it growing
+    if(old && old.pending && old.kind === kind && Math.abs(old.w - panel.offsetWidth) <= 6 && Math.abs(old.h - panel.offsetHeight) <= 6 && old.svg.parentNode){
+      old.pending = false;
+      if(animate) growSVG(old.svg, delayMs || 0, durMs);
+      old.svg.classList.remove('pending');
+      return old;
+    }
     if(old && old.svg.parentNode) old.svg.remove();
-    const seed = old ? old.seed : Math.floor(Math.random() * 1e6);
-    const v = buildFor(panel, seed);
+    const seed = old && old.kind === kind ? old.seed : Math.floor(Math.random() * 1e6);
+    const v = buildFor(panel, seed, kind);
     panel.appendChild(v.svg);
     built.set(panel, v);
     if(animate) growSVG(v.svg, delayMs || 0, durMs);
@@ -2053,13 +2235,17 @@ const UIVines = (() => {
     return v;
   }
   /* Grow on every visible card — delays (ms) come from the choreography. */
-  function growAll(delaysMs){
-    panels().forEach((p, i) => add(p, true, delaysMs ? delaysMs(i) : i * 180));
+  function growAll(kind, delaysMs){
+    panels().forEach((p, i) => add(p, kind, true, delaysMs ? delaysMs(i) : i * 180, kind === 'peony' ? 1300 : 1150));
   }
-  function showAllStatic(){ panels().forEach(p => add(p, false)); }
+  function showAllStatic(kind){ panels().forEach(p => add(p, kind, false)); }
+  /* Build everything now but keep it hidden — done while the startup screen is sitting idle, so
+     the tap that starts the intro has nothing heavy left to do. */
+  function prebuild(kind){ panels().forEach(p => { const v = add(p, kind, false); v.pending = true; v.svg.classList.add('pending'); }); }
+  function clearAll(){ built.forEach(v => v.svg.remove()); built.clear(); }
   function retractAll(durMs){
     durMs = durMs || 480;
-    built.forEach((v, panel) => {
+    built.forEach((v) => {
       const svg = v.svg;
       if(!REDUCED_MOTION){
         const leaves = Array.from(svg.querySelectorAll('.uvl')).reverse();
@@ -2070,30 +2256,34 @@ const UIVines = (() => {
     });
     built.clear();
   }
-  /* A card changed size (hint photo opened, list grew, a card appeared): re-route its vine. New
-     cards get their vine grown in; resized ones are re-routed quietly. */
+  /* A card changed size (hint photo opened, list grew, a card appeared): re-route its growth. New
+     cards get theirs grown in; resized ones are re-routed quietly. */
   function refresh(){
-    if(getTheme() !== 'monstera' || rootEl.classList.contains('theme-switching')) return;
+    if(rootEl.classList.contains('theme-switching') || rootEl.classList.contains('intro-pending')) return;
+    const kind = kindFor(getTheme());
     panels().forEach(p => {
       const v = built.get(p);
-      if(!v) add(p, !rootEl.classList.contains('intro-pending'), 80);
-      else if(Math.abs(v.w - p.offsetWidth) > 6 || Math.abs(v.h - p.offsetHeight) > 6) add(p, false);
+      if(!v || v.kind !== kind) add(p, kind, true, 80);
+      else if(Math.abs(v.w - p.offsetWidth) > 6 || Math.abs(v.h - p.offsetHeight) > 6) add(p, kind, false);
     });
     built.forEach((v, p) => { if(p.offsetParent === null){ v.svg.remove(); built.delete(p); } });
   }
-  function rustleAt(x, y, strong){
+  /* A tap near a card makes the nearest leaves/blooms wiggle. Only on taps (never while a finger
+     drags/scrolls — measuring leaves during a scroll is exactly the kind of work that makes a
+     phone stutter). */
+  function rustleAt(x, y){
     if(REDUCED_MOTION || !built.size) return;
     let n = 0;
     built.forEach((v, panel) => {
       const pr = panel.getBoundingClientRect();
-      if(x < pr.left - 50 || x > pr.right + 50 || y < pr.top - 50 || y > pr.bottom + 50) return;
+      if(x < pr.left - 60 || x > pr.right + 60 || y < pr.top - 60 || y > pr.bottom + 60) return;
       v.svg.querySelectorAll('.uvw').forEach(g => {
         if(n > 10) return;
         const lr = g.getBoundingClientRect();
         const d = Math.hypot(x - (lr.left + lr.width/2), y - (lr.top + lr.height/2));
-        if(d < (strong ? 60 : 38) && !g._wiggling){
+        if(d < 64 && !g._wiggling){
           n++; g._wiggling = true;
-          const amp = (strong ? 26 : 16) * (x < lr.left + lr.width/2 ? 1 : -1);
+          const amp = 24 * (x < lr.left + lr.width/2 ? 1 : -1);
           const a = animateEl(g, [{ transform:'rotate(0deg)' }, { transform:`rotate(${amp}deg)` }, { transform:`rotate(${-amp*0.5}deg)` }, { transform:`rotate(${amp*0.22}deg)` }, { transform:'rotate(0deg)' }], { duration: 900, easing:'ease-out' });
           if(a) a.onfinish = () => { g._wiggling = false; }; else g._wiggling = false;
         }
@@ -2107,253 +2297,115 @@ const UIVines = (() => {
       document.querySelectorAll('.wrap > .panel').forEach(p => ro.observe(p));
     }
   }
-  return { init, growAll, showAllStatic, retractAll, refresh, rustleAt, panels };
+  return { init, growAll, showAllStatic, prebuild, clearAll, retractAll, refresh, rustleAt, panels, kindFor };
 })();
+const UIVines = UIGrowth;   // older name, kept so nothing else needs to change
 
-/* ================= FX: particle canvas + the background "reveal" canvas =================
-   Particles are the real peony/petal/leaf art rasterised once into sprites, then flung around
-   with simple physics (gravity, air drag, flutter — petals flip as they tumble). The reveal
-   canvas sits just above the page background and paints the NEW vibe's background in, either
-   as splashes where thrown peonies land, or as a ring of foliage closing in from the edges. */
-const FX = (() => {
-  let fx, fctx, rev, rctx, W = 0, H = 0, dpr = 1;
-  const sprites = {}; let spritesReady = null;
-  const parts = []; let running = false, lastT = 0, reveal = null;
+/* ================= INK: the vibe-switch wipe =================
+   An ink blot bleeds out from the switch and floods the whole screen with the new vibe's colours,
+   the app swaps vibe underneath while it's covered, then a second blot eats through the ink from
+   the same spot and reveals the new look — the codyhouse "ink transition" idea, but drawn live
+   rather than from a sprite sheet: a noisy radius function with finger-like runs, a darker wet rim
+   and droplets flicked out ahead of the edge. One canvas at ≤1.25x resolution, one path fill per
+   frame — no particles, no DOM churn. */
+const Ink = (() => {
+  let cv = null, ctx = null, W = 0, H = 0;
   const BG = { peony:['#ffe4f1','#ffd3e8','#e9d6ff','#ffe9d6'], monstera:['#eaf2e0','#d7e8c8','#c6dfbf','#e8eed2'] };
-
-  function init(){
-    fx = $('fxCanvas'); rev = $('themeReveal');
-    if(!fx || !rev) return;
-    fctx = fx.getContext('2d'); rctx = rev.getContext('2d');
-    size();
-    addEventListener('resize', size, { passive:true });
-  }
+  const RIM = { peony:'rgba(214,74,142,.34)', monstera:'rgba(61,107,63,.32)' };
+  function init(){ cv = $('themeReveal'); if(cv) ctx = cv.getContext('2d'); }
   function size(){
-    W = innerWidth; H = innerHeight; dpr = Math.min(2, devicePixelRatio || 1);
-    fx.width = Math.round(W * dpr); fx.height = Math.round(H * dpr);
+    W = innerWidth; H = innerHeight;
+    const k = Math.min(1.25, devicePixelRatio || 1);
+    cv.width = Math.round(W * k); cv.height = Math.round(H * k);
+    ctx.setTransform(k, 0, 0, k, 0, 0);
   }
-  function raster(name, px){
-    const k = Math.min(2, devicePixelRatio || 1);
-    const { svg, w, h } = LLArt.standalone(name, Math.round(px * k));
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        const pad = Math.round(16 * k), c = document.createElement('canvas');
-        c.width = w + pad * 2; c.height = h + pad * 2;
-        const x = c.getContext('2d');
-        if(name.indexOf('peony') === 0){ x.shadowColor = 'rgba(140,20,80,.3)'; x.shadowBlur = 12 * k; x.shadowOffsetY = 6 * k; }
-        else if(name.indexOf('mon') === 0){ x.shadowColor = 'rgba(20,60,30,.25)'; x.shadowBlur = 10 * k; x.shadowOffsetY = 5 * k; }
-        x.drawImage(img, pad, pad, w, h);
-        c._k = k; resolve(c);
-      };
-      img.onerror = reject;
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  function blot(ox, oy, seed){
+    const r = mulberry(seed);
+    const harm = [];
+    for(let i = 0; i < 6; i++) harm.push({ n: 2 + i * 2 + Math.floor(r() * 3), a: (0.085 / (i + 1)) * (0.6 + r() * 0.8), p: r() * 6.283, w: (r() - 0.5) * 1.6 });
+    const fingers = [];
+    for(let i = 0; i < 12; i++) fingers.push({ th: r() * 6.283, w: 0.035 + r() * 0.07, len: 0.07 + r() * 0.2 });
+    const drops = [];
+    for(let i = 0; i < 30; i++) drops.push({ th: r() * 6.283, d: 1.03 + r() * 0.3, s: 0.004 + r() * 0.016, lag: r() * 0.3 });
+    const far = Math.max(Math.hypot(ox, oy), Math.hypot(W - ox, oy), Math.hypot(ox, H - oy), Math.hypot(W - ox, H - oy));
+    return { ox, oy, harm, fingers, drops, Rmax: far * 1.34 };
+  }
+  function edgeAt(b, th, R, t){
+    let m = 1;
+    for(const h of b.harm) m += h.a * Math.sin(h.n * th + h.p + t * h.w);
+    for(const f of b.fingers){
+      let d = Math.abs(th - f.th) % 6.283; if(d > 3.1416) d = 6.283 - d;
+      if(d < f.w) m += f.len * Math.pow(Math.cos(d / f.w * 1.5708), 2);
+    }
+    return R * m;
+  }
+  function blotPath(b, R, t, p){
+    ctx.beginPath();
+    const N = 160;
+    for(let i = 0; i <= N; i++){
+      const th = i / N * 6.283, rr = edgeAt(b, th, R, t);
+      const x = b.ox + Math.cos(th) * rr, y = b.oy + Math.sin(th) * rr;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+    // droplets flicked out ahead of the spreading edge (they're swallowed as the edge catches up)
+    for(const d of b.drops){
+      if(p < d.lag) continue;
+      const rr = R * d.d, s = Math.max(0.5, b.Rmax * d.s * Math.min(1, (p - d.lag) * 3));
+      const x = b.ox + Math.cos(d.th) * rr, y = b.oy + Math.sin(d.th) * rr;
+      ctx.moveTo(x + s, y); ctx.arc(x, y, s, 0, 6.283);
+    }
+  }
+  const spread = p => 1 - Math.pow(1 - p, 1.5);           // bleeds out fast, then soaks on out to the corners
+  function run(durS, frame){
+    return new Promise(resolve => {
+      const t0 = performance.now();
+      (function tick(now){
+        const p = Math.min(1, (now - t0) / 1000 / durS);
+        frame(p, (now - t0) / 1000);
+        if(p < 1) requestAnimationFrame(tick); else resolve();
+      })(t0);
     });
   }
-  function ready(){
-    if(!spritesReady){
-      const list = [['peony-a',150],['peony-b',150],['peony-c',150],['petal-a',54],['petal-b',54],['petal-c',54],
-                    ['mon-a',160],['mon-b',160],['mon-young',130],['vine-leaf',46],['vine-leaf2',46]];
-      spritesReady = Promise.all(list.map(([n, px]) => raster(n, px).then(c => { sprites[n] = c; }).catch(() => {})));
-    }
-    return spritesReady;
-  }
-
-  /* ---- particles ---- */
-  function spawn(p){
-    p.age = 0; p.alpha = 1;
-    p.rot = p.rot || 0; p.vr = p.vr || 0; p.drag = p.drag == null ? 0.2 : p.drag; p.g = p.g == null ? 1800 : p.g;
-    p.flip = p.flip || 0; p.ph = Math.random() * 6.28; p.sway = p.sway || 0;
-    p.fadeAt = p.fadeAt == null ? 9 : p.fadeAt; p.fadeDur = p.fadeDur || 0.6;
-    parts.push(p); go();
-  }
-  function go(){ if(!running){ running = true; lastT = 0; fx.style.display = 'block'; requestAnimationFrame(tick); } }
-  function tick(now){
-    const dt = Math.min(0.034, Math.max(0.004, (now - (lastT || now - 16)) / 1000)); lastT = now;
-    fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    fctx.clearRect(0, 0, W, H);
-    for(let i = parts.length - 1; i >= 0; i--){
-      const p = parts[i];
-      if(p.delay > 0){ p.delay -= dt; continue; }
-      p.age += dt;
-      p.vy += p.g * dt;
-      p.vx += Math.sin(p.age * 3.1 + p.ph) * p.sway * dt;
-      const k = Math.max(0, 1 - p.drag * dt);
-      p.vx *= k; p.vy *= k;
-      p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
-      if(p.shrink) p.size *= Math.max(0, 1 - p.shrink * dt);
-      if(p.onLand && !p.landed && p.age >= p.landT){ p.landed = true; try{ p.onLand(p); }catch(e){} }
-      if(p.age > p.fadeAt) p.alpha = Math.max(0, 1 - (p.age - p.fadeAt) / p.fadeDur);
-      if(p.alpha <= 0 || p.y > H + 220 || p.x < -320 || p.x > W + 320 || (p.y < -900)){ parts.splice(i, 1); continue; }
-      const spr = sprites[p.spr];
-      if(!spr) continue;
-      const sw = spr.width / spr._k * p.size, sh = spr.height / spr._k * p.size;
-      const fl = p.flip ? Math.cos(p.age * p.flip + p.ph) : 1;
-      fctx.save();
-      fctx.globalAlpha = p.alpha * (p.a == null ? 1 : p.a);
-      fctx.translate(p.x, p.y); fctx.rotate(p.rot);
-      fctx.scale(p.flip ? (Math.abs(fl) < 0.12 ? 0.12 * Math.sign(fl || 1) : fl) : 1, 1);
-      fctx.drawImage(spr, -sw/2, -sh/2, sw, sh);
-      fctx.restore();
-    }
-    if(reveal) drawReveal(dt);
-    if(parts.length || reveal) requestAnimationFrame(tick);
-    else { running = false; fctx.clearRect(0, 0, W, H); fx.style.display = 'none'; }
-  }
-
-  /* ---- reveal canvas ---- */
-  function revealBegin(theme, mode){
-    const rd = Math.min(1.25, devicePixelRatio || 1);
-    rev.width = Math.round(W * rd); rev.height = Math.round(H * rd);
-    rctx.setTransform(rd, 0, 0, rd, 0, 0);
-    rctx.clearRect(0, 0, W, H);
-    rev.style.transition = 'none'; rev.style.opacity = '1'; rev.style.display = 'block';
-    const g = rctx.createLinearGradient(W, H, 0, 0), c = BG[theme];
+  let fill = null, theme = 'peony', lastOrigin = [0, 0];
+  function gradient(th){
+    const g = ctx.createLinearGradient(W, H, 0, 0), c = BG[th];
     c.forEach((col, i) => g.addColorStop(i / (c.length - 1), col));
-    reveal = { theme, mode, grad: g, splats: [], t: 0, close: null, slots: [] };
-    if(mode === 'close'){
-      const n = 46;
-      for(let i = 0; i < n; i++) reveal.slots.push({ th: i / n * Math.PI * 2 + (Math.random() - 0.5) * 0.08, spr: ['mon-young','vine-leaf','mon-b','vine-leaf2'][i % 4], s: 0.34 + Math.random() * 0.26, j: (Math.random() - 0.5) * 0.5 });
-    }
-    go();
+    return g;
   }
-  function splat(x, y, r, dur){
-    if(!reveal) return;
-    const drops = [];
-    const n = 5 + Math.floor(Math.random() * 5);
-    for(let i = 0; i < n; i++){ const a = Math.random() * Math.PI * 2, d = r * (0.95 + Math.random() * 0.75); drops.push([Math.cos(a) * d, Math.sin(a) * d, r * (0.08 + Math.random() * 0.2)]); }
-    reveal.splats.push({ x, y, r, dur: dur || 0.42, t: 0, drops });
+  /* Flood the screen with the new vibe's colours from (ox, oy). Resolves once fully covered. */
+  function cover(th, ox, oy, durS){
+    if(!cv) return Promise.resolve();
+    size(); theme = th; fill = gradient(th); lastOrigin = [ox, oy];
+    cv.style.transition = 'none'; cv.style.opacity = '1'; cv.style.display = 'block';
+    const b = blot(ox, oy, Math.floor(Math.random() * 1e6));
+    return run(durS, (p, t) => {
+      const R = b.Rmax * spread(p);
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = RIM[th]; blotPath(b, R * 1.02 + 3, t, p); ctx.fill();   // darker wet rim
+      ctx.fillStyle = fill; blotPath(b, R, t, p); ctx.fill();
+    }).then(() => { ctx.clearRect(0, 0, W, H); ctx.fillStyle = fill; ctx.fillRect(0, 0, W, H); });
   }
-  function closeIn(dur){ if(reveal) reveal.close = { t: 0, dur }; }
-  function flood(x, y, dur){ splat(x, y, Math.hypot(W, H) * 1.05, dur || 0.6); }
-  function drawReveal(dt){
-    const rv = reveal; rv.t += dt;
-    if(rv.mode === 'splat'){
-      rctx.fillStyle = rv.grad;
-      for(const s of rv.splats){
-        if(s.t > s.dur) continue;
-        s.t += dt;
-        const p = Math.min(1, s.t / s.dur), e = 1 - Math.pow(1 - p, 3);
-        rctx.beginPath();
-        rctx.arc(s.x, s.y, Math.max(0.5, s.r * e), 0, Math.PI * 2);
-        s.drops.forEach(([dx, dy, rr]) => { rctx.moveTo(s.x + dx * e + rr * e, s.y + dy * e); rctx.arc(s.x + dx * e, s.y + dy * e, Math.max(0.3, rr * e), 0, Math.PI * 2); });
-        rctx.fill();
-      }
-    }else if(rv.mode === 'close' && rv.close){
-      const c = rv.close; c.t += dt;
-      const p = Math.min(1, c.t / c.dur), e = 1 - Math.pow(1 - p, 2.3);
-      const Rmax = Math.hypot(W, H) * 0.53, R = Rmax * (1 - e), cx = W / 2, cy = H * 0.46;
-      const rAt = (th) => R * (1 + 0.1 * Math.sin(3*th + 1.3 + rv.t * 1.1) + 0.06 * Math.sin(5*th + 0.4) + 0.035 * Math.sin(9*th + 2.2 - rv.t));
-      rctx.clearRect(0, 0, W, H);
-      rctx.fillStyle = rv.grad; rctx.fillRect(0, 0, W, H);
+  /* Eat back through the ink from the same spot, revealing what's underneath. */
+  function reveal(durS, ox, oy){
+    if(!cv) return Promise.resolve();
+    if(ox == null){ ox = lastOrigin[0]; oy = lastOrigin[1]; }
+    const b = blot(ox, oy, Math.floor(Math.random() * 1e6));
+    return run(durS, (p, t) => {
+      const R = b.Rmax * (1 - Math.pow(1 - p, 2.3)) * 1.04;      // opens at once, then soaks out to the corners
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = fill; ctx.fillRect(0, 0, W, H);
       if(R > 0.5){
-        rctx.globalCompositeOperation = 'destination-out';
-        rctx.beginPath();
-        for(let i = 0; i <= 72; i++){ const th = i / 72 * Math.PI * 2, rr = rAt(th); const x = cx + Math.cos(th) * rr, y = cy + Math.sin(th) * rr; i ? rctx.lineTo(x, y) : rctx.moveTo(x, y); }
-        rctx.closePath(); rctx.fill();
-        rctx.globalCompositeOperation = 'source-over';
-        // a fringe of leaves on the closing edge, tips reaching in
-        const a = Math.min(1, R / (Rmax * 0.3));
-        if(a > 0.02){
-          rctx.globalAlpha = a;
-          rv.slots.forEach(sl => {
-            const spr = sprites[sl.spr]; if(!spr) return;
-            const th = sl.th, rr = rAt(th) + 10;
-            const x = cx + Math.cos(th) * rr, y = cy + Math.sin(th) * rr;
-            if(x < -90 || x > W + 90 || y < -90 || y > H + 90) return;
-            const sw = spr.width / spr._k * sl.s, sh = spr.height / spr._k * sl.s;
-            rctx.save(); rctx.translate(x, y); rctx.rotate(th - Math.PI / 2 + sl.j);   // leaf tip points in toward the centre
-            rctx.drawImage(spr, -sw/2, -sh * 0.9, sw, sh);
-            rctx.restore();
-          });
-          rctx.globalAlpha = 1;
-        }
+        ctx.fillStyle = RIM[theme]; blotPath(b, R + 4, t, -1); ctx.fill();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.fillStyle = "#000"; blotPath(b, R, t, -1); ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
       }
-    }
+    }).then(() => { ctx.clearRect(0, 0, W, H); cv.style.display = 'none'; });
   }
-  function revealEnd(fadeMs){
-    if(!reveal) return;
-    reveal = null;
-    fadeMs = fadeMs == null ? 450 : fadeMs;
-    rev.style.transition = `opacity ${fadeMs}ms ease`;
-    requestAnimationFrame(() => { rev.style.opacity = '0'; });
-    setTimeout(() => { if(!reveal){ rev.style.display = 'none'; rctx.clearRect(0, 0, W, H); } }, fadeMs + 60);
-  }
-
-  /* ---- set pieces ---- */
-  const HEADS = ['peony-a','peony-b','peony-c'], PETALS = ['petal-a','petal-b','petal-c'];
-  const pick = (a) => a[Math.floor(Math.random() * a.length)];
-  /* A bucket of peonies flung across the screen: heads + a spray of petals leave one corner in a
-     short stream, arc over, and each head splashes the new background in where it lands. Landing
-     times are passed in so the splashes hit on the startup chime's shimmer beats. */
-  function throwBouquet(o){
-    const scale = Math.min(1.25, Math.max(0.8, Math.min(W, H) / 700));
-    const from = o.from || pick(['bl','br','bc']);
-    const O = from === 'bl' ? [-0.08*W, 1.08*H] : from === 'br' ? [1.08*W, 1.08*H] : [0.5*W, 1.14*H];
-    const nh = o.heads || 14, np = o.petals || 60, g = 2100 * (H / 800);
-    // spread landing spots over a jittered grid so the splashes cover the screen
-    const cols = W > H ? 5 : 3, rows = Math.ceil(nh / cols), cells = [];
-    for(let r = 0; r < rows; r++) for(let c = 0; c < cols; c++) cells.push([(c + 0.2 + Math.random()*0.6) / cols * W, (r + 0.2 + Math.random()*0.6) / rows * H * 0.92]);
-    cells.sort(() => Math.random() - 0.5);
-    for(let i = 0; i < nh; i++){
-      const [tx, ty] = cells[i % cells.length];
-      const launch = (o.launchSpread || 0.12) * Math.random();
-      const fl = o.flight || [0.28, 0.8];
-      const T = fl[0] + (fl[1] - fl[0]) * (i / Math.max(1, nh - 1)) + (Math.random() - 0.5) * 0.06;
-      const vx = (tx - O[0]) / T, vy = (ty - O[1] - 0.5 * g * T * T) / T;
-      const size = (0.55 + Math.random() * 0.55) * scale * (i % 5 === 0 ? 1.35 : 1);
-      spawn({ spr: pick(HEADS), x: O[0], y: O[1], vx, vy, g, drag: 0.05, size, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 5,
-        delay: (o.delay || 0) + launch, landT: T, fadeAt: T + 0.18, fadeDur: 0.5,
-        onLand: (p) => {
-          splat(p.x, p.y, (90 + Math.random() * 90) * size, 0.38);
-          // lands, then sinks back into the page as the splash of colour spreads
-          p.vx *= 0.15; p.vy = 40 + Math.random() * 60; p.g = 600; p.drag = 2.6; p.vr *= 0.3; p.shrink = 0.9;
-          for(let k = 0; k < 5; k++){ const a = Math.random() * Math.PI * 2, sp = 180 + Math.random() * 360;
-            spawn({ spr: pick(PETALS), x: p.x, y: p.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 120, g: 520, drag: 1.7, size: (0.45 + Math.random() * 0.4) * scale, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 9, flip: 6 + Math.random() * 7, sway: 140, fadeAt: 1.0 + Math.random() * 0.8, fadeDur: 0.6 }); }
-          if(o.onLand) o.onLand(i);
-        } });
-    }
-    for(let i = 0; i < np; i++){
-      const tx = Math.random() * W, ty = Math.random() * H * 0.95;
-      const launch = Math.random() * ((o.launchSpread || 0.18) + 0.12);
-      const T = 0.35 + Math.random() * 0.45;
-      const vx = (tx - O[0]) / T, vy = (ty - O[1] - 0.5 * g * 0.55 * T * T) / T;
-      spawn({ spr: pick(PETALS), x: O[0] + (Math.random() - 0.5) * 40, y: O[1], vx, vy, g: g * 0.55, drag: 0.35, size: (0.4 + Math.random() * 0.5) * scale,
-        rot: Math.random() * 6, vr: (Math.random() - 0.5) * 10, flip: 5 + Math.random() * 8, sway: 90, delay: (o.delay || 0) + launch,
-        landT: T, fadeAt: T + 0.9 + Math.random() * 0.9, fadeDur: 0.7,
-        onLand: (p) => { if(Math.random() < 0.45) splat(p.x, p.y, 26 + Math.random() * 38, 0.3); p.drag = 2.4; p.g = 380; } });
-    }
-  }
-  /* Monstera leaves drifting down through the scene, tumbling as they fall. */
-  function fallingLeaves(n, spread){
-    const scale = Math.min(1.2, Math.max(0.75, Math.min(W, H) / 700));
-    for(let i = 0; i < n; i++){
-      const big = i % 3 === 0, spr = big ? pick(['mon-a','mon-b','mon-young']) : pick(['vine-leaf','vine-leaf2']);
-      spawn({ spr, x: Math.random() * W, y: -90 - Math.random() * 60,
-        vx: (Math.random() - 0.5) * 60, vy: 90 + Math.random() * 90, g: 60, drag: 0.4, sway: 160,
-        size: (big ? 0.34 + Math.random() * 0.22 : 0.7 + Math.random() * 0.4) * scale,
-        rot: Math.random() * 6, vr: (Math.random() - 0.5) * 2.4, flip: 1.5 + Math.random() * 2.5,
-        delay: Math.random() * (spread || 1.4), fadeAt: 3.2, fadeDur: 1.2, a: 0.92 });
-    }
-  }
-  /* The launch bloom: the splash peony bursts into petals (and a few whole heads) outward. */
-  function bloomBurst(x, y, opts){
-    opts = opts || {};
-    const scale = Math.min(1.2, Math.max(0.8, Math.min(W, H) / 700));
-    for(let i = 0; i < (opts.petals || 46); i++){
-      const a = Math.random() * Math.PI * 2, sp = 500 + Math.random() * 1100;
-      spawn({ spr: pick(PETALS), x: x + Math.cos(a) * 30, y: y + Math.sin(a) * 30, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 150, g: 700, drag: 1.4,
-        size: (0.5 + Math.random() * 0.6) * scale, rot: a + Math.PI / 2, vr: (Math.random() - 0.5) * 8, flip: 5 + Math.random() * 8, sway: 120,
-        delay: (opts.delay || 0) + Math.random() * 0.05, fadeAt: 1.1 + Math.random() * 0.9, fadeDur: 0.7 });
-    }
-    for(let i = 0; i < (opts.heads || 6); i++){
-      const a = -Math.PI / 2 + (i - 2.5) * 0.55 + (Math.random() - 0.5) * 0.3, sp = 800 + Math.random() * 500;
-      spawn({ spr: pick(HEADS), x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: 1500, drag: 0.4, size: (0.6 + Math.random() * 0.5) * scale,
-        rot: Math.random() * 6, vr: (Math.random() - 0.5) * 5, delay: (opts.delay || 0) + 0.03 * i, fadeAt: 1.4, fadeDur: 0.6 });
-    }
-  }
-  function clear(){ parts.length = 0; }
-  return { init, ready, throwBouquet, fallingLeaves, bloomBurst, revealBegin, splat, flood, closeIn, revealEnd, clear, sprites, count: () => parts.length };
+  function hide(){ if(cv){ ctx && ctx.clearRect(0, 0, W, H); cv.style.display = 'none'; } }
+  return { init, cover, reveal, hide };
 })();
 
 /* ================= THE VIBE SWITCH ================= */
@@ -2372,83 +2424,178 @@ function updateThemeToggleUI(theme){
   if(btn) btn.setAttribute('aria-checked', theme === 'monstera' ? 'true' : 'false');
   if(label) label.textContent = theme === 'monstera' ? 'Monstera vibe' : 'Peony vibe';
 }
-function sprigTimings(cues, startBeat){
+/* Every button's sprig grows in on its own little delay (seconds), sweeping down the page. */
+function sprigTimings(baseS){
   const els = Array.from(document.querySelectorAll('.btn, .drive-btn, #logStopFab, #endHuntFab, #soundToggle, .points-chip, .theme-toggle')).filter(e => e.offsetParent !== null || getComputedStyle(e).position === 'fixed');
-  els.forEach((el, i) => el.style.setProperty('--vd', Math.max(0, beat(cues, startBeat + (i % 6)) - beat(cues, startBeat) + i * 0.035).toFixed(3) + 's'));
+  els.forEach((el, i) => el.style.setProperty('--vd', (baseS + i * 0.045).toFixed(3) + 's'));
 }
 
+/* Peony <-> monstera: ink floods out of the switch in the new vibe's colours, everything swaps
+   underneath while it's covered (no slow colour crossfade across the whole page), then the ink is
+   eaten away from the same spot and the new vibe's botanicals grow in — leaves unfurl / peony
+   bunches drop in behind the cards, vines or peony bushes grow around every card, and every
+   button sprouts its sprig. Timed to startup.mp3: the chime's big hit lands as the ink bursts. */
 async function playThemeTransition(to){
   if(themeTransitioning || to === getTheme()) return;
   themeTransitioning = true;
   const btn = $('themeToggleBtn'); if(btn) btn.setAttribute('aria-busy', 'true');
   Sound.unlock();
+  const from = getTheme(), kind = UIGrowth.kindFor(to);
   const done = () => { themeTransitioning = false; if(btn) btn.removeAttribute('aria-busy'); rootEl.classList.remove('theme-switching'); };
   if(REDUCED_MOTION){
-    setThemeAttr(to);
-    if(to === 'monstera') UIVines.showAllStatic(); else UIVines.retractAll(0);
+    setThemeAttr(to); Decor.swapTo(to); Decor.finish(to);
+    UIGrowth.clearAll(); UIGrowth.showAllStatic(kind);
     Sound.play('startup');
     done(); return;
   }
   rootEl.classList.add('theme-switching');
-  await Promise.race([FX.ready(), new Promise(r => setTimeout(r, 700))]);
-  const st = startupSoundtrack(), c = st.cues, ev = [];
-  const at = (t, fn) => ev.push({ t, fn });
-  const from = getTheme();
-  at(0, () => Motion.inhale());
+  const st = startupSoundtrack(), c = st.cues;
+  const thumb = btn && btn.querySelector('.tt-thumb');
+  const r = (thumb || btn).getBoundingClientRect();
+  const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
+  vibrate([12, 30, 12]);
+  rootEl.classList.add('vines-retracting');
+  UIGrowth.retractAll(380);                      // the old growth withers as the ink bursts out
+  await Ink.cover(to, ox, oy, 0.5);
 
-  if(to === 'monstera'){
-    at(c.pre, () => { Decor.prepare('monstera'); FX.revealBegin('monstera', 'close'); });
-    at(c.hit, () => {
-      Motion.exhale();
-      FX.closeIn(Math.max(1.0, c.end * 0.5));
-      FX.fallingLeaves(LOW_POWER ? 8 : 13, 1.5);
-      Decor.sets.peony.forEach((it, i) => setTimeout(() => Decor.exit(it), i * 40));
-      vibrate([20, 40, 20]);
-    });
-    // "growing in from the outside": one leaf unfurls on each shimmer beat, sweeping around the screen
-    Decor.sets.monstera.forEach((it, i) => at(onBeatNear(c, c.hit + 0.06 + i * 0.075) - 0.04, () => Decor.enter(it)));
-    at(c.hit + 0.28, () => setThemeAttr('monstera'));
-    at(beat(c, 1), () => {
-      UIVines.growAll(i => Math.max(0, (beat(c, 1 + i * 2) - beat(c, 1)) * 1000));
-      sprigTimings(c, 2);
-      rootEl.classList.add('vines-growing');
-    });
-  }else{
-    const origin = ['bl', 'br', 'bc'][Math.floor(Math.random() * 3)];   // a fresh throw every time
-    at(c.pre - 0.05, () => {
-      FX.revealBegin('peony', 'splat');
-      // the throw leaves the bucket just before the chime's big hit, so the first splashes land on it
-      FX.throwBouquet({ from: origin, heads: LOW_POWER ? 11 : 16, petals: LOW_POWER ? 40 : 66, launchSpread: 0.1,
-        flight: [Math.max(0.2, c.hit - c.pre + 0.14), Math.max(0.6, beat(c, 3) - c.pre)] });
-    });
-    at(c.hit, () => {
-      Motion.exhale();
-      rootEl.classList.add('vines-retracting');
-      UIVines.retractAll(520);
-      Decor.sets.monstera.forEach((it, i) => setTimeout(() => Decor.exit(it), i * 25));
-      vibrate([15, 30, 15, 30, 40]);
-    });
-    at(c.hit + 0.3, () => { setThemeAttr('peony'); Decor.prepare('peony'); });
-    Decor.sets.peony.forEach((it, i) => at(beat(c, 3 + i) + 0.02, () => Decor.enter(it)));
-    at(c.hit + 0.6, () => FX.flood(innerWidth / 2, innerHeight * 0.45, 0.6));
-  }
-  at(Math.max(c.end, beat(c, 7) + 0.9), () => {
-    FX.revealEnd(380);
+  // ---- fully covered: swap everything in one go (any hitch here is hidden under the ink) ----
+  setThemeAttr(to);
+  rootEl.classList.remove('vines-retracting');
+  UIGrowth.clearAll();
+  Decor.swapTo(to);
+  // the new growth is built now, while nothing can be seen, and starts growing as the ink clears
+  UIGrowth.growAll(kind, i => 160 + i * 240);
+  sprigTimings(0.25);
+  rootEl.classList.add('vines-growing');
+
+  const t0 = st.clock(), ev = [];
+  const at = (t, fn) => ev.push({ t, fn });
+  Ink.reveal(0.9, ox, oy);
+  Decor.sets[to].forEach((it, i) => at(onBeatNear(c, t0 + 0.1 + i * 0.07, 0.04), () => Decor.enter(it)));
+  at(t0 + 2.3, () => {
     Decor.finish(from); Decor.finish(to);
-    rootEl.classList.remove('vines-retracting');
     done();
-    UIVines.refresh();
+    UIGrowth.refresh();
     setTimeout(() => rootEl.classList.remove('vines-growing'), 1600);
   });
   runTimeline(ev, st.clock);
 }
 
-/* ================= LAUNCH: splash → intro ================= */
+/* ================= LAUNCH: the startup screen =================
+   The splash stays up while the trail loads (library locations, then the sounds/artwork), with a
+   progress bar and the title filling up with liquid as it goes. When everything's in it says
+   "Assets loaded!" and waits for a tap; the tap sends a wave of liquid up the screen that washes
+   the splash away, and the app rises in behind it. */
+const Splash = (() => {
+  const st = { loc: 0, assets: 0, locDone: false, assetsDone: false, ready: false, note: '', started: false };
+  let skipTimer = null;
+  function pct(){ return st.ready ? 100 : Math.min(99, Math.round(st.loc * 0.8 + st.assets * 0.2)); }
+  function render(msg){
+    const p = pct();
+    const f = $('progressFill'); if(f) f.style.width = p + '%';
+    const lv = $('liqLevel'); if(lv) lv.style.transform = `translateY(${(118 - p / 100 * 134).toFixed(1)}px)`;
+    const pc = $('splashPct'); if(pc) pc.textContent = p + '%';
+    const s = $('splashStatus'); if(s && msg) s.textContent = msg;
+  }
+  function waveD(w, amp, period, depth){
+    let d = `M0 ${depth} L0 0`;
+    for(let x = 0; x <= w; x += 4) d += ` L${x} ${(Math.sin(x / period * Math.PI * 2) * amp).toFixed(2)}`;
+    return d + ` L${w} ${depth} Z`;
+  }
+  function init(){
+    const sp = $('splash'); if(!sp) return;
+    const a = $('liqWaveA'), b = $('liqWaveB');
+    if(a) a.setAttribute('d', waveD(640, 5, 160, 180));
+    if(b) b.setAttribute('d', waveD(640, 4, 160, 180));
+    sp.hidden = false;
+    render();
+    skipTimer = setTimeout(() => { if(!st.ready){ const k = $('splashSkip'); if(k) k.hidden = false; } }, 15000);
+    const k = $('splashSkip');
+    if(k) k.onclick = () => { st.note = 'Starting now — the rest keeps loading in the background'; makeReady(); };
+  }
+  function locations(msg, p){ if(p != null) st.loc = Math.max(st.loc, p); if(!st.ready) render(msg); }
+  function locationsDone(note){ st.loc = 100; st.locDone = true; if(note) st.note = note; check(); }
+  function assets(p){ st.assets = Math.max(st.assets, p); if(!st.ready) render(); }
+  function assetsDone(){ st.assets = 100; st.assetsDone = true; check(); }
+  function check(){
+    if(st.ready) return;
+    if(st.locDone && st.assetsDone) makeReady();
+    else render(st.locDone ? 'Warming up the sounds…' : null);
+  }
+  function makeReady(){
+    if(st.ready) return;
+    st.ready = true; clearTimeout(skipTimer);
+    render('Assets loaded! 🌸');
+    const n = $('splashNote'); if(n) n.textContent = st.note || '';
+    const k = $('splashSkip'); if(k) k.hidden = true;
+    const go = $('splashGo');
+    if(go){ go.disabled = false; go.textContent = 'Tap to begin 🌸'; }
+    const sp = $('splash'); if(sp) sp.classList.add('is-ready');
+    // use the idle moment to build the vines/peony bushes for the cards behind the splash
+    setTimeout(() => { try{ UIGrowth.prebuild(UIGrowth.kindFor(getTheme())); }catch(e){} }, 60);
+  }
+  /* The wash: the splash is clipped to everything ABOVE a moving liquid surface (two sine waves
+     rolling past each other), with a foamy crest drawn along the surface on a canvas. The surface
+     rises from below the screen to above it. */
+  const TIDE = 1.2;
+  const easeTide = p => p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  function levelAt(p, H){ return H + 50 - easeTide(p) * (H + 140); }
+  /* Seconds into the wash when the surface passes screen-y `y` — so the app can rise in right behind it. */
+  function timeAt(y){
+    const H = innerHeight;
+    let lo = 0, hi = 1;
+    for(let i = 0; i < 18; i++){ const m = (lo + hi) / 2; if(levelAt(m, H) > y) lo = m; else hi = m; }
+    return Math.max(0, Math.min(1, (lo + hi) / 2)) * TIDE;
+  }
+  function tide(){
+    const sp = $('splash'), cv = $('tideCanvas');
+    if(!sp) return Promise.resolve();
+    st.started = true;
+    sp.classList.add('leaving');
+    const W = innerWidth, H = innerHeight, k = Math.min(1.5, devicePixelRatio || 1);
+    let c = null;
+    if(cv){ cv.width = Math.round(W * k); cv.height = Math.round(H * k); cv.style.display = 'block'; c = cv.getContext('2d'); c.setTransform(k, 0, 0, k, 0, 0); }
+    const cs = getComputedStyle(rootEl), crest = cs.getPropertyValue('--pink-3').trim() || '#ff8fc3', deep = cs.getPropertyValue('--pink-2').trim() || '#ffb6d5';
+    const surf = (x, t, L) => L + 15 * Math.sin(x / (W * 0.9) * 6.283 + t * 3.4) + 8 * Math.sin(x / (W * 0.33) * 6.283 - t * 5.3);
+    return new Promise(resolve => {
+      const t0 = performance.now();
+      (function tick(now){
+        const t = (now - t0) / 1000, p = Math.min(1, t / TIDE), L = levelAt(p, H);
+        const pts = ['0px 0px', `${W}px 0px`];
+        for(let x = W; x >= -1; x -= W / 36) pts.push(`${Math.max(0, x).toFixed(1)}px ${surf(Math.max(0, x), t, L).toFixed(1)}px`);
+        sp.style.clipPath = `polygon(${pts.join(',')})`;
+        if(c){
+          c.clearRect(0, 0, W, H);
+          // the crest: a band of colour riding just under the surface, fading into the app below
+          const g = c.createLinearGradient(0, L - 20, 0, L + 46);
+          g.addColorStop(0, crest); g.addColorStop(0.45, deep); g.addColorStop(1, 'rgba(255,255,255,0)');
+          c.beginPath();
+          for(let x = 0; x <= W; x += 8) c.lineTo(x, surf(x, t, L) - 1);
+          for(let x = W; x >= 0; x -= 8) c.lineTo(x, surf(x, t, L) + 34 + 8 * Math.sin(x / 40 + t * 4));
+          c.closePath(); c.fillStyle = g; c.globalAlpha = 0.9; c.fill();
+          // a thin bright foam line on the surface itself
+          c.beginPath();
+          for(let x = 0; x <= W; x += 6) c.lineTo(x, surf(x, t, L) + 1.5);
+          c.globalAlpha = 0.85; c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.stroke();
+          c.globalAlpha = 1;
+        }
+        if(p < 1) requestAnimationFrame(tick);
+        else {
+          sp.hidden = true; sp.style.clipPath = ''; sp.classList.remove('leaving');
+          if(cv){ c.clearRect(0, 0, W, H); cv.style.display = 'none'; }
+          resolve();
+        }
+      })(t0);
+    });
+  }
+  return { init, locations, locationsDone, assets, assetsDone, tide, timeAt, isReady: () => st.ready, TIDE };
+})();
+
 function introItems(){
   return Array.from(document.querySelectorAll('.wrap > h1, .wrap > .sub, .wrap > .panel, .wrap > .theme-toggle-row')).filter(e => e.offsetParent !== null || getComputedStyle(e).display !== 'none');
 }
 function playIntro(fromSplash){
-  const st = startupSoundtrack(), c = st.cues, theme = getTheme(), ev = [];
+  const st = startupSoundtrack(), c = st.cues, theme = getTheme(), kind = UIGrowth.kindFor(theme), ev = [];
   themeTransitioning = true;            // the vibe switch waits until the intro has finished
   const at = (t, fn) => ev.push({ t, fn });
   const now = st.clock();
@@ -2457,44 +2604,34 @@ function playIntro(fromSplash){
     themeTransitioning = false;
     rootEl.classList.remove('intro-pending');
     if(splash) splash.hidden = true;
-    if(theme === 'monstera') UIVines.showAllStatic();
+    UIGrowth.showAllStatic(kind);
     return st;
   }
-  // Everything that animates in is put in its "before" state right now (fill: backwards), then
-  // released on its beat — so nothing flickers between the splash leaving and it arriving.
+  const T0 = Math.max(now, c.pre);                        // the wash starts on the chime's pre-hit
+  const withSplash = fromSplash && splash && !splash.hidden;
   const sp = Springs.waapi(0.62, 0.26), msTo = (t) => Math.max(0, (t - now) * 1000);
   rootEl.classList.remove('intro-pending');
-  introItems().forEach((el, i) => animateEl(el, [
-    { opacity:0, translate:'0 46px', scale:.94, filter:'blur(8px)' },
-    { opacity:1, translate:'0 0', scale:1, filter:'blur(0px)' },
-  ], { duration: sp.duration, easing: sp.easing, delay: msTo(beat(c, Math.min(i, 8)) - 0.06), fill:'backwards' }));
+  // everything is put in its "before" state now (fill: backwards) and rises in as the wave passes it
+  introItems().forEach((el, i) => {
+    const y = el.getBoundingClientRect().top + 30;
+    const when = withSplash ? T0 + Splash.timeAt(Math.min(innerHeight, Math.max(0, y))) + 0.05 : T0 + i * 0.09;
+    animateEl(el, [{ opacity:0, translate:'0 54px', scale:.96 }, { opacity:1, translate:'0 0', scale:1 }], { duration: sp.duration, easing: sp.easing, delay: msTo(when), fill:'backwards' });
+  });
   ['#pointsChip', '#soundToggle', '#logStopFab', '#endHuntFab'].forEach((sel, i) => {
     const el = document.querySelector(sel); if(!el) return;
     const pop = Springs.waapi(0.45, 0.5);
-    animateEl(el, [{ opacity:0, scale:.3 }, { opacity:1, scale:1 }], { duration: pop.duration, easing: pop.easing, delay: msTo(beat(c, 3 + i)), fill:'backwards' });
+    animateEl(el, [{ opacity:0, scale:.3 }, { opacity:1, scale:1 }], { duration: pop.duration, easing: pop.easing, delay: msTo(T0 + (withSplash ? Splash.TIDE * 0.7 : 0.3) + i * 0.08), fill:'backwards' });
   });
   Decor.prepare(theme);
-  const set = Decor.sets[theme];
-  set.forEach((it, i) => at(theme === 'peony' ? beat(c, 1 + i) : onBeatNear(c, c.hit + 0.1 + i * 0.075) - 0.04, () => Decor.enter(it)));
-  if(theme === 'monstera'){
-    at(beat(c, 2), () => { UIVines.growAll(i => Math.max(0, (beat(c, 2 + i * 2) - beat(c, 2)) * 1000)); sprigTimings(c, 3); rootEl.classList.add('vines-growing'); });
-  }
-  if(fromSplash && splash){
-    splash.classList.add('leaving');
-    const hero = $('splashHero');
-    const r = hero ? hero.getBoundingClientRect() : { left: innerWidth/2, top: innerHeight/2, width:0, height:0 };
-    at(c.pre, () => {
-      animateEl(hero, [{ transform:'scale(1)', opacity:1 }, { transform:'scale(1.35)', opacity:0 }], { duration: 260, easing:'cubic-bezier(.3,0,.7,1)', fill:'forwards' });
-      Array.from(splash.children).forEach(ch => { if(ch !== hero) animateEl(ch, [{ opacity:1, transform:'none' }, { opacity:0, transform:'translateY(14px)' }], { duration: 240, easing:'ease-in', fill:'forwards' }); });
-    });
-    at(c.hit, () => {
-      FX.bloomBurst(r.left + r.width / 2, r.top + r.height / 2, { petals: LOW_POWER ? 30 : 48, heads: theme === 'peony' ? 6 : 3 });
-      if(theme === 'monstera') FX.fallingLeaves(LOW_POWER ? 6 : 10, 1.2);
-      animateEl(splash, [{ opacity:1 }, { opacity:0 }], { duration: 520, easing:'ease-out', fill:'forwards' });
-    });
-    at(c.hit + 0.56, () => { splash.hidden = true; });
-  }else if(splash){ splash.hidden = true; }
-  at(Math.max(c.end, beat(c, 8) + 0.8), () => {
+  const settle = T0 + (withSplash ? Splash.TIDE * 0.55 : 0.2);
+  Decor.sets[theme].forEach((it, i) => at(onBeatNear(c, settle + i * 0.075, 0.04), () => Decor.enter(it)));
+  // built now, while the startup screen still covers everything; grows in once the wave has passed
+  UIGrowth.growAll(kind, i => msTo(settle + 0.25) + i * 260);
+  sprigTimings((settle + 0.25 - now));
+  rootEl.classList.add('vines-growing');
+  if(withSplash) at(T0, () => Splash.tide());
+  else if(splash) splash.hidden = true;
+  at(Math.max(c.end, settle + 2.4), () => {
     themeTransitioning = false;
     Decor.finish(theme);
     setTimeout(() => rootEl.classList.remove('vines-growing'), 1600);
@@ -2503,6 +2640,7 @@ function playIntro(fromSplash){
   runTimeline(ev, st.clock);
   return st;
 }
+
 
 /* ================= ADD TO HOME SCREEN ================= */
 const Install = (() => {
@@ -2576,26 +2714,31 @@ const Install = (() => {
 })();
 
 /* ================= BOOT ================= */
+/* The little sprig every button wears: a vine sprig in the monstera vibe, a peony sprig (leaves,
+   a bud and a small bloom) in the peony vibe. Rendered once as a background image. */
 function sprigImage(){
-  const a = LLArt.get('vine-leaf'), b = LLArt.get('vine-leaf2');
-  const leaf = (id, x, y, w, rot) => { const h = w * 1.1; return `<use href="#${id}" x="${(x - w/2).toFixed(1)}" y="${(y - h*0.955).toFixed(1)}" width="${w}" height="${h.toFixed(1)}" transform="rotate(${rot} ${x} ${y})"/>`; };
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 32"><defs>${a.defs}${b.defs}<symbol id="vl" viewBox="${a.viewBox}" overflow="visible">${a.body}</symbol><symbol id="vl2" viewBox="${b.viewBox}" overflow="visible">${b.body}</symbol></defs>`
+  const sym = (name, alias) => { const a = LLArt.get(name); return `${a.defs}<symbol id="${alias}" viewBox="${a.viewBox}" overflow="visible">${a.body}</symbol>`; };
+  const put = (id, x, y, w, rot, base) => { const a = LLArt.get(id === 'vl' ? 'vine-leaf' : id === 'vl2' ? 'vine-leaf2' : id === 'pl' ? 'peony-leaf' : id === 'pb' ? 'peony-bud' : 'peony-b');
+    const [, , vw, vh] = a.viewBox.split(' ').map(Number), h = w * vh / vw;
+    return `<use href="#${id}" x="${(x - w/2).toFixed(1)}" y="${(y - h*base).toFixed(1)}" width="${w}" height="${h.toFixed(1)}" transform="rotate(${rot} ${x} ${y})"/>`; };
+  const vine = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 32"><defs>${sym('vine-leaf', 'vl')}${sym('vine-leaf2', 'vl2')}</defs>`
     + `<path d="M5 27 C15 24 22 15 34 13 S54 13 62 7" stroke="#46692f" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
     + `<path d="M5 27 C15 24 22 15 34 13 S54 13 62 7" stroke="#9cc374" stroke-width=".8" fill="none" stroke-linecap="round" opacity=".8"/>`
     + `<path d="M41 12 c2 -6 9 -7 9 -2 c0 3 -4 3 -3.5 0.5" stroke="#6b9448" stroke-width="1.1" fill="none" stroke-linecap="round"/>`
-    + leaf('vl', 14, 23, 12, -60) + leaf('vl2', 25, 16, 13, 35) + leaf('vl', 34, 13, 11, -35) + leaf('vl2', 52, 11, 12, 50) + leaf('vl', 61, 7, 10, 20)
+    + put('vl', 14, 23, 12, -60, .955) + put('vl2', 25, 16, 13, 35, .955) + put('vl', 34, 13, 11, -35, .955) + put('vl2', 52, 11, 12, 50, .955) + put('vl', 61, 7, 10, 20, .955)
     + `</svg>`;
-  rootEl.style.setProperty('--sprig-img', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}")`);
-}
-async function autoplayAllowed(){
-  const c = Sound.context();
-  if(!c) return false;
-  if(c.state === 'running') return true;
-  try{ return await Promise.race([c.resume().then(() => c.state === 'running'), new Promise(r => setTimeout(() => r(false), 250))]); }
-  catch(e){ return false; }
+  const peony = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 34"><defs>${sym('peony-leaf', 'pl')}${sym('peony-bud', 'pb')}${sym('peony-b', 'pf')}</defs>`
+    + `<path d="M4 30 C14 27 22 19 33 17 S50 15 56 11" stroke="#3d6b3a" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+    + `<path d="M4 30 C14 27 22 19 33 17 S50 15 56 11" stroke="#8fbf7a" stroke-width=".8" fill="none" stroke-linecap="round" opacity=".8"/>`
+    + put('pl', 13, 27, 15, -58, .976) + put('pl', 25, 20, 14, 40, .976) + put('pb', 38, 17, 8, -28, .968) + put('pl', 44, 15, 12, 55, .976)
+    + `<use href="#pf" x="47" y="-1" width="18" height="18"/>`
+    + `</svg>`;
+  rootEl.style.setProperty('--sprig-vine', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(vine)}")`);
+  rootEl.style.setProperty('--sprig-peony', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(peony)}")`);
 }
 async function LLBoot(){
   try{
+    rootEl.classList.add('booted');
     LLArt.installSymbols();
     sprigImage();
     updateThemeToggleUI(getTheme());
@@ -2606,49 +2749,36 @@ async function LLBoot(){
     if(hero) hero.innerHTML = (getTheme() === 'monstera' ? LLArt.img('mon-a', 'class="sh-leaf" style="rotate:-38deg"') + LLArt.img('mon-c', 'class="sh-leaf" style="rotate:36deg"') : '') + LLArt.img('peony-b', 'class="sh-bloom"');
     // every flower in the app is a peony — swap the few emoji ones for the real drawing
     document.querySelectorAll('.peony-inline').forEach(el => { el.innerHTML = LLArt.img('peony-b'); });
+    Splash.init();
+    Splash.assets(15);
     Decor.build(); Decor.init();
-    FX.init(); FX.ready();
-    UIVines.init();
+    Ink.init();
+    UIGrowth.init();
     Jelly.init();
     Motion.watchModals();
     Install.init();
+    Splash.assets(35);
     addEventListener('resize', () => Motion.positionPill(false), { passive:true });
     // One tap sound for every button in the app (a few buttons opt out with data-sound="none"
-    // because they have their own sound — the vibe switch plays the startup chime, etc.)
-    // `label.photo-slot` is deliberately EXCLUDED here: its native job on tap is to hand off to
-    // the OS camera/photo picker, and this used to also be in this list. Sound.play() resumes
-    // the AudioContext synchronously when it isn't already running, and doing that from a
-    // *capturing* click handler on the very element whose default action opens a native
-    // camera/file picker is a known source of exactly the "took a photo, nothing happened"
-    // failure on real phones (Safari and some Android WebViews only grant one privileged,
-    // gesture-consuming action per tap, and audio resume + native picker can end up racing for
-    // it) — likely why photo capture regressed after the tap-sound system was added. The photo
-    // slots already get their own confirmation sound in captureGateSlot()/setWayStopPhoto() once
-    // a photo actually lands, so no feedback is lost — it's just moved off the risky gesture.
+    // because they have their own sound — the vibe switch plays the startup chime, etc.).
+    // Photo buttons are deliberately NOT included: their native job on tap is to hand off to the
+    // camera/photo picker, and resuming audio from the same tap can make that hand-off fail on
+    // phones. They get their own confirmation sound once a photo actually lands.
     document.addEventListener('click', (e) => {
       const el = e.target.closest('button, a.drive-btn');
       if(!el || el.disabled || el.closest('[data-sound="none"]')) return;
       Sound.play('button');
     }, true);
-    Sound.load().then(() => Sound.scanStartup());
-
-    let on = true; try{ on = soundEnabled; }catch(e){}
-    const splash = $('splash');
-    const go = !on || REDUCED_MOTION ? true : await autoplayAllowed();
-    if(go){
-      if(on) await Promise.race([Sound.load(), new Promise(r => setTimeout(r, 1200))]);
-      await Promise.race([FX.ready(), new Promise(r => setTimeout(r, 500))]);
-      if(splash) splash.hidden = true;
-      playIntro(false);
-    }else{
-      splash.hidden = false;
-      $('splashGo').onclick = async () => {
-        Sound.unlock();
-        $('splashGo').textContent = 'Blooming…';
-        await Promise.race([Promise.all([Sound.load(), FX.ready()]), new Promise(r => setTimeout(r, 1500))]);
-        playIntro(true);
-      };
-    }
+    // assets: the five sounds (decoded + the startup chime scanned for its beats) and the fonts
+    const fontsP = (document.fonts && document.fonts.ready) ? document.fonts.ready.catch(() => {}) : Promise.resolve();
+    const soundsP = Promise.resolve(Sound.load()).then(() => { Splash.assets(80); return Sound.scanStartup(); }).catch(() => {});
+    Promise.race([Promise.all([soundsP, fontsP]), new Promise(r => setTimeout(r, 9000))]).then(() => Splash.assetsDone());
+    $('splashGo').onclick = () => {
+      if(!Splash.isReady()) return;
+      Sound.unlock();
+      $('splashGo').disabled = true;
+      playIntro(true);
+    };
   }catch(e){
     console.warn('[boot] visual layer failed — showing the app plainly', e);
     rootEl.classList.remove('intro-pending');
@@ -2988,18 +3118,9 @@ $('soundToggle').onclick = () => {
 updateSoundToggleUI();
 
 /* ================= status UI ================= */
-function setStatus(text, pct){ $('statusText').textContent = text; if(pct !== undefined) $('progressFill').style.width = pct + '%'; }
-function hideStatusPanel(){ $('statusSpinner').style.display = 'none'; }
-function dismissStatusPanel(delayMs){
-  setTimeout(() => {
-    const panel = $('statusPanel');
-    panel.style.transition = 'opacity .5s ease, max-height .5s ease, margin .5s ease, padding .5s ease';
-    panel.style.opacity = '0';
-    panel.style.maxHeight = panel.offsetHeight + 'px';
-    requestAnimationFrame(() => { panel.style.maxHeight = '0'; panel.style.margin = '0'; panel.style.padding = '0'; panel.style.overflow = 'hidden'; });
-    setTimeout(() => { panel.style.display = 'none'; }, 550);
-  }, delayMs);
-}
+/* Loading progress now lives on the startup screen (see Splash): the trail's locations are the
+   bulk of the bar, the sounds/artwork the rest. */
+function setStatus(text, pct){ Splash.locations(text, pct); }
 
 /* ================= data loading ================= */
 async function loadLibraryData(){
@@ -4657,9 +4778,7 @@ async function init(){
   await ensureGeocoded(libraries);
 
   const failed = libraries.filter(l => l.geofailed).length;
-  hideStatusPanel();
-  setStatus(`Trail ready! ${libraries.length - failed}/${libraries.length} libraries mapped.` + (failed ? ` (${failed} couldn't be located automatically.)` : ''), 100);
-  dismissStatusPanel(1300); // let them see "Trail ready!" briefly, then it gets out of the way for good
+  Splash.locationsDone(`${libraries.length - failed} of ${libraries.length} libraries mapped` + (failed ? ` (${failed} couldn't be located automatically)` : ''));
 
   startWatchingPosition();
   requestWakeLock();
@@ -4672,7 +4791,7 @@ async function init(){
     }
   }, 4000);
 }
-init();
+init().catch(e => { console.warn('[init]', e); Splash.locationsDone('Trail loaded'); });
 
 // --- Installable app: register service worker for offline app-shell + photo caching,
 //     and surface a "fresh update ready" banner instead of silently swapping content
