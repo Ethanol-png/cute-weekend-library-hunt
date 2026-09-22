@@ -1,0 +1,530 @@
+{
+  "generated": "2026-09-22",
+  "source": "https://streetlibrary.org.au",
+  "center": {
+    "label": "Kenmore, QLD 4069",
+    "note": "Approx. straight-line distance from Kenmore, estimated (no geocoding API was available to compute this precisely)."
+  },
+  "radius_km": 20,
+  "method": "No public bulk API exists for streetlibrary.org.au. Each entry below was found via the site's front-end search (per-suburb queries) and individually verified by opening its page and reading the address text, to filter out same-name false positives from other states (several 'Oxley', 'Taringa' and 'Sherwood' results turned out to be in NSW/ACT and were excluded).",
+  "libraries": [
+    {
+      "name": "Moggill Rd Street Library",
+      "address": "2051 Moggill Road, Kenmore QLD 4069, Australia",
+      "suburb": "Kenmore",
+      "approx_km": 0.2,
+      "source_url": "https://streetlibrary.org.au/library/moggill-rd-street-library-2/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=2051%20Moggill%20Road%2C%20Kenmore%20QLD%204069%2C%20Australia",
+      "number": 1,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/04/Moggill-Rd-Street-Library.jpg"
+    },
+    {
+      "name": "Green Kids Kenmore",
+      "address": "14 Kenmore Rd, Kenmore QLD 4069, Australia",
+      "suburb": "Kenmore",
+      "approx_km": 0.5,
+      "source_url": "https://streetlibrary.org.au/library/green-kids-kenmore/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=14%20Kenmore%20Rd%2C%20Kenmore%20QLD%204069%2C%20Australia",
+      "number": 2,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/08/IMG_1730v2-scaled.jpg"
+    },
+    {
+      "name": "The Little Pink Library",
+      "address": "3 Mactier St, Fig Tree Pocket QLD 4069, Australia",
+      "suburb": "Fig Tree Pocket",
+      "approx_km": 3,
+      "source_url": "https://streetlibrary.org.au/library/the-little-pink-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=3%20Mactier%20St%2C%20Fig%20Tree%20Pocket%20QLD%204069%2C%20Australia",
+      "number": 3,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/12/Screenshot_20251230-143747.png"
+    },
+    {
+      "name": "Pullenvale Hall Street Library",
+      "address": "302 Grandview Road, Pullenvale QLD 4069, Australia",
+      "suburb": "Pullenvale",
+      "approx_km": 4,
+      "source_url": "https://streetlibrary.org.au/library/pullenvale-hall-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=302%20Grandview%20Road%2C%20Pullenvale%20QLD%204069%2C%20Australia",
+      "number": 4,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/03/Curious-Caravan.jpg"
+    },
+    {
+      "name": "Journey Early Learning Indooroopilly Street Library",
+      "address": "1 Rylatt Street, Indooroopilly QLD 4068, Australia",
+      "suburb": "Indooroopilly",
+      "approx_km": 4,
+      "source_url": "https://streetlibrary.org.au/library/journey-early-learning-indooroopilly-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=1%20Rylatt%20Street%2C%20Indooroopilly%20QLD%204068%2C%20Australia",
+      "number": 5,
+      "photo": "https://media.streetlibrary.org.au/2024/11/Image-4-scaled.jpg"
+    },
+    {
+      "name": "Moggill Rd Street Library",
+      "address": "376 Moggill Rd, Indooroopilly QLD 4068, Australia",
+      "suburb": "Indooroopilly",
+      "approx_km": 6,
+      "source_url": "https://streetlibrary.org.au/library/moggill-rd-street-library-3/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=376%20Moggill%20Rd%2C%20Indooroopilly%20QLD%204068%2C%20Australia",
+      "number": 6,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/08/CK-Indooroopilly-scaled.jpg"
+    },
+    {
+      "name": "The Mighty Fine Book Swap",
+      "address": "213 Honour Avenue, Chelmer QLD 4068, Australia",
+      "suburb": "Chelmer",
+      "approx_km": 6,
+      "source_url": "https://streetlibrary.org.au/library/mighty-fine-book-swap/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=213%20Honour%20Avenue%2C%20Chelmer%20QLD%204068%2C%20Australia",
+      "number": 7,
+      "photo": "https://media.streetlibrary.org.au/2017/01/IMG_0078.jpg"
+    },
+    {
+      "name": "Taringa Playground Park",
+      "address": "Moorak Street, Taringa QLD 4068, Australia",
+      "suburb": "Taringa",
+      "approx_km": 6,
+      "source_url": "https://streetlibrary.org.au/library/taringa-playground-park/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=Moorak%20Street%2C%20Taringa%20QLD%204068%2C%20Australia",
+      "number": 8,
+      "photo": "https://media.streetlibrary.org.au/2017/08/Taringa-Playground-Park.jpeg"
+    },
+    {
+      "name": "St Lucia English Phone Booth Library",
+      "address": "Cnr Central Avenue & Hawken Drive, St Lucia QLD 4067, Australia",
+      "suburb": "St Lucia",
+      "approx_km": 6,
+      "source_url": "https://streetlibrary.org.au/library/st-lucia-english-phone-booth-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=Cnr%20Central%20Avenue%20%26%20Hawken%20Drive%2C%20St%20Lucia%20QLD%204067%2C%20Australia",
+      "number": 9,
+      "photo": "https://media.streetlibrary.org.au/2023/07/St-Lucia-English-Phone-Booth-Library-scaled.jpg"
+    },
+    {
+      "name": "Moggill Rd Street Library",
+      "address": "77A Moggill Road, Taringa QLD 4068, Australia",
+      "suburb": "Taringa",
+      "approx_km": 7,
+      "source_url": "https://streetlibrary.org.au/library/moggill-rd-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=77A%20Moggill%20Road%2C%20Taringa%20QLD%204068%2C%20Australia",
+      "number": 10,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/02/Moggill-Rd-Street-Library.jpg"
+    },
+    {
+      "name": "Taringa Community Garden Street Library (Autumn Leaves)",
+      "address": "9 Heroes Avenue, Perrin Park, Toowong QLD 4068, Australia",
+      "suburb": "Toowong",
+      "approx_km": 7,
+      "source_url": "https://streetlibrary.org.au/library/taringa-community-garden-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=9%20Heroes%20Avenue%2C%20Perrin%20Park%2C%20Toowong%20QLD%204068%2C%20Australia",
+      "number": 11,
+      "photo": "https://media.streetlibrary.org.au/2022/02/Street-Library-1.jpg"
+    },
+    {
+      "name": "Toowong English Phone Booth Street Library",
+      "address": "4 Croydon Street, Toowong QLD 4066, Australia",
+      "suburb": "Toowong",
+      "approx_km": 7,
+      "source_url": "https://streetlibrary.org.au/library/toowong-english-phone-booth-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=4%20Croydon%20Street%2C%20Toowong%20QLD%204066%2C%20Australia",
+      "number": 12,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2023/07/toowong-library.jpeg"
+    },
+    {
+      "name": "Ghost Gum",
+      "address": "65 Frederick St, Toowong QLD 4066, Australia",
+      "suburb": "Toowong",
+      "approx_km": 7,
+      "source_url": "https://streetlibrary.org.au/library/ghost-gum/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=65%20Frederick%20St%2C%20Toowong%20QLD%204066%2C%20Australia",
+      "number": 13,
+      "photo": "https://media.streetlibrary.org.au/2021/08/A64E4AD3-E540-4B69-8465-E8BC0B3764EC-scaled.jpeg"
+    },
+    {
+      "name": "The Book Circus",
+      "address": "491 Waterworks Road, Ashgrove QLD 4060, Australia",
+      "suburb": "Ashgrove",
+      "approx_km": 7,
+      "source_url": "https://streetlibrary.org.au/library/the-book-circus/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=491%20Waterworks%20Road%2C%20Ashgrove%20QLD%204060%2C%20Australia",
+      "number": 14,
+      "photo": "https://media.streetlibrary.org.au/2020/09/20200911_162112B-scaled.jpg"
+    },
+    {
+      "name": "The Book Bower",
+      "address": "489 Waterworks Road, Ashgrove West QLD 4060, Australia",
+      "suburb": "Ashgrove West",
+      "approx_km": 7,
+      "source_url": "https://streetlibrary.org.au/library/the-book-bower/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=489%20Waterworks%20Road%2C%20Ashgrove%20West%20QLD%204060%2C%20Australia",
+      "number": 15,
+      "photo": "https://media.streetlibrary.org.au/2019/08/Street-Library-2-1-COLLAGE.jpg"
+    },
+    {
+      "name": "Village Centre Kelvin Grove",
+      "address": "8 Carraway Street, Kelvin Grove QLD 4059, Australia",
+      "suburb": "Kelvin Grove",
+      "approx_km": 7,
+      "source_url": "https://streetlibrary.org.au/library/village-centre-kelvin-grove/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=8%20Carraway%20Street%2C%20Kelvin%20Grove%20QLD%204059%2C%20Australia",
+      "number": 16,
+      "photo": "https://media.streetlibrary.org.au/2021/07/D439DF6B-9395-433F-81C8-A7D440F058EB.jpeg"
+    },
+    {
+      "name": "Journey Early Learning Centre Riverhills",
+      "address": "20 Bogong Street, Riverhills QLD 4074, Australia",
+      "suburb": "Riverhills",
+      "approx_km": 8,
+      "source_url": "https://streetlibrary.org.au/library/journey-early-learning-centre-riverhills/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=20%20Bogong%20Street%2C%20Riverhills%20QLD%204074%2C%20Australia",
+      "number": 17,
+      "photo": "https://media.streetlibrary.org.au/2019/07/20190722_134416-scaled.jpg"
+    },
+    {
+      "name": "Horizon Little Library",
+      "address": "343 Horizon Drive, Riverhills QLD 4074, Australia",
+      "suburb": "Riverhills",
+      "approx_km": 8,
+      "source_url": "https://streetlibrary.org.au/library/horizon-little-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=343%20Horizon%20Drive%2C%20Riverhills%20QLD%204074%2C%20Australia",
+      "number": 18,
+      "photo": "https://media.streetlibrary.org.au/2020/06/02CD583E-6477-4BD6-B28E-115FBA3A3AE9-577x1024.png"
+    },
+    {
+      "name": "Bellbowrie Kindergarten Community Library",
+      "address": "Birkin Road, Bellbowrie QLD 4070, Australia",
+      "suburb": "Bellbowrie",
+      "approx_km": 8,
+      "source_url": "https://streetlibrary.org.au/library/bellbowrie-kindergarten-community-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=Birkin%20Road%2C%20Bellbowrie%20QLD%204070%2C%20Australia",
+      "number": 19,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/01/Bellbowrie-Kindergarten-scaled.jpg"
+    },
+    {
+      "name": "Shopping Centre Bellbowrie Street Library",
+      "address": "Bellbowrie Plaza, Birkin Road, Bellbowrie QLD 4070, Australia",
+      "suburb": "Bellbowrie",
+      "approx_km": 8,
+      "source_url": "https://streetlibrary.org.au/library/shopping-centre-bellbowrie-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=Bellbowrie%20Plaza%2C%20Birkin%20Road%2C%20Bellbowrie%20QLD%204070%2C%20Australia",
+      "number": 20,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/06/Bellbowrie-Plaza-Street-Library.jpg"
+    },
+    {
+      "name": "Anstead House Street Library",
+      "address": "15 Anstead Place, Mount Crosby QLD 4306, Australia",
+      "suburb": "Mount Crosby / Anstead",
+      "approx_km": 9,
+      "source_url": "https://streetlibrary.org.au/library/anstead-house-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=15%20Anstead%20Place%2C%20Mount%20Crosby%20QLD%204306%2C%20Australia",
+      "number": 21,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2018/09/D85AF9CF-6E7F-4301-A8FB-AB0807D90547.jpeg"
+    },
+    {
+      "name": "Sherwood Forest's Street Library",
+      "address": "16 Thallon Street, Sherwood QLD 4075, Australia",
+      "suburb": "Sherwood",
+      "approx_km": 9,
+      "source_url": "https://streetlibrary.org.au/library/sherwood-forests-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=16%20Thallon%20Street%2C%20Sherwood%20QLD%204075%2C%20Australia",
+      "number": 22,
+      "photo": "https://media.streetlibrary.org.au/2021/07/Street-Library-Photo-SF-scaled.jpg"
+    },
+    {
+      "name": "Magazine St Little Library",
+      "address": "47 Magazine St, Sherwood QLD 4075, Australia",
+      "suburb": "Sherwood",
+      "approx_km": 9,
+      "source_url": "https://streetlibrary.org.au/library/magazine-st-little-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=47%20Magazine%20St%2C%20Sherwood%20QLD%204075%2C%20Australia",
+      "number": 23,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/04/IMG_0768-scaled.jpeg"
+    },
+    {
+      "name": "Hogan's Heroes Community Library",
+      "address": "25 Hogan Pl, Seventeen Mile Rocks QLD 4073, Australia",
+      "suburb": "Seventeen Mile Rocks",
+      "approx_km": 9,
+      "source_url": "https://streetlibrary.org.au/library/hogans-heroes-community-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=25%20Hogan%20Pl%2C%20Seventeen%20Mile%20Rocks%20QLD%204073%2C%20Australia",
+      "number": 24,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/04/IMG_8574.jpeg"
+    },
+    {
+      "name": "Laurel St Library",
+      "address": "83 Laurel St, Enoggera QLD 4051, Australia",
+      "suburb": "Enoggera",
+      "approx_km": 9,
+      "source_url": "https://streetlibrary.org.au/library/laurel-st-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=83%20Laurel%20St%2C%20Enoggera%20QLD%204051%2C%20Australia",
+      "number": 25,
+      "photo": "https://media.streetlibrary.org.au/2021/02/Final-Laurel-St-Library-for-Registration-scaled.jpg"
+    },
+    {
+      "name": "South Brisbane Street Library",
+      "address": "1 Raymond Terrace, South Brisbane QLD 4101, Australia",
+      "suburb": "South Brisbane",
+      "approx_km": 9,
+      "source_url": "https://streetlibrary.org.au/library/south-brisbane-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=1%20Raymond%20Terrace%2C%20South%20Brisbane%20QLD%204101%2C%20Australia",
+      "number": 26,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/07/South-Brisbane-St-Library.jpg"
+    },
+    {
+      "name": "Benarrawa Place Street Library",
+      "address": "79 Waratah Avenue, Oxley QLD 4075, Australia",
+      "suburb": "Oxley",
+      "approx_km": 10,
+      "source_url": "https://streetlibrary.org.au/library/benarrawa-place-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=79%20Waratah%20Avenue%2C%20Oxley%20QLD%204075%2C%20Australia",
+      "number": 27,
+      "photo": "https://media.streetlibrary.org.au/2021/06/PHO_street-library_21.jpg"
+    },
+    {
+      "name": "The Library at the Bottom of My Garden",
+      "address": "25 Davies Street, Oxley QLD 4075, Australia",
+      "suburb": "Oxley",
+      "approx_km": 10,
+      "source_url": "https://streetlibrary.org.au/library/library-bottom-garden/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=25%20Davies%20Street%2C%20Oxley%20QLD%204075%2C%20Australia",
+      "number": 28,
+      "photo": "https://media.streetlibrary.org.au/2020/02/DSC_0326_1.jpg"
+    },
+    {
+      "name": "Moorooka Kids Library",
+      "address": "1 Cutler Ave, Moorooka QLD 4105, Australia",
+      "suburb": "Moorooka",
+      "approx_km": 10,
+      "source_url": "https://streetlibrary.org.au/library/moorooka-kids-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=1%20Cutler%20Ave%2C%20Moorooka%20QLD%204105%2C%20Australia",
+      "number": 29,
+      "photo": "https://media.streetlibrary.org.au/2018/07/20180729_164450-e1532908366133.jpg"
+    },
+    {
+      "name": "Kindness on Kine",
+      "address": "27 Kine Street, Moorooka QLD 4107, Australia",
+      "suburb": "Moorooka",
+      "approx_km": 10,
+      "source_url": "https://streetlibrary.org.au/library/kindness-on-kine/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=27%20Kine%20Street%2C%20Moorooka%20QLD%204107%2C%20Australia",
+      "number": 30,
+      "photo": "https://media.streetlibrary.org.au/2024/10/Collage_2024-10-03_15_33_16.jpg"
+    },
+    {
+      "name": "Goodwin Terrace Street Library",
+      "address": "34 Goodwin Terrace, Moorooka QLD 4105, Australia",
+      "suburb": "Moorooka",
+      "approx_km": 10,
+      "source_url": "https://streetlibrary.org.au/library/goodwin-terrace-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=34%20Goodwin%20Terrace%2C%20Moorooka%20QLD%204105%2C%20Australia",
+      "number": 31,
+      "photo": "https://media.streetlibrary.org.au/2017/12/IMG_0690.jpg"
+    },
+    {
+      "name": "Hubert Bookhouse",
+      "address": "2 Hubert Street, Woolloongabba QLD 4102, Australia",
+      "suburb": "Woolloongabba",
+      "approx_km": 10,
+      "source_url": "https://streetlibrary.org.au/library/hubert-bookhouse/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=2%20Hubert%20Street%2C%20Woolloongabba%20QLD%204102%2C%20Australia",
+      "number": 32,
+      "photo": "https://media.streetlibrary.org.au/2016/05/IMAG1434.jpeg"
+    },
+    {
+      "name": "Read @Trinity Street Library",
+      "address": "9 Church Street, Fortitude Valley QLD 4006, Australia",
+      "suburb": "Fortitude Valley",
+      "approx_km": 10,
+      "source_url": "https://streetlibrary.org.au/library/read-trinity-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=9%20Church%20Street%2C%20Fortitude%20Valley%20QLD%204006%2C%20Australia",
+      "number": 33,
+      "photo": "https://media.streetlibrary.org.au/2023/03/Street-Library-1.png"
+    },
+    {
+      "name": "I am NOT a possum box Library",
+      "address": "2 Eighth Ave, Coorparoo QLD 4151, Australia",
+      "suburb": "Coorparoo",
+      "approx_km": 11,
+      "source_url": "https://streetlibrary.org.au/library/not-possum-box-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=2%20Eighth%20Ave%2C%20Coorparoo%20QLD%204151%2C%20Australia",
+      "number": 34,
+      "photo": "https://media.streetlibrary.org.au/2016/12/library.jpg"
+    },
+    {
+      "name": "Barradine St Library",
+      "address": "40 Barradine St, Greenslopes QLD 4120, Australia",
+      "suburb": "Greenslopes",
+      "approx_km": 11,
+      "source_url": "https://streetlibrary.org.au/library/barradine-st-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=40%20Barradine%20St%2C%20Greenslopes%20QLD%204120%2C%20Australia",
+      "number": 35,
+      "photo": "https://media.streetlibrary.org.au/2019/08/library-1.jpg"
+    },
+    {
+      "name": "Stones Corner Community Kindergarten (SCCK)",
+      "address": "57-63 Lincoln St, Stones Corner QLD 4120, Australia",
+      "suburb": "Stones Corner",
+      "approx_km": 11,
+      "source_url": "https://streetlibrary.org.au/library/stones-corner-community-kindergarten-scck/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=57-63%20Lincoln%20St%2C%20Stones%20Corner%20QLD%204120%2C%20Australia",
+      "number": 36,
+      "photo": "https://media.streetlibrary.org.au/2024/10/IMG_8944-3-scaled.jpg"
+    },
+    {
+      "name": "Edge Early Learning Street Library",
+      "address": "51-53 Arbor Street, Ferny Grove QLD 4053, Australia",
+      "suburb": "Ferny Grove",
+      "approx_km": 11,
+      "source_url": "https://streetlibrary.org.au/library/edge-early-learning-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=51-53%20Arbor%20Street%2C%20Ferny%20Grove%20QLD%204053%2C%20Australia",
+      "number": 37,
+      "photo": "https://media.streetlibrary.org.au/2023/07/Edge-Street-Library-scaled.jpg"
+    },
+    {
+      "name": "Paws & Pages",
+      "address": "1016 Stanley St E, East Brisbane QLD 4169, Australia",
+      "suburb": "East Brisbane",
+      "approx_km": 11,
+      "source_url": "https://streetlibrary.org.au/library/paws-pages/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=1016%20Stanley%20St%20E%2C%20East%20Brisbane%20QLD%204169%2C%20Australia",
+      "number": 38,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/08/PawsPages.jpg"
+    },
+    {
+      "name": "Tree House for Books",
+      "address": "46 Fisher Street, East Brisbane QLD 4169, Australia",
+      "suburb": "East Brisbane",
+      "approx_km": 11,
+      "source_url": "https://streetlibrary.org.au/library/tree-house-for-books/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=46%20Fisher%20Street%2C%20East%20Brisbane%20QLD%204169%2C%20Australia",
+      "number": 39,
+      "photo": "https://media.streetlibrary.org.au/2021/09/20210919_095108.jpg"
+    },
+    {
+      "name": "Morningside State School Little Free Library",
+      "address": "67 Pashen St, Morningside QLD 4170, Australia",
+      "suburb": "Morningside",
+      "approx_km": 13,
+      "source_url": "https://streetlibrary.org.au/library/morningside-state-school-little-free-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=67%20Pashen%20St%2C%20Morningside%20QLD%204170%2C%20Australia",
+      "number": 40,
+      "photo": "https://media.streetlibrary.org.au/2019/06/20190612_202944.jpg"
+    },
+    {
+      "name": "Nexus Care Book Nook",
+      "address": "151 Flockton Street, Everton Park QLD 4053, Australia",
+      "suburb": "Everton Park",
+      "approx_km": 14,
+      "source_url": "https://streetlibrary.org.au/library/the-nexus-care-book-nook/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=151%20Flockton%20Street%2C%20Everton%20Park%20QLD%204053%2C%20Australia",
+      "number": 41,
+      "photo": "https://media.streetlibrary.org.au/2023/10/IMG_4676-rotated.jpg"
+    },
+    {
+      "name": "Bulimba Community Centre \u2013 Junior Book Hive",
+      "address": "1 Barramul St, Bulimba QLD 4171, Australia",
+      "suburb": "Bulimba",
+      "approx_km": 14,
+      "source_url": "https://streetlibrary.org.au/library/bulimba-community-centre-junior-book-hive/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=1%20Barramul%20St%2C%20Bulimba%20QLD%204171%2C%20Australia",
+      "number": 42,
+      "photo": "https://media.streetlibrary.org.au/2024/01/Book-Hive-Jnr.jpg"
+    },
+    {
+      "name": "Tugulawa Street Library",
+      "address": "235 Oxford St, Bulimba QLD 4171, Australia",
+      "suburb": "Bulimba",
+      "approx_km": 14,
+      "source_url": "https://streetlibrary.org.au/library/tugulawa-street-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=235%20Oxford%20St%2C%20Bulimba%20QLD%204171%2C%20Australia",
+      "number": 43,
+      "photo": "https://media.streetlibrary.org.au/2018/12/street-library1.jpg"
+    },
+    {
+      "name": "Margaret Street Little Library",
+      "address": "40 Margaret Street, Camp Hill QLD 4152, Australia",
+      "suburb": "Camp Hill",
+      "approx_km": 15,
+      "source_url": "https://streetlibrary.org.au/library/margaret-street-little-library/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=40%20Margaret%20Street%2C%20Camp%20Hill%20QLD%204152%2C%20Australia",
+      "number": 44,
+      "photo": "https://media.streetlibrary.org.au/2022/07/C01D2DC2-D2BB-471B-9CEA-2CE0897361FD-scaled.jpeg"
+    },
+    {
+      "name": "Hilltop Story Stop",
+      "address": "85 Erica Street, Cannon Hill QLD 4170, Australia",
+      "suburb": "Cannon Hill",
+      "approx_km": 16,
+      "source_url": "https://streetlibrary.org.au/library/hilltop-story-stop/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=85%20Erica%20Street%2C%20Cannon%20Hill%20QLD%204170%2C%20Australia",
+      "number": 45,
+      "photo": "https://media.streetlibrary.org.au/2024/10/IMG_5520-scaled.jpeg"
+    },
+    {
+      "name": "Kenilworth Place",
+      "address": "83 Kenilworth Place, Carindale QLD 4152, Australia",
+      "suburb": "Carindale",
+      "approx_km": 16,
+      "source_url": "https://streetlibrary.org.au/library/kenilworth-place/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=83%20Kenilworth%20Place%2C%20Carindale%20QLD%204152%2C%20Australia",
+      "number": 46,
+      "photo": "https://media.streetlibrary.org.au/2023/10/IMG_7700-rotated.jpg"
+    },
+    {
+      "name": "Banwell Books",
+      "address": "40 Banwell Crescent, Carindale QLD 4152, Australia",
+      "suburb": "Carindale",
+      "approx_km": 16,
+      "source_url": "https://streetlibrary.org.au/library/banwell-books/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=40%20Banwell%20Crescent%2C%20Carindale%20QLD%204152%2C%20Australia",
+      "number": 47,
+      "photo": "https://media.streetlibrary.org.au/2018/07/IMG_20180709_172138.jpg"
+    },
+    {
+      "name": "Makaw on the Park",
+      "address": "37 Reinhold Cres, Chermside QLD 4032, Australia",
+      "suburb": "Chermside",
+      "approx_km": 17,
+      "source_url": "https://streetlibrary.org.au/library/makaw-on-the-park/",
+      "maps_link": "https://www.google.com/maps/search/?api=1&query=37%20Reinhold%20Cres%2C%20Chermside%20QLD%204032%2C%20Australia",
+      "number": 48,
+      "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/11/20251117_145908-scaled.jpg"
+    }
+  ],
+  "excluded_false_positives": [
+    {
+      "name": "Taringa St Street Library / Taringa Street Library",
+      "reason": "Actually in Ashfield, NSW (Sydney) \u2014 same street name, wrong state."
+    },
+    {
+      "name": "Sherwood Circuit Street Library",
+      "reason": "Actually in Gordon, ACT (Canberra)."
+    },
+    {
+      "name": "Oxley Drive Street Library / Oxley / Oxley Book Box",
+      "reason": "Actually in Mittagong / Bowral NSW, or Oxley ACT \u2014 same suburb name used elsewhere."
+    },
+    {
+      "name": "Bedarra Court Book Cabinet",
+      "reason": "Actually in Maiden Gully, VIC (Bendigo) \u2014 matched 'Darra' only as a text substring."
+    },
+    {
+      "name": "Newtown Street Library",
+      "reason": "Actually in Newtown, Ipswich QLD 4305, roughly 21\u201322km out \u2014 just outside the 20km radius."
+    },
+    {
+      "name": "Wisteria House Corner Library / Friday Farm",
+      "reason": "Toowoomba, QLD \u2014 too far."
+    },
+    {
+      "name": "Pooraka Farm Community Centre Street Library",
+      "reason": "Pooraka is in South Australia."
+    },
+    {
+      "name": "Baulko Book Nook",
+      "reason": "Likely Baulkham Hills, NSW (Sydney)."
+    },
+    {
+      "name": "Whimsical Tales Community Library",
+      "reason": "Kippa-Ring, Moreton Bay \u2014 roughly 35km north, outside the radius."
+    }
+  ]
+}

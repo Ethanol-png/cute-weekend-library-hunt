@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Library Hunt">
+<meta name="theme-color" content="#ff8fc3">
+<meta name="description" content="A cute GPS treasure hunt to visit little free libraries together, one peony-pink stop at a time.">
+<title>Little Library Treasure Hunt 🌸</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFfUlEQVR4nLWX329dRxHHP7N7zrm/Yl87P2za2K1BUaIANTxEkXgA3lBV8lAJlP4FfQUpf0gl4L+4IlIfSqWChISgQpTwUFdqgmlKUrtu3djuvbav77nnnN3pw/jWaeN77RKx0kjn7M7MznxnZ3ZWALSjXm5K0DsfP8d07dfADUJYIsYUEJ5uKM6VeP8AeIPd4W/k2sWPRnuKqnoRCbqyfpNG87ek2TzDHKoS9Cm3Hg0BkhRqdSiLTQYHv5LlhY6qegHQ9zZ+wXT79wwOYDgMiDhEntbzrw5VRTVSq3kaTdjt/VJeePa26LtrC/hkBZ/MUAwj4vypXR+xndpUAY2BrOYIVZdQLTvU3aLRmiXPI4hH1RSfRFHBO6N4ShlVQDx5Hmm0ZlF3K0H1ZfKBAs4YTjkSD1t79n1+Cqpwellw5ANF9eUEdJGyFINnHP9jWKtClsDdj+GdD2z6+iW4ehGKCkQ4OTYilCWgiw4lMQgnkIgpCxGcQLcP//rQvp3Yd7dv3yEar8hknRa2xJ24sQj0h+Zd6qGewsMtyEvw3igvba6eGk9RmYycbEgyFnYBhhX8fRUe9Qz2C9Nw5Vk4KKFVh6oy3lbd5tZ34N8b8GjXjLjQhh9dhtSNDe/xCMRonm3swMNHBtdBAfc34d01EAdL89CsGy3Ng3O2dn/TeKOa7MaO6YrxGyAwSrMsMUidHFWzZu2I75mzBrET42/WLAyj8KXedIzS9NQIAJQVzLVhtmUxViAoVAEtSjQENFT0/nyHwfsPbLNhebRZXprsXNt0wTgExpimQCLww2/DnQ+h3YIsQatA94//RLyDkDFc34EAje99B8404Lk5qwndvsnKoeFjMtJNrFyIebE0B40MEo/UUiRNKLf38S9s0fq5J+wN6b31DvnqGtQyqGcmM9viy/oyhsYjkHj4aAtWHsJUE85OQYjEqoQqpf7jyNStIURl/3fQf6MPTqlfWbRD91kP7n8Cy8/D4rmxlfJJBKKagg8+hbfvwcEQtnuw1QNg728rDNc+sxBEBSdoiNQW5pj6yQ+gisa/vWuyb98zXd4fe2c8iYAI5AXcXbeD5Z1Vt+1dmGpSW/gWBCj+MWRfgRgZ/tWRXChwPoEywPaeaR9l0N11uHjWUP3afscjIGLpU1T2HxXOtyFLqF9ZpP2z6/ipGv0/BKr3zpOcO4OWlh00Mjg3fSRXVKZL5JQI6GEIrl2C99eh17f41TNbryLUUrLFOXAw/dPvg1ihkVoKGs2I1JvHF9rw3QUrVCEc3iuPAa5/+c+Tp1Ax6J3AoLC57gF80jUFewOYPQNpYgaXFeweWElWhWdmYKZpco3MPA/x2FQcfxeMTm3ioJbCxufwYNPgLCureIkznryAR59DNzXI2w24OGuFqaiOztYxe41Pw9GIarDvDx6T8pYVtdS82t6FJDla3x+YzOg8wROH72sGTGjqRoL+8EZzAmWEWBnUAP/91HSMbj3vHpOd1DDqKAsm9AR62GTMz0DmDe4ssUN69ozRtUs2lxfGMz9jMnpCU6Ig+qd7JU5ODoV30DuAvdx6wEZmOQ924geF9YhTdWg3DzujCcPSskpA13DpEmXBxLdAGWC6CTMti++X/R+H3VJiJTeq8U56VqgqaQqxWHMor5PVBI1xIlwjI4alNRfw1bUYbW2EykToY7Q9eV30zdUFkrhCksxQFvY2+L8ODaSZo6q6VG7ZyUuX14n6Klld8KknhkCMOtmD/4FiVGII+NST1YWor8pLl9eddtTLi1dv0915BZFNmtOeJJWTs+ObEJCkQnPaI7JJd+cVefHqbe2od3JTgnY6Xm4sd+h3r1Pmr6GsghQoeron10TSQ12rlPlr9LvX5cZyRzsdLzclfAE36sByhmigMAAAAABJRU5ErkJggg==">
+<link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACLUlEQVR4nFWTzU4UQRSFv9vVPT0twxAkGMEgK0QzMfEJ3LCSZ1B5DJbGV1EewkQXaty4ksACzSSo4c9EcTL89fRP1XVxewA7qaT+Tp1zzz0tALq995xs8gVVsYj3EYgggGLf5VwV5wJJ+pP89KU8XHglunX4lHb7NSFAWYCIgVQhimwewv/7rdTORqNnopv7B7TSecrCI+IIanTOQVkZqJWA9yYlElD1tFJHWRyKftlXVE0mAokztqKCN5sm/ckjSBNjr7wRKCBCjA9XdYYAOwfQTkzi8Zkx7h2DDzCqYOl2owJAiU0yEEcwPIfPfVPw4C7cvwNVDQdD6O9DULjVhZsdxsT2gABlDVM3YGkOTkfUf4cU3wf4s5zu42WY6cL0hN0payPR8QM0juclZCl0Jyg+9dGlbeIs5eQjdFd6RpSXjakBECJCsHpqDx92YOsHHA/xZzlRlhLyAtfJ4GIEm7t2p/aGCWFcQuNqN2sYUrorPU7eKa6TkS7PQpJAp213rmFE3/fNRREbdQ3fjuD3EGanIInh1wBmJmF5DuLY2qk6NrFJ2diLJIbBKRwNYLrTdOEPRECyYGukibcSj2sxVxXqAIuz0Mng3lwTEGCmY2fjrgW1X0bffj0gSeYpS4uyKrjIRuUNnDhz3V8SeVotR1UdRlR+HRVwicOHq7jm5RUoL21P1dYucahA5dcjWe1tcHG+BrKLiMerXqbzmlkEBa+KiAfZ5eJ8TVZ7G/8AYgMlBbnXSGkAAAAASUVORK5CYII=">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-1:#ffd9e8; --pink-2:#ffb6d5; --pink-3:#ff8fc3; --pink-deep:#c93f82;
+    --lav-1:#e8d9ff; --lav-2:#c9a8ff; --lav-deep:#6c4aa3;
+    --text:#5a2e4a; --good:#5fbf8f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:'Quicksand',sans-serif; color:var(--text);
+    background:linear-gradient(-45deg,#ffe4f1,#ffd3e8,#e9d6ff,#ffe9d6);
+    background-size:400% 400%; animation:bgShift 20s ease infinite;
+    min-height:100vh; padding:28px 16px 70px;
+  }
+  @keyframes bgShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  h1{ font-family:'Fredoka',sans-serif; text-align:center; color:var(--pink-deep); font-size:clamp(1.4rem,5vw,2.1rem); margin:0 0 4px; text-shadow:0 2px 0 #fff;}
+  .sub{ text-align:center; opacity:.75; max-width:520px; margin:0 auto 22px; font-size:.9rem; }
+  .wrap{ max-width:640px; margin:0 auto; }
+
+  .panel{
+    background:rgba(255,255,255,.85); backdrop-filter:blur(6px); border-radius:24px;
+    padding:22px; box-shadow:0 10px 28px rgba(201,63,130,.16); margin-bottom:18px;
+  }
+
+  /* status */
+  #statusPanel .status-row{ display:flex; align-items:center; gap:12px; }
+  #statusPanel .spinner{
+    width:22px; height:22px; border-radius:50%; border:3px solid var(--pink-1); border-top-color:var(--pink-3);
+    animation:spin 1s linear infinite; flex-shrink:0;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .progress-track{ background:var(--pink-1); border-radius:20px; height:10px; overflow:hidden; margin-top:10px; }
+  .progress-fill{ background:linear-gradient(90deg,var(--pink-3),var(--lav-2)); height:100%; width:0%; transition:width .4s ease; }
+  #statusText{ font-size:.85rem; }
+  .btn{
+    border:none; border-radius:16px; font-family:inherit; font-weight:700; cursor:pointer;
+    padding:12px 20px; font-size:.95rem; color:#fff; background:linear-gradient(135deg,var(--pink-2),var(--pink-3));
+    box-shadow:0 6px 16px rgba(201,63,130,.3); transition:transform .15s ease;
+  }
+  .btn:hover{ transform:translateY(-2px) scale(1.02); }
+  .btn.secondary{ background:linear-gradient(135deg,var(--lav-1),var(--lav-2)); color:var(--lav-deep); box-shadow:0 6px 16px rgba(108,74,163,.22); }
+  .btn.ghost{ background:#fff; color:var(--pink-deep); box-shadow:0 4px 10px rgba(201,63,130,.15); }
+  .btn.small{ padding:8px 14px; font-size:.78rem; border-radius:12px; box-shadow:none; }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+
+  /* hero target card */
+  #targetPanel{ display:none; text-align:center; }
+  .stop-label{ font-size:.75rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--pink-3); }
+  #targetName{ font-family:'Fredoka',sans-serif; font-size:1.5rem; color:var(--pink-deep); margin:4px 0 2px; }
+  #targetSub{ font-size:.82rem; opacity:.7; margin-bottom:14px; }
+
+  /* compass dial */
+  .dial-wrap{ position:relative; width:180px; height:180px; margin:6px auto 14px; transition:width .3s ease, height .3s ease; }
+  .dial-wrap.near{ width:220px; height:220px; }
+  .dial{
+    width:100%; height:100%; border-radius:50%;
+    background:radial-gradient(circle at 50% 40%, #fff, var(--pink-1) 75%, var(--pink-2) 100%);
+    box-shadow:0 10px 26px rgba(201,63,130,.25), inset 0 0 0 4px #fff;
+    position:relative; display:flex; align-items:center; justify-content:center;
+  }
+  .dial-wrap.near .dial{ animation:dialPulse 1.6s ease-in-out infinite; }
+  @keyframes dialPulse{ 0%,100%{ box-shadow:0 10px 26px rgba(201,63,130,.25), inset 0 0 0 4px #fff;} 50%{ box-shadow:0 14px 34px rgba(201,63,130,.4), inset 0 0 0 4px #fff;} }
+  .dial-n{ position:absolute; top:8px; left:50%; transform:translateX(-50%); font-size:.65rem; font-weight:700; color:var(--pink-3); opacity:.6; }
+  .compass-ring{ position:absolute; inset:0; width:100%; height:100%; transition:transform .25s linear; pointer-events:none; }
+  .compass-ring .tick{ stroke:var(--pink-3); opacity:.35; stroke-width:1.4; }
+  .compass-ring .tick.major{ opacity:.6; stroke-width:2.2; }
+  .compass-ring text{ font-family:'Quicksand',sans-serif; font-size:7px; font-weight:700; fill:var(--pink-deep); opacity:.7; text-anchor:middle; }
+  .arrow-svg{ width:56%; height:56%; transition:transform .35s cubic-bezier(.34,1.2,.64,1); transform:rotate(0deg); }
+  .dial-wrap.near .arrow-svg{ width:64%; height:64%; }
+  #distReadout{ font-family:'Fredoka',sans-serif; font-size:1.3rem; color:var(--pink-deep); margin-top:2px; transition:transform .2s ease; display:inline-block; }
+  #distReadout.bump{ transform:scale(1.12); }
+  #compassLabel{ font-size:.78rem; opacity:.65; margin-bottom:6px; }
+  #confettiCanvas{ position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:60; display:none; }
+
+  .last-updated{ font-size:.7rem; opacity:.55; margin-bottom:10px; }
+  .compass-status{ font-size:.72rem; color:var(--lav-deep); min-height:1.1em; margin:2px 0 4px; }
+  .action-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
+  .drive-btn{
+    display:inline-block; text-decoration:none; font-family:inherit; font-weight:700; color:#fff;
+    background:linear-gradient(135deg,var(--pink-3),var(--pink-deep)); padding:14px 26px; border-radius:20px;
+    font-size:.98rem; box-shadow:0 10px 22px rgba(201,63,130,.32);
+  }
+  .drive-btn.emph{ animation:pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.04); } }
+  .drive-btn.subtle{ padding:9px 16px; font-size:.8rem; box-shadow:none; background:#fff; color:var(--pink-deep); border:1px solid var(--pink-2); }
+
+  .arrived-manual{ display:block; margin:14px auto 0; background:none; border:none; text-decoration:underline; color:var(--lav-deep); font-family:inherit; font-size:.8rem; cursor:pointer; opacity:.8; }
+  .note{ font-size:.78rem; background:var(--lav-1); color:var(--lav-deep); padding:10px 14px; border-radius:14px; margin-top:12px; text-align:left; }
+
+  /* hint / photo */
+  .hint-photo{ margin-top:16px; display:none; }
+  .hint-photo.show{ display:block; animation:popIn .4s ease; }
+  .polaroid{
+    background:#fff; padding:10px 10px 16px; border-radius:6px; box-shadow:0 10px 24px rgba(201,63,130,.25);
+    display:inline-block; transform:rotate(-2deg); max-width:260px;
+  }
+  .polaroid img{ width:100%; display:block; border-radius:2px; max-height:220px; object-fit:cover; background:var(--pink-1); }
+  .polaroid .cap{ font-size:.72rem; text-align:center; margin-top:8px; opacity:.6; }
+
+  /* checklist */
+  #checklistPanel h2{ font-family:'Fredoka',sans-serif; font-size:1.05rem; color:var(--pink-deep); margin:0 0 12px; text-align:center;}
+  .view-switch{ display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; margin-bottom:2px; }
+  .view-toggle-btns{ display:flex; gap:6px; background:var(--pink-1); padding:4px; border-radius:14px; }
+  .vt-btn{
+    font-family:inherit; font-weight:700; font-size:.78rem; padding:7px 14px; border-radius:10px; border:none;
+    background:transparent; color:var(--pink-deep); cursor:pointer; opacity:.6; transition:all .15s ease;
+  }
+  .vt-btn.active{ background:#fff; opacity:1; box-shadow:0 3px 8px rgba(201,63,130,.2); }
+  .tally{ text-align:center; font-size:.8rem; opacity:.7; margin-bottom:14px; }
+
+  /* trophy / scrapbook grid */
+  .trophy-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); gap:10px; }
+  .trophy{
+    aspect-ratio:1; border-radius:16px; overflow:hidden; position:relative;
+    background:linear-gradient(135deg, var(--pink-1), var(--lav-1));
+    display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(201,63,130,.18);
+  }
+  .trophy img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .trophy .lock-num{ font-size:.68rem; font-weight:700; color:var(--pink-deep); opacity:.55; text-align:center; padding:4px; }
+  .trophy .lock-icon{ font-size:1.3rem; opacity:.4; }
+  .trophy .t-num{
+    position:absolute; bottom:3px; right:5px; font-size:.6rem; font-weight:700; color:#fff;
+    background:rgba(90,46,74,.55); padding:1px 6px; border-radius:8px;
+  }
+  .trophy.revealed{ animation:trophyPop .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes trophyPop{ 0%{ transform:scale(.3) rotate(-8deg); opacity:0;} 60%{ transform:scale(1.08) rotate(2deg); opacity:1;} 100%{ transform:scale(1) rotate(0);} }
+  .list-item{
+    display:flex; align-items:center; gap:10px; padding:10px 6px; border-bottom:1px dashed rgba(201,63,130,.15);
+    font-size:.86rem; transition:opacity .3s ease;
+  }
+  .list-item:last-child{ border-bottom:none; }
+  .list-item.visited{ opacity:.55; }
+  .list-item.visited .li-name{ text-decoration:line-through; }
+  .list-item.current{ background:var(--pink-1); border-radius:12px; padding-left:10px; font-weight:700; }
+  .li-check{ width:22px; height:22px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:.75rem;
+    background:#fff; border:2px solid var(--pink-2); }
+  .list-item.visited .li-check{ background:var(--good); border-color:var(--good); color:#fff; }
+  .li-info{ flex:1; }
+  .li-name{ font-weight:600; }
+  .li-sub{ font-size:.72rem; opacity:.65; }
+
+  /* modal */
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(90,46,74,.45); z-index:50;
+    align-items:center; justify-content:center; padding:20px; overflow-y:auto;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal{
+    background:#fff9fb; border-radius:26px; padding:28px 24px; max-width:420px; width:100%;
+    text-align:center; box-shadow:0 20px 50px rgba(201,63,130,.35);
+    animation:popIn .45s cubic-bezier(.34,1.56,.64,1); margin:auto;
+  }
+  @keyframes popIn{ 0%{ opacity:0; transform:scale(.6);} 100%{ opacity:1; transform:scale(1);} }
+  .modal h2{ font-family:'Fredoka',sans-serif; color:var(--pink-deep); margin:6px 0; }
+  .confetti-emoji{ font-size:2.4rem; }
+  .modal .polaroid{ margin:14px 0; }
+  .direction-cards{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .dir-card{
+    display:flex; align-items:center; gap:12px; background:#fff; border:2px solid var(--pink-1);
+    border-radius:16px; padding:12px 14px; cursor:pointer; text-align:left; transition:all .15s ease;
+  }
+  .dir-card:hover{ border-color:var(--pink-3); transform:translateX(3px); }
+  .dir-card .arrow-mini{ width:26px; height:26px; flex-shrink:0; transition:transform .3s ease; }
+  .dir-card .dinfo{ flex:1; }
+  .dir-card .dname{ font-weight:700; font-size:.9rem; }
+  .dir-card .ddist{ font-size:.72rem; opacity:.65; }
+  .dir-card.recommended{ border-color:var(--pink-3); background:var(--pink-1); }
+  .dir-card .rec-tag{ font-size:.65rem; background:var(--pink-3); color:#fff; padding:2px 8px; border-radius:10px; font-weight:700; }
+  .peek-btn{ background:none; border:1px solid var(--pink-2); border-radius:10px; font-size:.9rem; padding:4px 8px; cursor:pointer; flex-shrink:0; }
+  .card-photo{ display:none; margin-top:8px; }
+  .card-photo.show{ display:block; }
+  .card-photo img{ width:100%; border-radius:10px; max-height:120px; object-fit:cover; }
+
+  /* finale */
+  #finalePanel{ display:none; text-align:center; }
+  .big-emoji{ font-size:3rem; }
+
+  footer{ text-align:center; font-size:.72rem; opacity:.55; margin-top:20px; }
+
+  #soundToggle{
+    position:fixed; top:14px; right:14px; z-index:55; width:42px; height:42px; border-radius:50%;
+    background:#fff; border:2px solid var(--pink-2); box-shadow:0 6px 16px rgba(201,63,130,.22);
+    display:flex; align-items:center; justify-content:center; font-size:1.15rem; cursor:pointer;
+    transition:transform .15s ease;
+  }
+  #soundToggle:active{ transform:scale(.9); }
+</style>
+</head>
+<body>
+<canvas id="confettiCanvas"></canvas>
+<button id="soundToggle" title="Toggle sound & haptics" aria-label="Toggle sound and haptics">🔊</button>
+<div class="wrap">
+  <h1>🌸 Little Library Treasure Hunt</h1>
+  <p class="sub">Each stop is a mystery until you arrive — follow the arrow, use a hint if you're stuck, and watch the trail fill in.</p>
+
+  <div class="panel" id="statusPanel">
+    <div class="status-row">
+      <div class="spinner" id="statusSpinner"></div>
+      <div style="flex:1">
+        <div id="statusText">Waking up the peonies…</div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="targetPanel">
+    <div class="stop-label" id="stopLabel">Next stop</div>
+    <div id="targetName">Library #—</div>
+    <div id="targetSub">—</div>
+
+    <div class="dial-wrap" id="dialWrap">
+      <div class="dial">
+        <svg class="compass-ring" id="compassRing" viewBox="0 0 100 100"></svg>
+        <svg class="arrow-svg" id="arrowSvg" viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="arrowGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ff8fc3"/>
+              <stop offset="100%" stop-color="#c93f82"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 6 L78 62 L58 62 L58 94 L42 94 L42 62 L22 62 Z" fill="url(#arrowGrad)"/>
+        </svg>
+      </div>
+    </div>
+    <div id="distReadout">— away</div>
+    <div id="compassLabel">—</div>
+    <div class="last-updated" id="lastUpdated">waiting for GPS…</div>
+
+    <div class="action-row">
+      <a class="drive-btn" id="driveBtn" href="#" target="_blank" rel="noopener">🚗 Drive there</a>
+      <button class="btn secondary small" id="compassBtn" style="display:none;">🧭 Enable compass</button>
+      <button class="btn ghost small" id="refreshBtn">🔄 Refresh location</button>
+    </div>
+    <div class="compass-status" id="compassStatus"></div>
+    <div class="action-row">
+      <button class="btn ghost small" id="hintBtn">🔍 Hint (see a photo)</button>
+    </div>
+    <button class="arrived-manual" id="manualArriveBtn">…already there? Tap to mark it visited manually</button>
+
+    <div class="hint-photo" id="hintPhoto">
+      <div class="polaroid">
+        <img id="hintImg" alt="A hint photo of this mystery library" loading="lazy">
+        <div class="cap">📸 pulled from streetlibrary.org.au — guess who!</div>
+      </div>
+    </div>
+
+    <div class="note" id="gpsNote" style="display:none;"></div>
+  </div>
+
+  <div class="panel" id="checklistPanel" style="display:none;">
+    <div class="view-switch">
+      <h2 style="margin:0;">📖 The Trail</h2>
+      <div class="view-toggle-btns">
+        <button class="vt-btn active" id="viewListBtn" type="button">List</button>
+        <button class="vt-btn" id="viewTrophyBtn" type="button">🏆 Trophies</button>
+      </div>
+    </div>
+    <div class="tally" id="tally">0 of 0 visited</div>
+    <div id="listContainer"></div>
+    <div id="trophyGrid" class="trophy-grid" style="display:none;"></div>
+    <div style="text-align:center; margin-top:16px;">
+      <button class="btn ghost" id="resetBtn">Reset hunt</button>
+    </div>
+  </div>
+
+  <div class="panel" id="finalePanel">
+    <div class="big-emoji">🎉🌸🎉</div>
+    <h2>You found every little library!</h2>
+    <p>All of them, ticked off, one cute bookish adventure at a time.</p>
+    <button class="btn" id="resetBtn2">Start a new hunt</button>
+  </div>
+
+  <footer>GPS-guided · geocoded once via OpenStreetMap and cached on this device · photos pulled from streetlibrary.org.au · progress saves to this browser only<br>📱 tip: "Add to Home Screen" from your browser menu so this opens like an app, full-screen</footer>
+</div>
+
+<!-- Arrival + direction modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="confetti-emoji">🎉🌷</div>
+    <h2 id="modalTitle">You made it!</h2>
+    <p id="modalSub" style="font-size:.88rem; opacity:.8;"></p>
+    <div class="polaroid" id="modalPolaroid" style="display:none;">
+      <img id="modalImg" alt="Photo of the library you just found">
+    </div>
+    <div id="directionSection" style="display:none;">
+      <p style="font-size:.85rem; font-weight:700; margin-top:18px;">Which way do you want to go next?</p>
+      <div class="direction-cards" id="directionCards"></div>
+    </div>
+    <div id="modalActions" style="margin-top:18px;"></div>
+  </div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const JSON_URL = './little_libraries_kenmore_20km.json';
+const ARRIVAL_RADIUS_M = 40;   // GPS+address geocoding isn't pixel-perfect, but tight enough to feel like "arriving"
+const FAR_THRESHOLD_M = 300;   // above this: emphasise the drive button. below: emphasise the compass arrow
+const NOMINATIM_DELAY_MS = 1100;
+const GEOCACHE_KEY = 'llth_geocache_v1';
+const STATE_KEY = 'llth_state_v2';
+
+const EMBEDDED_LIBRARIES = [{"name": "Moggill Rd Street Library", "address": "2051 Moggill Road, Kenmore QLD 4069, Australia", "suburb": "Kenmore", "approx_km": 0.2, "source_url": "https://streetlibrary.org.au/library/moggill-rd-street-library-2/", "maps_link": "https://www.google.com/maps/search/?api=1&query=2051%20Moggill%20Road%2C%20Kenmore%20QLD%204069%2C%20Australia", "number": 1, "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/04/Moggill-Rd-Street-Library.jpg"}, {"name": "Green Kids Kenmore", "address": "14 Kenmore Rd, Kenmore QLD 4069, Australia", "suburb": "Kenmore", "approx_km": 0.5, "source_url": "https://streetlibrary.org.au/library/green-kids-kenmore/", "maps_link": "https://www.google.com/maps/search/?api=1&query=14%20Kenmore%20Rd%2C%20Kenmore%20QLD%204069%2C%20Australia", "number": 2, "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/08/IMG_1730v2-scaled.jpg"}, {"name": "The Little Pink Library", "address": "3 Mactier St, Fig Tree Pocket QLD 4069, Australia", "suburb": "Fig Tree Pocket", "approx_km": 3, "source_url": "https://streetlibrary.org.au/library/the-little-pink-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=3%20Mactier%20St%2C%20Fig%20Tree%20Pocket%20QLD%204069%2C%20Australia", "number": 3, "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/12/Screenshot_20251230-143747.png"}, {"name": "Pullenvale Hall Street Library", "address": "302 Grandview Road, Pullenvale QLD 4069, Australia", "suburb": "Pullenvale", "approx_km": 4, "source_url": "https://streetlibrary.org.au/library/pullenvale-hall-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=302%20Grandview%20Road%2C%20Pullenvale%20QLD%204069%2C%20Australia", "number": 4, "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/03/Curious-Caravan.jpg"}, {"name": "Journey Early Learning Indooroopilly Street Library", "address": "1 Rylatt Street, Indooroopilly QLD 4068, Australia", "suburb": "Indooroopilly", "approx_km": 4, "source_url": "https://streetlibrary.org.au/library/journey-early-learning-indooroopilly-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=1%20Rylatt%20Street%2C%20Indooroopilly%20QLD%204068%2C%20Australia", "number": 5, "photo": "https://media.streetlibrary.org.au/2024/11/Image-4-scaled.jpg"}, {"name": "Moggill Rd Street Library", "address": "376 Moggill Rd, Indooroopilly QLD 4068, Australia", "suburb": "Indooroopilly", "approx_km": 6, "source_url": "https://streetlibrary.org.au/library/moggill-rd-street-library-3/", "maps_link": "https://www.google.com/maps/search/?api=1&query=376%20Moggill%20Rd%2C%20Indooroopilly%20QLD%204068%2C%20Australia", "number": 6, "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/08/CK-Indooroopilly-scaled.jpg"}, {"name": "The Mighty Fine Book Swap", "address": "213 Honour Avenue, Chelmer QLD 4068, Australia", "suburb": "Chelmer", "approx_km": 6, "source_url": "https://streetlibrary.org.au/library/mighty-fine-book-swap/", "maps_link": "https://www.google.com/maps/search/?api=1&query=213%20Honour%20Avenue%2C%20Chelmer%20QLD%204068%2C%20Australia", "number": 7, "photo": "https://media.streetlibrary.org.au/2017/01/IMG_0078.jpg"}, {"name": "Taringa Playground Park", "address": "Moorak Street, Taringa QLD 4068, Australia", "suburb": "Taringa", "approx_km": 6, "source_url": "https://streetlibrary.org.au/library/taringa-playground-park/", "maps_link": "https://www.google.com/maps/search/?api=1&query=Moorak%20Street%2C%20Taringa%20QLD%204068%2C%20Australia", "number": 8, "photo": "https://media.streetlibrary.org.au/2017/08/Taringa-Playground-Park.jpeg"}, {"name": "St Lucia English Phone Booth Library", "address": "Cnr Central Avenue & Hawken Drive, St Lucia QLD 4067, Australia", "suburb": "St Lucia", "approx_km": 6, "source_url": "https://streetlibrary.org.au/library/st-lucia-english-phone-booth-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=Cnr%20Central%20Avenue%20%26%20Hawken%20Drive%2C%20St%20Lucia%20QLD%204067%2C%20Australia", "number": 9, "photo": "https://media.streetlibrary.org.au/2023/07/St-Lucia-English-Phone-Booth-Library-scaled.jpg"}, {"name": "Moggill Rd Street Library", "address": "77A Moggill Road, Taringa QLD 4068, Australia", "suburb": "Taringa", "approx_km": 7, "source_url": "https://streetlibrary.org.au/library/moggill-rd-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=77A%20Moggill%20Road%2C%20Taringa%20QLD%204068%2C%20Australia", "number": 10, "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/02/Moggill-Rd-Street-Library.jpg"}, {"name": "Taringa Community Garden Street Library (Autumn Leaves)", "address": "9 Heroes Avenue, Perrin Park, Toowong QLD 4068, Australia", "suburb": "Toowong", "approx_km": 7, "source_url": "https://streetlibrary.org.au/library/taringa-community-garden-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=9%20Heroes%20Avenue%2C%20Perrin%20Park%2C%20Toowong%20QLD%204068%2C%20Australia", "number": 11, "photo": "https://media.streetlibrary.org.au/2022/02/Street-Library-1.jpg"}, {"name": "Toowong English Phone Booth Street Library", "address": "4 Croydon Street, Toowong QLD 4066, Australia", "suburb": "Toowong", "approx_km": 7, "source_url": "https://streetlibrary.org.au/library/toowong-english-phone-booth-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=4%20Croydon%20Street%2C%20Toowong%20QLD%204066%2C%20Australia", "number": 12, "photo": "https://streetlibrary.org.au/wp-content/uploads/2023/07/toowong-library.jpeg"}, {"name": "Ghost Gum", "address": "65 Frederick St, Toowong QLD 4066, Australia", "suburb": "Toowong", "approx_km": 7, "source_url": "https://streetlibrary.org.au/library/ghost-gum/", "maps_link": "https://www.google.com/maps/search/?api=1&query=65%20Frederick%20St%2C%20Toowong%20QLD%204066%2C%20Australia", "number": 13, "photo": "https://media.streetlibrary.org.au/2021/08/A64E4AD3-E540-4B69-8465-E8BC0B3764EC-scaled.jpeg"}, {"name": "The Book Circus", "address": "491 Waterworks Road, Ashgrove QLD 4060, Australia", "suburb": "Ashgrove", "approx_km": 7, "source_url": "https://streetlibrary.org.au/library/the-book-circus/", "maps_link": "https://www.google.com/maps/search/?api=1&query=491%20Waterworks%20Road%2C%20Ashgrove%20QLD%204060%2C%20Australia", "number": 14, "photo": "https://media.streetlibrary.org.au/2020/09/20200911_162112B-scaled.jpg"}, {"name": "The Book Bower", "address": "489 Waterworks Road, Ashgrove West QLD 4060, Australia", "suburb": "Ashgrove West", "approx_km": 7, "source_url": "https://streetlibrary.org.au/library/the-book-bower/", "maps_link": "https://www.google.com/maps/search/?api=1&query=489%20Waterworks%20Road%2C%20Ashgrove%20West%20QLD%204060%2C%20Australia", "number": 15, "photo": "https://media.streetlibrary.org.au/2019/08/Street-Library-2-1-COLLAGE.jpg"}, {"name": "Village Centre Kelvin Grove", "address": "8 Carraway Street, Kelvin Grove QLD 4059, Australia", "suburb": "Kelvin Grove", "approx_km": 7, "source_url": "https://streetlibrary.org.au/library/village-centre-kelvin-grove/", "maps_link": "https://www.google.com/maps/search/?api=1&query=8%20Carraway%20Street%2C%20Kelvin%20Grove%20QLD%204059%2C%20Australia", "number": 16, "photo": "https://media.streetlibrary.org.au/2021/07/D439DF6B-9395-433F-81C8-A7D440F058EB.jpeg"}, {"name": "Journey Early Learning Centre Riverhills", "address": "20 Bogong Street, Riverhills QLD 4074, Australia", "suburb": "Riverhills", "approx_km": 8, "source_url": "https://streetlibrary.org.au/library/journey-early-learning-centre-riverhills/", "maps_link": "https://www.google.com/maps/search/?api=1&query=20%20Bogong%20Street%2C%20Riverhills%20QLD%204074%2C%20Australia", "number": 17, "photo": "https://media.streetlibrary.org.au/2019/07/20190722_134416-scaled.jpg"}, {"name": "Horizon Little Library", "address": "343 Horizon Drive, Riverhills QLD 4074, Australia", "suburb": "Riverhills", "approx_km": 8, "source_url": "https://streetlibrary.org.au/library/horizon-little-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=343%20Horizon%20Drive%2C%20Riverhills%20QLD%204074%2C%20Australia", "number": 18, "photo": "https://media.streetlibrary.org.au/2020/06/02CD583E-6477-4BD6-B28E-115FBA3A3AE9-577x1024.png"}, {"name": "Bellbowrie Kindergarten Community Library", "address": "Birkin Road, Bellbowrie QLD 4070, Australia", "suburb": "Bellbowrie", "approx_km": 8, "source_url": "https://streetlibrary.org.au/library/bellbowrie-kindergarten-community-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=Birkin%20Road%2C%20Bellbowrie%20QLD%204070%2C%20Australia", "number": 19, "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/01/Bellbowrie-Kindergarten-scaled.jpg"}, {"name": "Shopping Centre Bellbowrie Street Library", "address": "Bellbowrie Plaza, Birkin Road, Bellbowrie QLD 4070, Australia", "suburb": "Bellbowrie", "approx_km": 8, "source_url": "https://streetlibrary.org.au/library/shopping-centre-bellbowrie-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=Bellbowrie%20Plaza%2C%20Birkin%20Road%2C%20Bellbowrie%20QLD%204070%2C%20Australia", "number": 20, "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/06/Bellbowrie-Plaza-Street-Library.jpg"}, {"name": "Anstead House Street Library", "address": "15 Anstead Place, Mount Crosby QLD 4306, Australia", "suburb": "Mount Crosby / Anstead", "approx_km": 9, "source_url": "https://streetlibrary.org.au/library/anstead-house-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=15%20Anstead%20Place%2C%20Mount%20Crosby%20QLD%204306%2C%20Australia", "number": 21, "photo": "https://streetlibrary.org.au/wp-content/uploads/2018/09/D85AF9CF-6E7F-4301-A8FB-AB0807D90547.jpeg"}, {"name": "Sherwood Forest's Street Library", "address": "16 Thallon Street, Sherwood QLD 4075, Australia", "suburb": "Sherwood", "approx_km": 9, "source_url": "https://streetlibrary.org.au/library/sherwood-forests-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=16%20Thallon%20Street%2C%20Sherwood%20QLD%204075%2C%20Australia", "number": 22, "photo": "https://media.streetlibrary.org.au/2021/07/Street-Library-Photo-SF-scaled.jpg"}, {"name": "Magazine St Little Library", "address": "47 Magazine St, Sherwood QLD 4075, Australia", "suburb": "Sherwood", "approx_km": 9, "source_url": "https://streetlibrary.org.au/library/magazine-st-little-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=47%20Magazine%20St%2C%20Sherwood%20QLD%204075%2C%20Australia", "number": 23, "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/04/IMG_0768-scaled.jpeg"}, {"name": "Hogan's Heroes Community Library", "address": "25 Hogan Pl, Seventeen Mile Rocks QLD 4073, Australia", "suburb": "Seventeen Mile Rocks", "approx_km": 9, "source_url": "https://streetlibrary.org.au/library/hogans-heroes-community-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=25%20Hogan%20Pl%2C%20Seventeen%20Mile%20Rocks%20QLD%204073%2C%20Australia", "number": 24, "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/04/IMG_8574.jpeg"}, {"name": "Laurel St Library", "address": "83 Laurel St, Enoggera QLD 4051, Australia", "suburb": "Enoggera", "approx_km": 9, "source_url": "https://streetlibrary.org.au/library/laurel-st-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=83%20Laurel%20St%2C%20Enoggera%20QLD%204051%2C%20Australia", "number": 25, "photo": "https://media.streetlibrary.org.au/2021/02/Final-Laurel-St-Library-for-Registration-scaled.jpg"}, {"name": "South Brisbane Street Library", "address": "1 Raymond Terrace, South Brisbane QLD 4101, Australia", "suburb": "South Brisbane", "approx_km": 9, "source_url": "https://streetlibrary.org.au/library/south-brisbane-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=1%20Raymond%20Terrace%2C%20South%20Brisbane%20QLD%204101%2C%20Australia", "number": 26, "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/07/South-Brisbane-St-Library.jpg"}, {"name": "Benarrawa Place Street Library", "address": "79 Waratah Avenue, Oxley QLD 4075, Australia", "suburb": "Oxley", "approx_km": 10, "source_url": "https://streetlibrary.org.au/library/benarrawa-place-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=79%20Waratah%20Avenue%2C%20Oxley%20QLD%204075%2C%20Australia", "number": 27, "photo": "https://media.streetlibrary.org.au/2021/06/PHO_street-library_21.jpg"}, {"name": "The Library at the Bottom of My Garden", "address": "25 Davies Street, Oxley QLD 4075, Australia", "suburb": "Oxley", "approx_km": 10, "source_url": "https://streetlibrary.org.au/library/library-bottom-garden/", "maps_link": "https://www.google.com/maps/search/?api=1&query=25%20Davies%20Street%2C%20Oxley%20QLD%204075%2C%20Australia", "number": 28, "photo": "https://media.streetlibrary.org.au/2020/02/DSC_0326_1.jpg"}, {"name": "Moorooka Kids Library", "address": "1 Cutler Ave, Moorooka QLD 4105, Australia", "suburb": "Moorooka", "approx_km": 10, "source_url": "https://streetlibrary.org.au/library/moorooka-kids-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=1%20Cutler%20Ave%2C%20Moorooka%20QLD%204105%2C%20Australia", "number": 29, "photo": "https://media.streetlibrary.org.au/2018/07/20180729_164450-e1532908366133.jpg"}, {"name": "Kindness on Kine", "address": "27 Kine Street, Moorooka QLD 4107, Australia", "suburb": "Moorooka", "approx_km": 10, "source_url": "https://streetlibrary.org.au/library/kindness-on-kine/", "maps_link": "https://www.google.com/maps/search/?api=1&query=27%20Kine%20Street%2C%20Moorooka%20QLD%204107%2C%20Australia", "number": 30, "photo": "https://media.streetlibrary.org.au/2024/10/Collage_2024-10-03_15_33_16.jpg"}, {"name": "Goodwin Terrace Street Library", "address": "34 Goodwin Terrace, Moorooka QLD 4105, Australia", "suburb": "Moorooka", "approx_km": 10, "source_url": "https://streetlibrary.org.au/library/goodwin-terrace-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=34%20Goodwin%20Terrace%2C%20Moorooka%20QLD%204105%2C%20Australia", "number": 31, "photo": "https://media.streetlibrary.org.au/2017/12/IMG_0690.jpg"}, {"name": "Hubert Bookhouse", "address": "2 Hubert Street, Woolloongabba QLD 4102, Australia", "suburb": "Woolloongabba", "approx_km": 10, "source_url": "https://streetlibrary.org.au/library/hubert-bookhouse/", "maps_link": "https://www.google.com/maps/search/?api=1&query=2%20Hubert%20Street%2C%20Woolloongabba%20QLD%204102%2C%20Australia", "number": 32, "photo": "https://media.streetlibrary.org.au/2016/05/IMAG1434.jpeg"}, {"name": "Read @Trinity Street Library", "address": "9 Church Street, Fortitude Valley QLD 4006, Australia", "suburb": "Fortitude Valley", "approx_km": 10, "source_url": "https://streetlibrary.org.au/library/read-trinity-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=9%20Church%20Street%2C%20Fortitude%20Valley%20QLD%204006%2C%20Australia", "number": 33, "photo": "https://media.streetlibrary.org.au/2023/03/Street-Library-1.png"}, {"name": "I am NOT a possum box Library", "address": "2 Eighth Ave, Coorparoo QLD 4151, Australia", "suburb": "Coorparoo", "approx_km": 11, "source_url": "https://streetlibrary.org.au/library/not-possum-box-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=2%20Eighth%20Ave%2C%20Coorparoo%20QLD%204151%2C%20Australia", "number": 34, "photo": "https://media.streetlibrary.org.au/2016/12/library.jpg"}, {"name": "Barradine St Library", "address": "40 Barradine St, Greenslopes QLD 4120, Australia", "suburb": "Greenslopes", "approx_km": 11, "source_url": "https://streetlibrary.org.au/library/barradine-st-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=40%20Barradine%20St%2C%20Greenslopes%20QLD%204120%2C%20Australia", "number": 35, "photo": "https://media.streetlibrary.org.au/2019/08/library-1.jpg"}, {"name": "Stones Corner Community Kindergarten (SCCK)", "address": "57-63 Lincoln St, Stones Corner QLD 4120, Australia", "suburb": "Stones Corner", "approx_km": 11, "source_url": "https://streetlibrary.org.au/library/stones-corner-community-kindergarten-scck/", "maps_link": "https://www.google.com/maps/search/?api=1&query=57-63%20Lincoln%20St%2C%20Stones%20Corner%20QLD%204120%2C%20Australia", "number": 36, "photo": "https://media.streetlibrary.org.au/2024/10/IMG_8944-3-scaled.jpg"}, {"name": "Edge Early Learning Street Library", "address": "51-53 Arbor Street, Ferny Grove QLD 4053, Australia", "suburb": "Ferny Grove", "approx_km": 11, "source_url": "https://streetlibrary.org.au/library/edge-early-learning-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=51-53%20Arbor%20Street%2C%20Ferny%20Grove%20QLD%204053%2C%20Australia", "number": 37, "photo": "https://media.streetlibrary.org.au/2023/07/Edge-Street-Library-scaled.jpg"}, {"name": "Paws & Pages", "address": "1016 Stanley St E, East Brisbane QLD 4169, Australia", "suburb": "East Brisbane", "approx_km": 11, "source_url": "https://streetlibrary.org.au/library/paws-pages/", "maps_link": "https://www.google.com/maps/search/?api=1&query=1016%20Stanley%20St%20E%2C%20East%20Brisbane%20QLD%204169%2C%20Australia", "number": 38, "photo": "https://streetlibrary.org.au/wp-content/uploads/2026/08/PawsPages.jpg"}, {"name": "Tree House for Books", "address": "46 Fisher Street, East Brisbane QLD 4169, Australia", "suburb": "East Brisbane", "approx_km": 11, "source_url": "https://streetlibrary.org.au/library/tree-house-for-books/", "maps_link": "https://www.google.com/maps/search/?api=1&query=46%20Fisher%20Street%2C%20East%20Brisbane%20QLD%204169%2C%20Australia", "number": 39, "photo": "https://media.streetlibrary.org.au/2021/09/20210919_095108.jpg"}, {"name": "Morningside State School Little Free Library", "address": "67 Pashen St, Morningside QLD 4170, Australia", "suburb": "Morningside", "approx_km": 13, "source_url": "https://streetlibrary.org.au/library/morningside-state-school-little-free-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=67%20Pashen%20St%2C%20Morningside%20QLD%204170%2C%20Australia", "number": 40, "photo": "https://media.streetlibrary.org.au/2019/06/20190612_202944.jpg"}, {"name": "Nexus Care Book Nook", "address": "151 Flockton Street, Everton Park QLD 4053, Australia", "suburb": "Everton Park", "approx_km": 14, "source_url": "https://streetlibrary.org.au/library/the-nexus-care-book-nook/", "maps_link": "https://www.google.com/maps/search/?api=1&query=151%20Flockton%20Street%2C%20Everton%20Park%20QLD%204053%2C%20Australia", "number": 41, "photo": "https://media.streetlibrary.org.au/2023/10/IMG_4676-rotated.jpg"}, {"name": "Bulimba Community Centre \u2013 Junior Book Hive", "address": "1 Barramul St, Bulimba QLD 4171, Australia", "suburb": "Bulimba", "approx_km": 14, "source_url": "https://streetlibrary.org.au/library/bulimba-community-centre-junior-book-hive/", "maps_link": "https://www.google.com/maps/search/?api=1&query=1%20Barramul%20St%2C%20Bulimba%20QLD%204171%2C%20Australia", "number": 42, "photo": "https://media.streetlibrary.org.au/2024/01/Book-Hive-Jnr.jpg"}, {"name": "Tugulawa Street Library", "address": "235 Oxford St, Bulimba QLD 4171, Australia", "suburb": "Bulimba", "approx_km": 14, "source_url": "https://streetlibrary.org.au/library/tugulawa-street-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=235%20Oxford%20St%2C%20Bulimba%20QLD%204171%2C%20Australia", "number": 43, "photo": "https://media.streetlibrary.org.au/2018/12/street-library1.jpg"}, {"name": "Margaret Street Little Library", "address": "40 Margaret Street, Camp Hill QLD 4152, Australia", "suburb": "Camp Hill", "approx_km": 15, "source_url": "https://streetlibrary.org.au/library/margaret-street-little-library/", "maps_link": "https://www.google.com/maps/search/?api=1&query=40%20Margaret%20Street%2C%20Camp%20Hill%20QLD%204152%2C%20Australia", "number": 44, "photo": "https://media.streetlibrary.org.au/2022/07/C01D2DC2-D2BB-471B-9CEA-2CE0897361FD-scaled.jpeg"}, {"name": "Hilltop Story Stop", "address": "85 Erica Street, Cannon Hill QLD 4170, Australia", "suburb": "Cannon Hill", "approx_km": 16, "source_url": "https://streetlibrary.org.au/library/hilltop-story-stop/", "maps_link": "https://www.google.com/maps/search/?api=1&query=85%20Erica%20Street%2C%20Cannon%20Hill%20QLD%204170%2C%20Australia", "number": 45, "photo": "https://media.streetlibrary.org.au/2024/10/IMG_5520-scaled.jpeg"}, {"name": "Kenilworth Place", "address": "83 Kenilworth Place, Carindale QLD 4152, Australia", "suburb": "Carindale", "approx_km": 16, "source_url": "https://streetlibrary.org.au/library/kenilworth-place/", "maps_link": "https://www.google.com/maps/search/?api=1&query=83%20Kenilworth%20Place%2C%20Carindale%20QLD%204152%2C%20Australia", "number": 46, "photo": "https://media.streetlibrary.org.au/2023/10/IMG_7700-rotated.jpg"}, {"name": "Banwell Books", "address": "40 Banwell Crescent, Carindale QLD 4152, Australia", "suburb": "Carindale", "approx_km": 16, "source_url": "https://streetlibrary.org.au/library/banwell-books/", "maps_link": "https://www.google.com/maps/search/?api=1&query=40%20Banwell%20Crescent%2C%20Carindale%20QLD%204152%2C%20Australia", "number": 47, "photo": "https://media.streetlibrary.org.au/2018/07/IMG_20180709_172138.jpg"}, {"name": "Makaw on the Park", "address": "37 Reinhold Cres, Chermside QLD 4032, Australia", "suburb": "Chermside", "approx_km": 17, "source_url": "https://streetlibrary.org.au/library/makaw-on-the-park/", "maps_link": "https://www.google.com/maps/search/?api=1&query=37%20Reinhold%20Cres%2C%20Chermside%20QLD%204032%2C%20Australia", "number": 48, "photo": "https://streetlibrary.org.au/wp-content/uploads/2025/11/20251117_145908-scaled.jpg"}];
+
+/* ================= STATE ================= */
+let libraries = [];
+let visitedIds = new Set();
+let currentTargetId = null;
+let currentPosition = null;
+let lastFixAt = null;
+let watchId = null;
+let arrivalLock = false;
+let deviceHeading = null;
+let compassActive = false;
+
+const $ = (id) => document.getElementById(id);
+
+/* ================= geo math ================= */
+function haversineMeters(lat1, lon1, lat2, lon2){
+  const R = 6371000, toRad = d => d * Math.PI/180;
+  const dLat = toRad(lat2-lat1), dLon = toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R * 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function bearingDeg(lat1, lon1, lat2, lon2){
+  const toRad = d => d*Math.PI/180, toDeg = r => r*180/Math.PI;
+  const y = Math.sin(toRad(lon2-lon1))*Math.cos(toRad(lat2));
+  const x = Math.cos(toRad(lat1))*Math.sin(toRad(lat2)) - Math.sin(toRad(lat1))*Math.cos(toRad(lat2))*Math.cos(toRad(lon2-lon1));
+  return (toDeg(Math.atan2(y,x)) + 360) % 360;
+}
+function compassLabel(deg){
+  const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+  return dirs[Math.round(deg/45) % 8];
+}
+function fmtDist(m){
+  if(m < 1000) return Math.round(m/10)*10 + ' m';
+  return (m/1000).toFixed(1) + ' km';
+}
+function idFor(lib){ return lib.source_url || (lib.name + lib.address); }
+
+/* ================= compass rose ring (tick marks around the dial) ================= */
+function buildCompassRing(){
+  const cx = 50, cy = 50;
+  const labels = { 0:'N', 90:'E', 180:'S', 270:'W' };
+  let svg = '';
+  for(let deg = 0; deg < 360; deg += 30){
+    const rad = (deg - 90) * Math.PI / 180; // 0deg = up
+    const major = (deg % 90 === 0);
+    const rOuter = 47, rInner = major ? 40 : 43;
+    const x1 = cx + rOuter * Math.cos(rad), y1 = cy + rOuter * Math.sin(rad);
+    const x2 = cx + rInner * Math.cos(rad), y2 = cy + rInner * Math.sin(rad);
+    svg += `<line class="tick${major ? ' major' : ''}" x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`;
+    if(labels[deg]){
+      const rLabel = 34;
+      const lx = cx + rLabel * Math.cos(rad), ly = cy + rLabel * Math.sin(rad);
+      svg += `<text x="${lx.toFixed(2)}" y="${(ly + 2.5).toFixed(2)}">${labels[deg]}</text>`;
+    }
+  }
+  const ring = $('compassRing');
+  if(ring) ring.innerHTML = svg;
+}
+buildCompassRing();
+
+/* ================= animated distance counter (tween instead of snapping) ================= */
+let displayedDistM = null, distTweenRAF = null;
+function animateDistance(targetM){
+  if(displayedDistM == null){ displayedDistM = targetM; $('distReadout').textContent = fmtDist(targetM) + ' away'; return; }
+  const startM = displayedDistM, delta = targetM - startM;
+  if(Math.abs(delta) < 1){ displayedDistM = targetM; return; }
+  const startTime = performance.now(), duration = 450;
+  $('distReadout').classList.add('bump');
+  setTimeout(() => $('distReadout').classList.remove('bump'), 220);
+  if(distTweenRAF) cancelAnimationFrame(distTweenRAF);
+  function step(now){
+    const t = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    const val = startM + delta * eased;
+    $('distReadout').textContent = fmtDist(Math.max(0, val)) + ' away';
+    if(t < 1){ distTweenRAF = requestAnimationFrame(step); }
+    else { displayedDistM = targetM; distTweenRAF = null; }
+  }
+  distTweenRAF = requestAnimationFrame(step);
+}
+
+/* ================= confetti burst (canvas particles, no external assets) ================= */
+function burstConfetti(){
+  const canvas = $('confettiCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr;
+  canvas.style.display = 'block';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const colors = ['#ff8fc3', '#ffb6d5', '#c93f82', '#c9a8ff', '#e8d9ff', '#fff'];
+  const n = 90;
+  const particles = [];
+  for(let i = 0; i < n; i++){
+    particles.push({
+      x: innerWidth/2 + (Math.random()-0.5) * 60,
+      y: innerHeight * 0.35 + (Math.random()-0.5) * 40,
+      vx: (Math.random()-0.5) * 9,
+      vy: -Math.random() * 9 - 3,
+      size: 4 + Math.random() * 6,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random() * Math.PI * 2,
+      vrot: (Math.random()-0.5) * 0.3,
+      shape: Math.random() < 0.5 ? 'petal' : 'circle',
+      life: 1
+    });
+  }
+  const gravity = 0.22;
+  let running = true;
+  function frame(){
+    if(!running) return;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = false;
+    particles.forEach(p => {
+      p.vy += gravity;
+      p.x += p.vx; p.y += p.vy;
+      p.rot += p.vrot;
+      p.life -= 0.012;
+      if(p.life > 0){
+        alive = true;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        if(p.shape === 'petal'){
+          ctx.beginPath();
+          ctx.ellipse(0, 0, p.size*0.6, p.size, 0, 0, Math.PI*2);
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size*0.55, 0, Math.PI*2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    });
+    if(alive){ requestAnimationFrame(frame); }
+    else { running = false; canvas.style.display = 'none'; ctx.clearRect(0,0,innerWidth,innerHeight); }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ================= sound + haptics (synthesized, no audio files) ================= */
+const SOUND_KEY = 'llth_sound_v1';
+let soundEnabled = true;
+try{ const saved = localStorage.getItem(SOUND_KEY); if(saved !== null) soundEnabled = saved === '1'; }catch(e){}
+let audioCtx = null;
+function ensureAudioCtx(){
+  if(audioCtx) return audioCtx;
+  try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return null; }
+  return audioCtx;
+}
+function playTone(freq, startAt, duration, type, peakGain){
+  const ctx = ensureAudioCtx();
+  if(!ctx || !soundEnabled) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  const t0 = ctx.currentTime + startAt;
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(peakGain != null ? peakGain : 0.18, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(t0); osc.stop(t0 + duration + 0.02);
+}
+function playArrivalSound(){
+  // cheerful little ascending arpeggio
+  [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => playTone(freq, i * 0.09, 0.35, 'triangle', 0.16));
+}
+function playHintSound(){ playTone(740, 0, 0.18, 'sine', 0.1); }
+function playSelectSound(){ playTone(880, 0, 0.09, 'sine', 0.09); }
+function playPopSound(){ playTone(600, 0, 0.12, 'triangle', 0.1); }
+function vibrate(pattern){
+  if(!soundEnabled) return;
+  try{ if('vibrate' in navigator) navigator.vibrate(pattern); }catch(e){}
+}
+function updateSoundToggleUI(){
+  $('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+  $('soundToggle').style.opacity = soundEnabled ? '1' : '.55';
+}
+$('soundToggle').onclick = () => {
+  soundEnabled = !soundEnabled;
+  try{ localStorage.setItem(SOUND_KEY, soundEnabled ? '1' : '0'); }catch(e){}
+  updateSoundToggleUI();
+  if(soundEnabled){ ensureAudioCtx(); playSelectSound(); vibrate(20); }
+};
+updateSoundToggleUI();
+
+/* ================= status UI ================= */
+function setStatus(text, pct){ $('statusText').textContent = text; if(pct !== undefined) $('progressFill').style.width = pct + '%'; }
+function hideStatusPanel(){ $('statusSpinner').style.display = 'none'; }
+
+/* ================= data loading ================= */
+async function loadLibraryData(){
+  try{
+    const res = await fetch(JSON_URL, {cache:'no-store'});
+    if(!res.ok) throw new Error('bad response');
+    const data = await res.json();
+    return data.libraries;
+  }catch(e){
+    console.warn('Could not fetch', JSON_URL, '— using the built-in copy instead.', e);
+    return EMBEDDED_LIBRARIES;
+  }
+}
+
+/* ================= geocoding (once, cached) ================= */
+function loadGeocache(){ try{ return JSON.parse(localStorage.getItem(GEOCACHE_KEY) || '{}'); }catch(e){ return {}; } }
+function saveGeocache(cache){ try{ localStorage.setItem(GEOCACHE_KEY, JSON.stringify(cache)); }catch(e){} }
+async function geocodeAddress(address){
+  const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=au&q=' + encodeURIComponent(address);
+  const res = await fetch(url, { headers: { 'Accept':'application/json' } });
+  if(!res.ok) throw new Error('geocode http ' + res.status);
+  const arr = await res.json();
+  if(!arr.length) throw new Error('no match');
+  return { lat: parseFloat(arr[0].lat), lon: parseFloat(arr[0].lon) };
+}
+async function ensureGeocoded(libs){
+  const cache = loadGeocache();
+  const todo = libs.filter(l => !cache[idFor(l)]);
+  let done = libs.length - todo.length;
+  libs.forEach(l => { const c = cache[idFor(l)]; if(c){ l.lat = c.lat; l.lon = c.lon; } });
+
+  if(todo.length === 0){ setStatus(`All ${libs.length} libraries are ready to go! 🌸`, 100); return; }
+
+  for(let i=0; i<todo.length; i++){
+    const lib = todo[i];
+    setStatus(`Mapping out the trail… (${done+1}/${libs.length}) — this only happens once`, Math.round((done/libs.length)*100));
+    try{
+      const coords = await geocodeAddress(lib.address);
+      cache[idFor(lib)] = coords;
+      lib.lat = coords.lat; lib.lon = coords.lon;
+      saveGeocache(cache);
+    }catch(e){ console.warn('Could not geocode', lib.name, e); lib.geofailed = true; }
+    done++;
+    setStatus(`Mapping out the trail… (${done}/${libs.length})`, Math.round((done/libs.length)*100));
+    if(i < todo.length-1) await new Promise(r => setTimeout(r, NOMINATIM_DELAY_MS));
+  }
+}
+
+/* ================= persisted hunt state ================= */
+function loadState(){ try{ return JSON.parse(localStorage.getItem(STATE_KEY) || '{}'); }catch(e){ return {}; } }
+function saveState(){ localStorage.setItem(STATE_KEY, JSON.stringify({ visited: Array.from(visitedIds), currentTargetId })); }
+
+/* ================= geolocation ================= */
+function startWatchingPosition(){
+  if(!('geolocation' in navigator)){ handleNoGPS('This browser has no geolocation support.'); return; }
+  const onOk = pos => {
+    currentPosition = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+    lastFixAt = Date.now();
+    $('gpsNote').style.display = 'none';
+    onPositionUpdate();
+  };
+  const onErr = err => {
+    if(err.code === 1) handleNoGPS('Location permission was denied.');
+    else if(!window.isSecureContext) handleNoGPS('insecure');
+    else handleNoGPS('Could not get a GPS fix (' + err.message + ').');
+  };
+  watchId = navigator.geolocation.watchPosition(onOk, onErr, { enableHighAccuracy:true, maximumAge:0, timeout:20000 });
+}
+function refreshPositionOnce(){
+  if(!('geolocation' in navigator)) return;
+  $('refreshBtn').textContent = '🔄 Locating…';
+  navigator.geolocation.getCurrentPosition(pos => {
+    currentPosition = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+    lastFixAt = Date.now();
+    $('refreshBtn').textContent = '🔄 Refresh location';
+    onPositionUpdate();
+  }, err => {
+    $('refreshBtn').textContent = '🔄 Refresh location';
+    handleNoGPS(err.code === 1 ? 'Location permission was denied.' : ('Could not get a fix (' + err.message + ').'));
+  }, { enableHighAccuracy:true, maximumAge:0, timeout:20000 });
+}
+$('refreshBtn').onclick = refreshPositionOnce;
+
+/* Mobile browsers throttle/pause GPS + timers once a tab is backgrounded (screen locked,
+   or you've switched to the Google Maps app to actually drive) — that's the main reason
+   updates can feel inconsistent. Two mitigations: keep the screen awake while this tab is
+   the one on screen, and force an immediate fresh GPS fix the moment you switch back to it
+   (e.g. after using Maps to drive), rather than waiting for the next scheduled update. */
+let wakeLock = null;
+async function requestWakeLock(){
+  try{
+    if('wakeLock' in navigator && document.visibilityState === 'visible'){
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  }catch(e){ console.warn('wake lock unavailable', e); }
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible'){
+    refreshPositionOnce();   // snap to an accurate fix the instant you come back to this tab
+    requestWakeLock();
+  }
+});
+
+function handleNoGPS(reason){
+  $('gpsNote').style.display = 'block';
+  if(reason === 'insecure' || !window.isSecureContext){
+    $('gpsNote').innerHTML = `📵 Live GPS needs a secure connection (https, or "localhost"). Loaded over plain http on your local network, the browser blocks location access — so distance/arrows won't auto-update. Tap "Drive there" to navigate manually, then mark each stop visited by hand.`;
+  } else {
+    $('gpsNote').innerHTML = `📵 ${reason} You can still open directions and mark each stop visited manually.`;
+  }
+}
+
+/* last-updated ticker */
+setInterval(() => {
+  if(!lastFixAt){ $('lastUpdated').textContent = 'waiting for GPS…'; return; }
+  const secs = Math.round((Date.now()-lastFixAt)/1000);
+  $('lastUpdated').textContent = secs < 3 ? 'updated just now' : `updated ${secs}s ago`;
+}, 1000);
+
+/* ================= device compass =================
+   Goal: make the arrow point using the phone's real magnetometer (true north) rather than
+   just the GPS bearing, and keep it smooth/live rather than jumpy.
+   - iOS Safari: `webkitCompassHeading` on the plain 'deviceorientation' event — already true-north,
+     no separate "absolute" event exists there.
+   - Android/Chrome: the 'deviceorientationabsolute' event's `alpha`, when `event.absolute === true`,
+     is true-north. Plain 'deviceorientation' alpha with no absolute flag is only relative to wherever
+     the phone happened to be pointed when the page loaded — NOT a real compass reading, so once a true
+     reading has arrived we stop trusting that noisier fallback source, to stop the arrow fighting itself.
+   A little smoothing (circular exponential moving average) is applied so small sensor jitter doesn't
+   make the arrow shake. */
+let hasTrueCompass = false;
+let compassAutoTried = false;
+function wantsCompassButton(){ return (typeof DeviceOrientationEvent !== 'undefined'); }
+function beginCompassListening(){
+  window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+  window.addEventListener('deviceorientation', handleOrientation, true);
+  compassActive = true;
+  $('compassBtn').style.display = 'none';
+  setCompassStatus('🧭 waiting for a compass reading…');
+  setTimeout(() => {
+    if(compassActive && !hasTrueCompass){
+      setCompassStatus('🧭 no true-north sensor found — arrow is using GPS bearing only. Try holding the phone flat and moving it in a figure-8 to calibrate.');
+    }
+  }, 3000);
+}
+function initCompassUI(){
+  if(compassActive || compassAutoTried || !wantsCompassButton()) return;
+  compassAutoTried = true;
+  const needsGesture = (typeof DeviceOrientationEvent.requestPermission === 'function'); // iOS 13+
+  if(needsGesture){ $('compassBtn').style.display = 'inline-block'; }  // must wait for a tap
+  else { beginCompassListening(); }                                    // Android etc: no permission gate, start right away
+}
+function smoothHeading(prev, next, blend){
+  if(prev == null) return next;
+  const rad = d => d*Math.PI/180, deg = r => (r*180/Math.PI+360)%360;
+  const x = Math.cos(rad(prev))*(1-blend) + Math.cos(rad(next))*blend;
+  const y = Math.sin(rad(prev))*(1-blend) + Math.sin(rad(next))*blend;
+  return deg(Math.atan2(y,x));
+}
+function setCompassStatus(text){ const el = $('compassStatus'); if(el) el.textContent = text; }
+function handleOrientation(e){
+  let heading = null, isTrue = false;
+  if(typeof e.webkitCompassHeading === 'number'){ heading = e.webkitCompassHeading; isTrue = true; } // iOS
+  else if(e.absolute === true && e.alpha != null){ heading = (360 - e.alpha) % 360; isTrue = true; }  // Android true-north
+  else if(!hasTrueCompass && e.alpha != null){ heading = (360 - e.alpha) % 360; }                     // rough fallback only
+  else { return; } // already have a true reading flowing — ignore noisy relative-only events
+
+  if(isTrue && !hasTrueCompass){ hasTrueCompass = true; setCompassStatus('🧭 live compass active'); }
+  deviceHeading = smoothHeading(deviceHeading, heading, 0.25);
+  renderTarget();
+}
+$('compassBtn').onclick = async () => {
+  try{
+    if(typeof DeviceOrientationEvent.requestPermission === 'function'){
+      const res = await DeviceOrientationEvent.requestPermission();
+      if(res !== 'granted'){ setCompassStatus('Compass permission was declined.'); return; }
+    }
+    beginCompassListening();
+  }catch(e){ console.warn('compass permission failed', e); setCompassStatus('Could not access the compass on this device.'); }
+};
+
+/* ================= core flow ================= */
+function unvisited(){ return libraries.filter(l => !visitedIds.has(idFor(l)) && l.lat != null); }
+function nearestTo(pos, pool){
+  let best = null, bestDist = Infinity;
+  pool.forEach(l => { const d = haversineMeters(pos.lat, pos.lon, l.lat, l.lon); if(d < bestDist){ bestDist = d; best = l; } });
+  return best ? { lib: best, dist: bestDist } : null;
+}
+function setTarget(lib){
+  currentTargetId = idFor(lib);
+  saveState();
+  $('hintPhoto').classList.remove('show');
+  renderTarget();
+  renderChecklist();
+}
+function renderTarget(){
+  const lib = libraries.find(l => idFor(l) === currentTargetId);
+  if(!lib){ $('targetPanel').style.display = 'none'; return; }
+  $('targetPanel').style.display = 'block';
+  $('targetName').textContent = `Library #${lib.number}`;
+  $('targetSub').textContent = `somewhere near ${lib.suburb || '?'}`;
+  $('hintImg').src = lib.photo || '';
+
+  let dist = null, bearing = null;
+  if(currentPosition && lib.lat != null){
+    dist = haversineMeters(currentPosition.lat, currentPosition.lon, lib.lat, lib.lon);
+    bearing = bearingDeg(currentPosition.lat, currentPosition.lon, lib.lat, lib.lon);
+    animateDistance(dist);
+    $('compassLabel').textContent = 'head ' + compassLabel(bearing);
+    const arrowRotation = (deviceHeading != null) ? (bearing - deviceHeading + 360) % 360 : bearing;
+    $('arrowSvg').style.transform = `rotate(${arrowRotation}deg)`;
+    const ringRotation = (deviceHeading != null) ? (-deviceHeading + 360) % 360 : 0;
+    $('compassRing').style.transform = `rotate(${ringRotation}deg)`;
+  } else {
+    $('distReadout').textContent = '— away';
+    displayedDistM = null;
+    $('compassLabel').textContent = currentPosition ? '' : 'waiting for your location…';
+  }
+
+  const near = dist != null && dist <= FAR_THRESHOLD_M;
+  $('dialWrap').classList.toggle('near', near);
+  $('driveBtn').classList.toggle('emph', !near);
+  $('driveBtn').classList.toggle('subtle', near);
+  $('driveBtn').textContent = near ? '🚗 Open in Maps' : '🚗 Drive there';
+
+  const origin = currentPosition ? `${currentPosition.lat},${currentPosition.lon}` : '';
+  const dest = (lib.lat != null) ? `${lib.lat},${lib.lon}` : encodeURIComponent(lib.address);
+  $('driveBtn').href = `https://www.google.com/maps/dir/?api=1${origin ? '&origin='+origin : ''}&destination=${dest}&travelmode=driving`;
+
+  initCompassUI();
+}
+function onPositionUpdate(){
+  renderTarget();
+  const lib = libraries.find(l => idFor(l) === currentTargetId);
+  if(!lib || lib.lat == null || arrivalLock) return;
+  const d = haversineMeters(currentPosition.lat, currentPosition.lon, lib.lat, lib.lon);
+  if(d <= ARRIVAL_RADIUS_M) triggerArrival(lib);
+}
+function triggerArrival(lib){
+  arrivalLock = true;
+  visitedIds.add(idFor(lib));
+  saveState();
+  renderChecklist();
+  burstConfetti();
+  playArrivalSound();
+  vibrate([40, 60, 40, 60, 120]);
+  showArrivalModal(lib);
+}
+
+/* ================= hint button ================= */
+$('hintBtn').onclick = () => { $('hintPhoto').classList.toggle('show'); playHintSound(); vibrate(15); };
+
+/* ================= arrival modal ================= */
+function showArrivalModal(lib){
+  $('modalTitle').textContent = `You found it — Library #${lib.number}: ${lib.name}!`;
+  $('modalSub').textContent = `${lib.address}`;
+  if(lib.photo){ $('modalImg').src = lib.photo; $('modalPolaroid').style.display = 'inline-block'; }
+  else{ $('modalPolaroid').style.display = 'none'; }
+  $('modalActions').innerHTML = '';
+
+  const remaining = unvisited();
+  if(remaining.length === 0){
+    $('directionSection').style.display = 'none';
+    $('modalActions').innerHTML = `<button class="btn" id="finishBtn">See the finale 🎉</button>`;
+    $('modalOverlay').classList.add('show');
+    $('finishBtn').onclick = () => { closeModal(); showFinale(); };
+    return;
+  }
+
+  const withDist = remaining.map(l => ({
+    lib: l,
+    dist: haversineMeters(lib.lat, lib.lon, l.lat, l.lon),
+    bearing: bearingDeg(lib.lat, lib.lon, l.lat, l.lon)
+  })).sort((a,b) => a.dist - b.dist);
+
+  const options = withDist.slice(0, 3);
+  $('directionSection').style.display = 'block';
+  $('directionCards').innerHTML = '';
+  options.forEach((opt, i) => {
+    const card = document.createElement('div');
+    card.className = 'dir-card' + (i===0 ? ' recommended' : '');
+    card.innerHTML = `
+      <svg class="arrow-mini" viewBox="0 0 100 100" style="transform:rotate(${opt.bearing}deg)">
+        <path d="M50 6 L78 62 L58 62 L58 94 L42 94 L42 62 L22 62 Z" fill="#c93f82"/>
+      </svg>
+      <div class="dinfo">
+        <div class="dname">Library #${opt.lib.number} ${i===0 ? '<span class="rec-tag">closest</span>' : ''}</div>
+        <div class="ddist">${compassLabel(opt.bearing)} · ${fmtDist(opt.dist)} · near ${opt.lib.suburb || ''}</div>
+        <div class="card-photo" id="cardPhoto${i}"><img src="${opt.lib.photo || ''}" alt="hint photo"></div>
+      </div>
+      <button class="peek-btn" data-i="${i}" title="peek at a photo hint">👁</button>
+    `;
+    card.querySelector('.peek-btn').onclick = (ev) => {
+      ev.stopPropagation();
+      $('cardPhoto'+i).classList.toggle('show');
+      playPopSound(); vibrate(12);
+    };
+    card.onclick = () => { playSelectSound(); vibrate(20); closeModal(); setTarget(opt.lib); arrivalLock = false; };
+    $('directionCards').appendChild(card);
+  });
+
+  $('modalOverlay').classList.add('show');
+}
+function closeModal(){ $('modalOverlay').classList.remove('show'); }
+function showFinale(){ $('targetPanel').style.display = 'none'; $('checklistPanel').style.display = 'none'; $('finalePanel').style.display = 'block'; }
+
+/* ================= checklist ================= */
+function renderChecklist(){
+  $('checklistPanel').style.display = 'block';
+  const total = libraries.length, done = visitedIds.size;
+  $('tally').textContent = `${done} of ${total} visited`;
+  $('listContainer').innerHTML = '';
+  const sorted = [...libraries].sort((a,b) => (a.number||0) - (b.number||0));
+  sorted.forEach(lib => {
+    const id = idFor(lib);
+    const isVisited = visitedIds.has(id);
+    const isCurrent = id === currentTargetId;
+    const row = document.createElement('div');
+    row.className = 'list-item' + (isVisited ? ' visited' : '') + (isCurrent ? ' current' : '');
+    row.innerHTML = `
+      <div class="li-check">${isVisited ? '✓' : ''}</div>
+      <div class="li-info">
+        <div class="li-name">${isVisited ? lib.name : ('Library #' + lib.number + (isCurrent ? ' (current target)' : ' 🔒'))}</div>
+        <div class="li-sub">${isVisited ? (lib.suburb||'') : ('near ' + (lib.suburb||'?'))}</div>
+      </div>
+    `;
+    $('listContainer').appendChild(row);
+  });
+  renderTrophyGrid();
+}
+
+/* ================= trophy / scrapbook grid view ================= */
+const VIEW_KEY = 'llth_view_v1';
+let trophyView = false;
+try{ trophyView = localStorage.getItem(VIEW_KEY) === 'trophy'; }catch(e){}
+let prevVisitedIds = new Set();
+function renderTrophyGrid(){
+  const grid = $('trophyGrid');
+  const sorted = [...libraries].sort((a,b) => (a.number||0) - (b.number||0));
+  grid.innerHTML = '';
+  sorted.forEach(lib => {
+    const id = idFor(lib);
+    const isVisited = visitedIds.has(id);
+    const justRevealed = isVisited && !prevVisitedIds.has(id);
+    const cell = document.createElement('div');
+    cell.className = 'trophy' + (justRevealed ? ' revealed' : '');
+    if(isVisited && lib.photo){
+      cell.innerHTML = `<img src="${lib.photo}" alt="${lib.name}"><span class="t-num">#${lib.number}</span>`;
+      cell.title = `${lib.name} — ${lib.suburb || ''}`;
+    } else if(isVisited){
+      cell.innerHTML = `<div class="lock-num">${lib.name}</div><span class="t-num">#${lib.number}</span>`;
+    } else {
+      cell.innerHTML = `<div style="text-align:center;"><div class="lock-icon">🌸</div><div class="lock-num">#${lib.number}</div></div>`;
+    }
+    grid.appendChild(cell);
+  });
+  prevVisitedIds = new Set(visitedIds);
+}
+function setTrophyView(on){
+  trophyView = on;
+  try{ localStorage.setItem(VIEW_KEY, on ? 'trophy' : 'list'); }catch(e){}
+  $('listContainer').style.display = on ? 'none' : 'block';
+  $('trophyGrid').style.display = on ? 'grid' : 'none';
+  $('viewListBtn').classList.toggle('active', !on);
+  $('viewTrophyBtn').classList.toggle('active', on);
+}
+$('viewListBtn').onclick = () => { setTrophyView(false); playSelectSound(); vibrate(12); };
+$('viewTrophyBtn').onclick = () => { setTrophyView(true); playSelectSound(); vibrate(12); };
+setTrophyView(trophyView);
+
+/* ================= manual controls ================= */
+$('manualArriveBtn').onclick = () => {
+  const lib = libraries.find(l => idFor(l) === currentTargetId);
+  if(lib && !arrivalLock) triggerArrival(lib);
+};
+function resetHunt(){
+  visitedIds = new Set(); currentTargetId = null; localStorage.removeItem(STATE_KEY);
+  $('finalePanel').style.display = 'none'; arrivalLock = false; beginHunt();
+}
+$('resetBtn').onclick = resetHunt;
+$('resetBtn2').onclick = resetHunt;
+
+/* ================= boot sequence ================= */
+async function beginHunt(){
+  const pool = unvisited();
+  if(pool.length === 0){ showFinale(); return; }
+  if(currentPosition){ const n = nearestTo(currentPosition, pool); if(n) setTarget(n.lib); }
+  else if(!currentTargetId){ setTarget(pool[0]); }
+  else { renderTarget(); renderChecklist(); }
+}
+
+async function init(){
+  const raw = await loadLibraryData();
+  libraries = raw.map(l => ({...l}));
+  libraries.forEach((l,i) => { if(l.number == null) l.number = i+1; });
+
+  const saved = loadState();
+  if(saved.visited) visitedIds = new Set(saved.visited);
+  if(saved.currentTargetId) currentTargetId = saved.currentTargetId;
+
+  setStatus('Mapping out the trail…', 0);
+  await ensureGeocoded(libraries);
+
+  const failed = libraries.filter(l => l.geofailed).length;
+  hideStatusPanel();
+  setStatus(`Trail ready! ${libraries.length - failed}/${libraries.length} libraries mapped.` + (failed ? ` (${failed} couldn't be located automatically.)` : ''), 100);
+
+  startWatchingPosition();
+  requestWakeLock();
+  await beginHunt();
+
+  setTimeout(() => {
+    if(!currentPosition && window.isSecureContext){
+      $('gpsNote').style.display = 'block';
+      $('gpsNote').innerHTML = `⏳ Waiting for your phone to share its location — if it doesn't ask you for permission, check your browser's site settings, or tap "Refresh location" above.`;
+    }
+  }, 4000);
+}
+init();
+
+// --- Installable app: register service worker for offline app-shell + photo caching ---
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((err) => {
+      console.warn('Service worker registration failed', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
