@@ -179,6 +179,45 @@
   .map-dot-current{ background:var(--pink-deep); }
   .map-trail-swatch{ width:14px; height:0; border-top:2px dashed var(--lav-deep); display:inline-block; }
   .map-dot-cafe{ background:#fff3d9; border:2px solid #e0a83f; }
+
+  /* gallery view: every photo, book title and note browsable in one place */
+  .gallery-empty, .gallery-loading{ text-align:center; font-size:.85rem; opacity:.6; padding:30px 10px; }
+  .gallery-section-label{
+    font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--lav-deep); opacity:.8; margin:18px 4px 8px;
+  }
+  .gallery-section-label:first-child{ margin-top:0; }
+  .gallery-card{
+    background:#fff; border-radius:18px; padding:14px; margin-bottom:12px;
+    box-shadow:0 4px 12px rgba(201,63,130,.15);
+  }
+  .gallery-card-head{ display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .gallery-card-num{ font-size:.65rem; font-weight:700; color:#fff; background:var(--pink-3); padding:2px 8px; border-radius:10px; flex-shrink:0; }
+  .gallery-card-name{ font-weight:700; font-size:.9rem; }
+  .gallery-card-book{ font-size:.76rem; opacity:.7; margin:4px 0 2px; }
+  .gallery-photos{ display:grid; grid-template-columns:repeat(auto-fill, minmax(90px,1fr)); gap:8px; margin-top:8px; }
+  .gallery-photo{ position:relative; border-radius:12px; overflow:hidden; aspect-ratio:1; cursor:pointer; background:var(--pink-1); }
+  .gallery-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gallery-photo-label{
+    position:absolute; left:0; right:0; bottom:0; background:linear-gradient(transparent,rgba(90,46,74,.78));
+    color:#fff; font-size:.6rem; font-weight:700; padding:14px 6px 4px; text-align:center;
+  }
+
+  /* photo save button — shown on a just-captured photo and on every gallery tile */
+  .photo-save-btn{
+    position:absolute; top:6px; right:6px; width:30px; height:30px; border-radius:50%;
+    background:rgba(255,255,255,.92); border:2px solid var(--pink-2); font-size:.85rem;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;
+    box-shadow:0 3px 8px rgba(90,46,74,.25); z-index:2; transition:transform .15s ease;
+  }
+  .photo-save-btn:active{ transform:scale(.88); }
+
+  /* photo lightbox: view any photo full-size, download it, or (iOS) press-and-hold to save to Photos */
+  .lightbox-modal{ max-width:460px; }
+  .lightbox-img{ width:100%; max-height:56vh; object-fit:contain; border-radius:16px; box-shadow:0 8px 20px rgba(201,63,130,.25); background:#f6eef2; display:block; }
+  .lightbox-caption{ font-size:.84rem; font-weight:700; color:var(--pink-deep); margin-top:10px; }
+  .lightbox-tip{ font-size:.72rem; opacity:.65; margin-top:6px; }
+
   .list-item{
     display:flex; align-items:center; gap:10px; padding:10px 6px; border-bottom:1px dashed rgba(201,63,130,.15);
     font-size:.86rem; transition:opacity .3s ease;
@@ -262,6 +301,17 @@
     font-size:.85rem; box-shadow:0 8px 20px rgba(201,63,130,.22); cursor:pointer; transition:transform .15s ease;
   }
   #logStopFab:active{ transform:scale(.94); }
+
+  /* "stop for today" floating action button — pauses the hunt without resetting anything */
+  #endHuntFab{
+    position:fixed; left:14px; bottom:18px; z-index:55; display:flex; align-items:center; gap:7px;
+    background:linear-gradient(135deg,var(--lav-1),var(--lav-2)); border:2px solid var(--lav-deep); color:var(--lav-deep);
+    border-radius:24px; padding:11px 16px 11px 14px; font-family:'Fredoka',sans-serif; font-weight:700;
+    font-size:.85rem; box-shadow:0 8px 20px rgba(201,63,130,.22); cursor:pointer; transition:transform .15s ease;
+  }
+  #endHuntFab:active{ transform:scale(.94); }
+  .recap-modal{ max-width:460px; }
+  .recap-modal .trip-summary-actions{ margin-top:14px; }
   .waystop-modal textarea{
     width:100%; border:2px solid var(--pink-2); border-radius:14px; padding:10px 12px; font-family:inherit;
     font-size:.88rem; resize:vertical; min-height:70px; margin-top:10px; color:var(--text);
@@ -358,7 +408,8 @@
   /* trip-so-far summary collage, shown inside the milestone modal */
   .trip-summary-wrap{ margin-top:14px; }
   .trip-summary-wrap canvas{ width:100%; max-width:300px; aspect-ratio:9/16; border-radius:14px; box-shadow:0 6px 16px rgba(201,63,130,.22); }
-  .trip-summary-actions{ margin-top:10px; }
+  .trip-summary-actions{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+  .trip-summary-actions .btn{ flex:1; min-width:140px; }
 </style>
 </head>
 <body>
@@ -370,6 +421,33 @@
   <button class="btn-dismiss" id="updateDismissBtn">Later</button>
 </div>
 <button id="logStopFab" type="button">☕ <span>Log a stop</span></button>
+<button id="endHuntFab" type="button">🛑 <span>Stop for today</span></button>
+
+<!-- "Stop for today" confirmation -->
+<div class="modal-overlay" id="stopConfirmOverlay">
+  <div class="modal">
+    <h2>Stop for today? 🌸</h2>
+    <p style="font-size:.88rem; opacity:.8;">We'll make a cute recap of your adventure so far. Nothing gets reset — the libraries you haven't found yet will be waiting for you next time.</p>
+    <div class="modal-btn-row">
+      <button class="btn ghost" id="stopCancelBtn">Not yet</button>
+      <button class="btn" id="stopConfirmBtn">Yes, stop for today</button>
+    </div>
+  </div>
+</div>
+
+<!-- "Stop for today" recap: a bigger Strava-style scrapbook of the whole day so far -->
+<div class="modal-overlay" id="runRecapOverlay">
+  <div class="modal recap-modal">
+    <h2>🌸 Today's adventure</h2>
+    <p class="milestone-sub">Come back anytime to pick up where you left off.</p>
+    <canvas id="runRecapCanvas" class="lightbox-img" style="width:100%; max-width:300px; aspect-ratio:9/16; border-radius:14px; box-shadow:0 6px 16px rgba(201,63,130,.22); margin:10px auto 0; display:block;"></canvas>
+    <div class="trip-summary-actions">
+      <button class="btn secondary" id="saveRunRecapBtn">💾 Save today's recap</button>
+      <button class="btn ghost" id="saveRunRecapOverlayBtn">🖼️ Save transparent overlay</button>
+    </div>
+    <button class="btn" id="runRecapCloseBtn" style="margin-top:14px;">Close</button>
+  </div>
+</div>
 
 <!-- Log a cafe/shop found along the way -->
 <div class="modal-overlay" id="wayStopOverlay">
@@ -455,6 +533,7 @@
         <button class="vt-btn active" id="viewListBtn" type="button">List</button>
         <button class="vt-btn" id="viewTrophyBtn" type="button">🏆 Trophies</button>
         <button class="vt-btn" id="viewMapBtn" type="button">🗺️ Map</button>
+        <button class="vt-btn" id="viewGalleryBtn" type="button">🖼️ Gallery</button>
       </div>
     </div>
     <div class="tally" id="tally">0 of 0 visited</div>
@@ -469,6 +548,9 @@
         <span><i class="map-dot map-dot-cafe"></i> a stop you logged</span>
         <span><i class="map-trail-swatch"></i> ground covered</span>
       </div>
+    </div>
+    <div id="galleryView" class="gallery-view" style="display:none;">
+      <div id="galleryContainer"></div>
     </div>
     <div style="text-align:center; margin-top:16px;">
       <button class="btn ghost" id="resetBtn">Reset hunt</button>
@@ -488,6 +570,19 @@
   <footer>GPS-guided · geocoded once via OpenStreetMap and cached on this device · photos pulled from streetlibrary.org.au · progress saves to this browser only<br>📱 tip: "Add to Home Screen" from your browser menu so this opens like an app, full-screen</footer>
 </div>
 
+<!-- Photo lightbox: view any captured photo full-size, download it, or (iOS) press-and-hold it to save to Photos -->
+<div class="modal-overlay" id="lightboxOverlay">
+  <div class="modal lightbox-modal">
+    <img id="lightboxImg" class="lightbox-img" alt="photo">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+    <div class="lightbox-tip">📱 tip: press &amp; hold the photo to save it straight to your Photos</div>
+    <div class="modal-btn-row">
+      <button class="btn secondary" id="lightboxSaveBtn">⬇️ Download</button>
+      <button class="btn ghost" id="lightboxCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Points milestone: peony bloom celebration -->
 <div class="modal-overlay" id="milestoneOverlay">
   <div class="modal milestone-modal">
@@ -500,6 +595,7 @@
       <canvas id="tripSummaryCanvas"></canvas>
       <div class="trip-summary-actions">
         <button class="btn secondary" id="saveTripSummaryBtn">💾 Save this moment</button>
+        <button class="btn ghost" id="saveTripSummaryOverlayBtn">🖼️ Save transparent overlay</button>
       </div>
     </div>
     <button class="btn" id="milestoneCloseBtn">Keep going</button>
@@ -1052,6 +1148,25 @@ function roundRectPath(ctx, x, y, w, h, r){
   ctx.arcTo(x, y, x+w, y, r);
   ctx.closePath();
 }
+/* Soft dashed border + corner peony flourishes, drawn on every scrapbook-style canvas. On the
+   normal (opaque) export it's a subtle finishing touch; on the transparent-overlay export it IS
+   the whole point — it's what makes the exported PNG read as a self-contained frame/sticker you
+   can lay on top of your own photo arrangement, with nothing needed underneath it. */
+function drawFrameDecorations(ctx, W, H){
+  ctx.save();
+  ctx.strokeStyle = 'rgba(201,63,130,0.4)';
+  ctx.lineWidth = 4; ctx.setLineDash([2, 16]); ctx.lineCap = 'round';
+  roundRectPath(ctx, 26, 26, W-52, H-52, 40);
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.font = '56px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🌸', 62, 62);
+  ctx.fillText('🌸', W-62, 62);
+  ctx.fillText('🌸', 62, H-62);
+  ctx.fillText('🌸', W-62, H-62);
+  ctx.textBaseline = 'alphabetic';
+  ctx.restore();
+}
 async function collectTripPhotos(){
   const items = [];
   for(const lib of libraries.filter(l => visitedIds.has(idFor(l)))){
@@ -1176,32 +1291,39 @@ function drawMinimapOnCanvas(ctx, x, y, w, h){
    polaroids from whatever's been captured so far, handwritten-style captions and headline,
    and a stylized progress minimap along the bottom. Built fresh each time (not cached) so it
    always reflects the latest photos/notes/position. */
-async function buildTripSummaryCanvas(){
+async function buildTripSummaryCanvas(opts){
+  opts = opts || {};
+  const transparent = !!opts.transparent;
   await loadHandwrittenFont();
   const W = 1080, H = 1920;
   const canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
 
-  const grad = ctx.createLinearGradient(0, 0, W, H);
-  grad.addColorStop(0, '#ffe9f3'); grad.addColorStop(0.45, '#ffd9ec'); grad.addColorStop(1, '#ecd9ff');
-  ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
-  const blob = (cx, cy, r, color) => {
-    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-    g.addColorStop(0, color); g.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
-  };
-  blob(120, 140, 260, 'rgba(255,180,214,0.55)');
-  blob(960, 1750, 320, 'rgba(201,168,255,0.45)');
-  blob(900, 300, 200, 'rgba(255,223,122,0.35)');
+  if(!transparent){
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, '#ffe9f3'); grad.addColorStop(0.45, '#ffd9ec'); grad.addColorStop(1, '#ecd9ff');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+    const blob = (cx, cy, r, color) => {
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0, color); g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+    };
+    blob(120, 140, 260, 'rgba(255,180,214,0.55)');
+    blob(960, 1750, 320, 'rgba(201,168,255,0.45)');
+    blob(900, 300, 200, 'rgba(255,223,122,0.35)');
+  }
 
+  // "First 80 points!" reads nicer than "80 points!" on the very first checkpoint; every
+  // checkpoint after that just shows the running total ("160 points!", "240 points!", ...).
+  const titleText = milestonesCelebrated === 1 ? `🌸 First ${MILESTONE_INTERVAL} points!` : `🌸 ${points} points!`;
   ctx.save();
   ctx.translate(W/2, 150);
   ctx.rotate(-2 * Math.PI/180);
   ctx.textAlign = 'center';
   ctx.fillStyle = '#c93f82';
   ctx.font = "700 96px 'Caveat', cursive";
-  ctx.fillText(`🌸 ${points} points!`, 0, 0);
+  ctx.fillText(titleText, 0, 0);
   ctx.restore();
 
   ctx.textAlign = 'center';
@@ -1209,26 +1331,30 @@ async function buildTripSummaryCanvas(){
   ctx.font = "600 40px 'Caveat', cursive";
   ctx.fillText('our little library adventure — ' + new Date().toLocaleDateString(undefined, { month:'long', day:'numeric' }), W/2, 216);
 
-  const items = await collectTripPhotos();
-  const slots = [
-    { x: 60,  y: 260,  rot: -7, w: 430 },
-    { x: 560, y: 220,  rot: 6,  w: 400 },
-    { x: 90,  y: 620,  rot: 5,  w: 410 },
-    { x: 580, y: 660,  rot: -8, w: 390 },
-    { x: 70,  y: 1010, rot: -4, w: 420 },
-    { x: 570, y: 1040, rot: 8,  w: 400 },
-  ];
-  const shown = items.slice(-slots.length); // most recent photos so the scrapbook page stays fresh each milestone
-  for(let i=0; i<shown.length; i++){
-    try{
-      const img = await loadImageEl(shown[i].img);
-      drawPolaroid(ctx, img, { ...slots[i], caption: shown[i].caption });
-    }catch(e){ /* a broken/unreadable image just gets skipped — the page still completes */ }
-  }
-  if(shown.length === 0){
-    ctx.textAlign = 'center'; ctx.fillStyle = '#5a2e4a';
-    ctx.font = "600 38px 'Caveat', cursive";
-    ctx.fillText('no photos yet — keep exploring! 🌱', W/2, 700);
+  // The transparent overlay export deliberately skips the photo layer — it's meant to be laid
+  // OVER photos Vanessa arranges herself (e.g. an Instagram Story), not to carry its own.
+  if(!transparent){
+    const items = await collectTripPhotos();
+    const slots = [
+      { x: 60,  y: 260,  rot: -7, w: 430 },
+      { x: 560, y: 220,  rot: 6,  w: 400 },
+      { x: 90,  y: 620,  rot: 5,  w: 410 },
+      { x: 580, y: 660,  rot: -8, w: 390 },
+      { x: 70,  y: 1010, rot: -4, w: 420 },
+      { x: 570, y: 1040, rot: 8,  w: 400 },
+    ];
+    const shown = items.slice(-slots.length); // most recent photos so the scrapbook page stays fresh each milestone
+    for(let i=0; i<shown.length; i++){
+      try{
+        const img = await loadImageEl(shown[i].img);
+        drawPolaroid(ctx, img, { ...slots[i], caption: shown[i].caption });
+      }catch(e){ /* a broken/unreadable image just gets skipped — the page still completes */ }
+    }
+    if(shown.length === 0){
+      ctx.textAlign = 'center'; ctx.fillStyle = '#5a2e4a';
+      ctx.font = "600 38px 'Caveat', cursive";
+      ctx.fillText('no photos yet — keep exploring! 🌱', W/2, 700);
+    }
   }
 
   const mapX = 60, mapY = 1500, mapW = W - 120, mapH = 300;
@@ -1242,8 +1368,151 @@ async function buildTripSummaryCanvas(){
   ctx.font = "600 30px 'Caveat', cursive";
   ctx.fillText('🌸 a cute weekend treasure hunt 🌸', W/2, H - 28);
 
+  drawFrameDecorations(ctx, W, H);
+
   return canvas;
 }
+
+/* ================= "stop for today" run recap =================
+   A bigger, denser version of the trip-summary scrapbook — every captured photo (up to nine)
+   piled on top of each other at different angles like a real scattered scrapbook page, the full
+   route map, and the day's stats, all in one Instagram-Story-shaped image. Triggered manually
+   by the Stop FAB rather than automatically, and doesn't reset or end anything — progress is
+   already persisted in localStorage/IndexedDB, so reopening the app later just picks up where
+   today left off. */
+async function buildRunRecapCanvas(opts){
+  opts = opts || {};
+  const transparent = !!opts.transparent;
+  await loadHandwrittenFont();
+  const W = 1080, H = 1920;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  if(!transparent){
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, '#ffe9f3'); grad.addColorStop(0.5, '#ffd9ec'); grad.addColorStop(1, '#ecd9ff');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+    const blob = (cx, cy, r, color) => {
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0, color); g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+    };
+    blob(100, 120, 260, 'rgba(255,180,214,0.5)');
+    blob(980, 1800, 340, 'rgba(201,168,255,0.45)');
+  }
+
+  const visitedCount = libraries.filter(l => visitedIds.has(idFor(l))).length;
+  const km = computeTrailKm();
+
+  ctx.save();
+  ctx.translate(W/2, 130);
+  ctx.rotate(-1.5 * Math.PI/180);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#c93f82';
+  ctx.font = "700 78px 'Caveat', cursive";
+  ctx.fillText('🌸 Our Adventure So Far 🌸', 0, 0);
+  ctx.restore();
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#5a2e4a';
+  ctx.font = "600 36px 'Caveat', cursive";
+  ctx.fillText(new Date().toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' }), W/2, 196);
+
+  const stats = [
+    { num: String(visitedCount), lbl: 'libraries found' },
+    { num: String(points), lbl: 'points earned' },
+    { num: km.toFixed(1), lbl: 'km covered' },
+  ];
+  const colW = W / stats.length;
+  stats.forEach((s, i) => {
+    const cx = colW*i + colW/2;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#c93f82';
+    ctx.font = "700 60px 'Caveat', cursive";
+    ctx.fillText(s.num, cx, 300);
+    ctx.fillStyle = '#5a2e4a';
+    ctx.font = "600 24px 'Caveat', cursive";
+    ctx.fillText(s.lbl, cx, 334);
+  });
+
+  // Every captured photo (most recent nine), scattered and heavily overlapping on purpose —
+  // a real scrapbook pile, not a tidy grid.
+  if(!transparent){
+    const items = await collectTripPhotos();
+    const slots = [
+      { x: 40,  y: 380,  rot: -9, w: 420 },
+      { x: 470, y: 350,  rot: 7,  w: 400 },
+      { x: 630, y: 500,  rot: -6, w: 380 },
+      { x: 60,  y: 600,  rot: 6,  w: 400 },
+      { x: 340, y: 680,  rot: -8, w: 420 },
+      { x: 620, y: 780,  rot: 5,  w: 380 },
+      { x: 90,  y: 880,  rot: -5, w: 400 },
+      { x: 380, y: 980,  rot: 8,  w: 400 },
+      { x: 100, y: 1120, rot: -7, w: 420 },
+    ];
+    const shown = items.slice(-slots.length);
+    for(let i=0; i<shown.length; i++){
+      try{
+        const img = await loadImageEl(shown[i].img);
+        drawPolaroid(ctx, img, { ...slots[i], caption: shown[i].caption });
+      }catch(e){ /* a broken/unreadable image just gets skipped */ }
+    }
+    if(shown.length === 0){
+      ctx.textAlign = 'center'; ctx.fillStyle = '#5a2e4a';
+      ctx.font = "600 38px 'Caveat', cursive";
+      ctx.fillText('no photos captured yet 🌱', W/2, 700);
+    }
+  }
+
+  const mapX = 60, mapY = 1610, mapW = W - 120, mapH = 250;
+  ctx.textAlign = 'center'; ctx.fillStyle = '#6c4aa3';
+  ctx.font = "600 32px 'Caveat', cursive";
+  ctx.fillText('your route so far', W/2, mapY - 18);
+  drawMinimapOnCanvas(ctx, mapX, mapY, mapW, mapH);
+
+  ctx.textAlign = 'center'; ctx.fillStyle = '#5a2e4a';
+  ctx.font = "600 30px 'Caveat', cursive";
+  ctx.fillText('📖 to be continued... 🌸', W/2, H - 28);
+
+  drawFrameDecorations(ctx, W, H);
+
+  return canvas;
+}
+async function showRunRecap(){
+  try{
+    const canvas = await buildRunRecapCanvas();
+    const target = $('runRecapCanvas');
+    target.width = canvas.width; target.height = canvas.height;
+    target.getContext('2d').drawImage(canvas, 0, 0);
+    $('runRecapOverlay').classList.add('show');
+    burstConfetti();
+  }catch(e){ console.warn('[run recap] failed to build', e); }
+}
+$('endHuntFab').onclick = () => { $('stopConfirmOverlay').classList.add('show'); playSelectSound(); vibrate(12); };
+$('stopCancelBtn').onclick = () => { $('stopConfirmOverlay').classList.remove('show'); };
+$('stopConfirmBtn').onclick = async () => {
+  $('stopConfirmOverlay').classList.remove('show');
+  await showRunRecap();
+};
+$('runRecapCloseBtn').onclick = () => { $('runRecapOverlay').classList.remove('show'); };
+$('saveRunRecapBtn').onclick = async () => {
+  const canvas = await buildRunRecapCanvas();
+  canvas.toBlob((blob) => {
+    if(!blob) return;
+    downloadBlobFile(blob, `${PHOTO_FOLDER}/library-hunt-recap-${Date.now()}.png`);
+  }, 'image/png');
+  playArrivalSound(); vibrate([20,40,20]);
+};
+$('saveRunRecapOverlayBtn').onclick = async () => {
+  const canvas = await buildRunRecapCanvas({ transparent: true });
+  canvas.toBlob((blob) => {
+    if(!blob) return;
+    downloadBlobFile(blob, `${PHOTO_FOLDER}/library-hunt-recap-overlay-transparent-${Date.now()}.png`);
+  }, 'image/png');
+  playArrivalSound(); vibrate([20,40,20]);
+};
+
 async function showTripSummary(){
   try{
     const canvas = await buildTripSummaryCanvas();
@@ -1259,11 +1528,17 @@ $('saveTripSummaryBtn').onclick = async () => {
   const canvas = await buildTripSummaryCanvas();
   canvas.toBlob((blob) => {
     if(!blob) return;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `library-hunt-${points}pts.png`;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    downloadBlobFile(blob, `${PHOTO_FOLDER}/library-hunt-${points}pts.png`);
+  }, 'image/png');
+  playArrivalSound(); vibrate([20,40,20]);
+};
+$('saveTripSummaryOverlayBtn').onclick = async () => {
+  // A transparent PNG of just the frame/title/stats/map — no photos — so it can be laid on top
+  // of photos arranged by hand elsewhere (an Instagram Story, say) as a border/sticker.
+  const canvas = await buildTripSummaryCanvas({ transparent: true });
+  canvas.toBlob((blob) => {
+    if(!blob) return;
+    downloadBlobFile(blob, `${PHOTO_FOLDER}/library-hunt-${points}pts-overlay-transparent.png`);
   }, 'image/png');
   playArrivalSound(); vibrate([20,40,20]);
 };
@@ -1633,7 +1908,19 @@ async function captureGateSlot(slotKey, slotId, label, file, visitFlag){
     capturedPhotos[slotKey] = dataUrl;
     const el = $(slotId);
     el.classList.add('has-photo');
-    el.innerHTML = `<img src="${dataUrl}" alt="captured photo">`;
+    el.innerHTML = `<img src="${dataUrl}" alt="captured photo"><button type="button" class="photo-save-btn" title="Save to your phone">💾</button>`;
+    const slotLabel = slotKey === 'selfie' ? 'Selfie' : (slotKey === 'ethanParagraph' ? "Ethan's page" : (slotKey === 'vanessaParagraph' ? "Vanessa's page" : 'Photo'));
+    const libName = gateLib ? gateLib.name : 'library';
+    const autoFilename = `${PHOTO_FOLDER}/library-hunt-${safeFileSlug(libName)}-${safeFileSlug(slotLabel)}-${Date.now()}.jpg`;
+    el.querySelector('.photo-save-btn').onclick = (ev) => {
+      ev.preventDefault(); ev.stopPropagation();
+      openLightbox(dataUrl, `${libName} — ${slotLabel}`, autoFilename);
+    };
+    // Auto-save straight to the phone as soon as it's captured, on top of the manual 💾 button —
+    // best-effort: some browsers throttle several automatic downloads fired close together
+    // (e.g. the paragraph prompt's 3 photos), in which case the 💾 button on the photo is the
+    // reliable fallback.
+    downloadDataUrl(dataUrl, autoFilename);
     if(gateLib){
       await putPhoto('lib_' + idFor(gateLib) + '_' + slotKey, dataUrl);
       setVisitField(gateLib, visitFlag, true);
@@ -1890,6 +2177,7 @@ function renderChecklist(){
   });
   renderTrophyGrid();
   if(currentView === 'map') renderMapView();
+  if(currentView === 'gallery') renderGallery();
 }
 
 /* ================= trophy / scrapbook grid view ================= */
@@ -1897,7 +2185,7 @@ const VIEW_KEY = 'llth_view_v1';
 let currentView = 'list'; // 'list' | 'trophy' | 'map'
 try{
   const savedView = localStorage.getItem(VIEW_KEY);
-  if(savedView === 'trophy' || savedView === 'map') currentView = savedView;
+  if(savedView === 'trophy' || savedView === 'map' || savedView === 'gallery') currentView = savedView;
 }catch(e){}
 let prevVisitedIds = new Set();
 function renderTrophyGrid(){
@@ -1922,6 +2210,134 @@ function renderTrophyGrid(){
   });
   prevVisitedIds = new Set(visitedIds);
 }
+
+/* ================= save-to-phone + gallery =================
+   The web platform has no API for a page to silently drop a file into the phone's photo
+   gallery — that's a deliberate browser security boundary, not something we can code around.
+   The practical equivalent: a one-tap download (works cleanly on Android/desktop, and on iOS
+   lands in Files) PLUS showing the photo as a real full-size <img> in a lightbox, which is
+   what makes the OS's native "press and hold → Save to Photos" gesture available on iOS. */
+function safeFileSlug(s){
+  return String(s||'photo').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40) || 'photo';
+}
+function downloadDataUrl(dataUrl, filename){
+  try{
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }catch(e){ console.warn('[save] download failed', e); }
+}
+/* Same idea as downloadDataUrl but for a Blob (used for the larger PNG canvases, where a Blob
+   is cheaper than a giant base64 data: URL). Every download in the app uses a "LibraryHuntPhotos/"
+   filename prefix — Chrome on desktop and Android turns that into an actual subfolder under
+   Downloads; other browsers just keep it as a clearly-named flat file. */
+const PHOTO_FOLDER = 'LibraryHuntPhotos';
+function downloadBlobFile(blob, filename){
+  try{
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }catch(e){ console.warn('[save] blob download failed', e); }
+}
+let lightboxCurrent = null;
+function openLightbox(dataUrl, caption, filename){
+  lightboxCurrent = { img: dataUrl, filename: filename || `${PHOTO_FOLDER}/library-hunt-${Date.now()}.jpg` };
+  $('lightboxImg').src = dataUrl;
+  $('lightboxCaption').textContent = caption || '';
+  $('lightboxOverlay').classList.add('show');
+}
+$('lightboxCloseBtn').onclick = () => { $('lightboxOverlay').classList.remove('show'); };
+$('lightboxSaveBtn').onclick = () => {
+  if(!lightboxCurrent) return;
+  downloadDataUrl(lightboxCurrent.img, lightboxCurrent.filename);
+  playPopSound(); vibrate(15);
+};
+
+/* Gallery view: everything captured so far — every photo, book title, page and cafe note —
+   browsable in one place, not just the most-recent few shown in the milestone scrapbook.
+   Built fresh each time it's opened (photos live in IndexedDB, fetched here by key) so it
+   always reflects the latest captures. */
+let galleryPhotoIndex = []; // flat list of {img, caption} for the currently rendered gallery, referenced by data-photo-id so we don't duplicate big data: URLs into DOM attributes
+function galleryPhotoTileHtml(img, caption){
+  const idx = galleryPhotoIndex.length;
+  galleryPhotoIndex.push({ img, caption });
+  return `
+    <div class="gallery-photo" data-photo-id="${idx}">
+      <img src="${img}" alt="${escapeHtml(caption)}" loading="lazy">
+      <div class="gallery-photo-label">${escapeHtml(caption)}</div>
+      <button type="button" class="photo-save-btn" data-save-id="${idx}" title="Save to your phone">💾</button>
+    </div>`;
+}
+async function renderGallery(){
+  const container = $('galleryContainer');
+  container.innerHTML = '<div class="gallery-loading">Loading your gallery… 🌸</div>';
+  galleryPhotoIndex = [];
+
+  const visitedLibs = libraries.filter(l => visitedIds.has(idFor(l))).sort((a,b) => (a.number||0) - (b.number||0));
+  let libHtml = '';
+  for(const lib of visitedLibs){
+    const id = idFor(lib);
+    const rec = visitRecords[id] || {};
+    let tiles = '';
+    if(rec.hasSelfie){ const p = await getPhoto('lib_'+id+'_selfie'); if(p) tiles += galleryPhotoTileHtml(p, 'Selfie'); }
+    if(rec.hasEthanPhoto){ const p = await getPhoto('lib_'+id+'_ethanParagraph'); if(p) tiles += galleryPhotoTileHtml(p, 'Ethan' + (rec.ethanPage ? ' — p.'+rec.ethanPage : '')); }
+    if(rec.hasVanessaPhoto){ const p = await getPhoto('lib_'+id+'_vanessaParagraph'); if(p) tiles += galleryPhotoTileHtml(p, 'Vanessa' + (rec.vanessaPage ? ' — p.'+rec.vanessaPage : '')); }
+    if(!tiles) continue; // every visit requires at least a selfie, but skip gracefully if a photo somehow didn't save
+    libHtml += `
+      <div class="gallery-card">
+        <div class="gallery-card-head">
+          <span class="gallery-card-num">#${lib.number}</span>
+          <span class="gallery-card-name">${escapeHtml(lib.name)}</span>
+        </div>
+        ${rec.bookTitle ? `<div class="gallery-card-book">📖 ${escapeHtml(rec.bookTitle)}</div>` : ''}
+        <div class="gallery-photos">${tiles}</div>
+      </div>`;
+  }
+
+  let stopHtml = '';
+  for(const stop of wayStops){
+    let tiles = '';
+    if(stop.hasPhoto){ const p = await getPhoto('waystop_'+stop.id); if(p) tiles += galleryPhotoTileHtml(p, 'A sweet find'); }
+    stopHtml += `
+      <div class="gallery-card">
+        <div class="gallery-card-head">
+          <span class="gallery-card-num">☕</span>
+          <span class="gallery-card-name">${escapeHtml(stop.note || 'A stop along the way')}</span>
+        </div>
+        ${tiles ? `<div class="gallery-photos">${tiles}</div>` : ''}
+      </div>`;
+  }
+
+  if(!libHtml && !stopHtml){
+    container.innerHTML = '<div class="gallery-empty">No photos yet — once you visit a library or log a stop, everything shows up here. 🌱</div>';
+    return;
+  }
+
+  let html = '';
+  if(libHtml) html += `<div class="gallery-section-label">Libraries you've found</div>${libHtml}`;
+  if(stopHtml) html += `<div class="gallery-section-label">Stops along the way</div>${stopHtml}`;
+  container.innerHTML = html;
+}
+$('galleryContainer').addEventListener('click', (ev) => {
+  const saveBtn = ev.target.closest('.photo-save-btn[data-save-id]');
+  if(saveBtn){
+    ev.preventDefault(); ev.stopPropagation();
+    const item = galleryPhotoIndex[+saveBtn.dataset.saveId];
+    if(item) downloadDataUrl(item.img, `${PHOTO_FOLDER}/library-hunt-${safeFileSlug(item.caption)}-${Date.now()}.jpg`);
+    playPopSound(); vibrate(15);
+    return;
+  }
+  const tile = ev.target.closest('.gallery-photo[data-photo-id]');
+  if(tile){
+    const item = galleryPhotoIndex[+tile.dataset.photoId];
+    if(item) openLightbox(item.img, item.caption, `${PHOTO_FOLDER}/library-hunt-${safeFileSlug(item.caption)}-${Date.now()}.jpg`);
+  }
+});
 
 /* Real road map: a Leaflet map over free OpenStreetMap tiles (no API key needed, unlike
    Google Maps tiles) so the actual streets/roads show, not just a dot projection. Built
@@ -2004,14 +2420,18 @@ function setView(mode){
   $('listContainer').style.display = mode === 'list' ? 'block' : 'none';
   $('trophyGrid').style.display = mode === 'trophy' ? 'grid' : 'none';
   $('mapView').style.display = mode === 'map' ? 'block' : 'none';
+  $('galleryView').style.display = mode === 'gallery' ? 'block' : 'none';
   $('viewListBtn').classList.toggle('active', mode === 'list');
   $('viewTrophyBtn').classList.toggle('active', mode === 'trophy');
   $('viewMapBtn').classList.toggle('active', mode === 'map');
+  $('viewGalleryBtn').classList.toggle('active', mode === 'gallery');
   if(mode === 'map') renderMapView();
+  if(mode === 'gallery') renderGallery();
 }
 $('viewListBtn').onclick = () => { setView('list'); playSelectSound(); vibrate(12); };
 $('viewTrophyBtn').onclick = () => { setView('trophy'); playSelectSound(); vibrate(12); };
 $('viewMapBtn').onclick = () => { setView('map'); playSelectSound(); vibrate(12); };
+$('viewGalleryBtn').onclick = () => { setView('gallery'); playSelectSound(); vibrate(12); };
 setView(currentView);
 
 /* ================= cafe/shop "log a stop" ================= */
@@ -2032,7 +2452,13 @@ async function handleWayStopPhotoPick(ev){
     wayStopPendingPhoto = await compressPhotoFile(file, 640, 0.62);
     const slot = $('wayStopPhotoSlot');
     slot.classList.add('has-photo');
-    slot.innerHTML = `<img src="${wayStopPendingPhoto}" alt="photo of the stop">`;
+    slot.innerHTML = `<img src="${wayStopPendingPhoto}" alt="photo of the stop"><button type="button" class="photo-save-btn" title="Save to your phone">💾</button>`;
+    const autoFilename = `${PHOTO_FOLDER}/library-hunt-stop-${Date.now()}.jpg`;
+    slot.querySelector('.photo-save-btn').onclick = (ev) => {
+      ev.preventDefault(); ev.stopPropagation();
+      openLightbox(wayStopPendingPhoto, 'A sweet find along the way', autoFilename);
+    };
+    downloadDataUrl(wayStopPendingPhoto, autoFilename); // auto-save straight to the phone, same as library photos
     playPopSound(); vibrate(15);
   }catch(e){ console.warn('[waystop] photo failed', e); }
 }
@@ -2052,6 +2478,7 @@ $('wayStopSaveBtn').onclick = async () => {
   wayStops.push(stop);
   saveState();
   if(currentView === 'map') renderMapView();
+  if(currentView === 'gallery') renderGallery();
   $('wayStopOverlay').classList.remove('show');
   playArrivalSound(); vibrate([20,40,20]); burstConfetti();
 };
