@@ -98,18 +98,18 @@
      and translate are the independent CSS properties (not `transform`), so they compose with any
      transform an element already has (a rotated polaroid, a pulsing button...) instead of fighting it. */
   .jelly, .btn, .drive-btn, .dir-card, .vt-btn, .points-chip, #soundToggle, #logStopFab, #endHuntFab,
-  .peek-btn, .photo-save-btn, .theme-toggle, .photo-slot, .update-banner button, .splash-go, .install-btn,
+  .peek-btn, .photo-save-btn, .theme-toggle, .photo-slot, .photo-choice-btn, .update-banner button, .splash-go, .install-btn,
   .arrived-manual{
     translate: 0 calc(var(--jy) + var(--lift));
   }
   .btn, .drive-btn, .dir-card, .vt-btn, .points-chip, #soundToggle, #logStopFab, #endHuntFab, .peek-btn,
-  .photo-save-btn, .theme-toggle, .photo-slot, .update-banner button, .splash-go, .install-btn, .arrived-manual{
+  .photo-save-btn, .theme-toggle, .photo-slot, .photo-choice-btn, .update-banner button, .splash-go, .install-btn, .arrived-manual{
     -webkit-tap-highlight-color: transparent;
     transition: scale var(--sp-press), --lift var(--sp-soft), box-shadow .35s ease, background-color .35s ease,
                 border-color .35s ease, color .35s ease, opacity .3s ease, filter .3s ease;
   }
   :is(.btn, .drive-btn, .vt-btn, .points-chip, #soundToggle, #logStopFab, #endHuntFab, .peek-btn, .photo-save-btn,
-      .theme-toggle, .update-banner button, .splash-go, .install-btn, .arrived-manual):active:not(:disabled){ scale:.94; }
+      .theme-toggle, .update-banner button, .splash-go, .install-btn, .arrived-manual, .photo-choice-btn):active:not(:disabled){ scale:.94; }
   :is(.dir-card, .photo-slot):active{ scale:.975; }
   @media (hover:hover){
     :is(.btn, .drive-btn, .points-chip, #soundToggle, #logStopFab, #endHuntFab, .theme-toggle, .splash-go, .install-btn):hover:not(:disabled){ --lift:-3px; }
@@ -548,12 +548,23 @@
   }
   .photo-slot{
     margin-top:12px; border:2px dashed var(--pink-2); border-radius:16px; padding:14px; text-align:center;
-    font-size:.82rem; font-weight:700; color:var(--pink-deep); cursor:pointer; position:relative; overflow:hidden;
+    font-size:.82rem; font-weight:700; color:var(--pink-deep); position:relative; overflow:hidden;
     display:block; transition:border-color .15s ease, background .15s ease;
   }
-  .photo-slot input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
   .photo-slot.has-photo{ border-style:solid; border-color:var(--good); padding:0; }
   .photo-slot img{ width:100%; max-height:160px; object-fit:cover; display:block; border-radius:14px; }
+  /* Two explicit buttons rather than one tile relying on the OS to offer both options in its
+     picker — some phones/browsers only show the photo library when a plain file input is tapped,
+     with no way to reach the camera at all. Each button is its own <label>+hidden <input>, one
+     with `capture` (opens the camera directly) and one without (opens the photo library/gallery). */
+  .photo-choice-row{ display:flex; gap:8px; justify-content:center; margin-top:10px; }
+  .photo-choice-btn{
+    position:relative; flex:1; max-width:170px; display:flex; align-items:center; justify-content:center;
+    gap:5px; border:2px solid var(--pink-2); border-radius:12px; padding:9px 10px; font-size:.78rem;
+    font-weight:700; color:var(--pink-deep); background:rgba(255,255,255,.55); cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .photo-choice-btn input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
   .modal-btn-row{ display:flex; gap:10px; margin-top:16px; }
   .modal-btn-row .btn{ flex:1; }
 
@@ -710,10 +721,13 @@
     <h2>☕ Found something cute?</h2>
     <p style="font-size:.85rem; opacity:.75; margin-top:-6px;">Jot down a cafe, shop or anything sweet you spotted on the way — it'll show up as a pin on your trail map.</p>
     <textarea id="wayStopNote" placeholder="e.g. 'That gorgeous little coffee cart on Moggill Rd'"></textarea>
-    <label class="photo-slot" id="wayStopPhotoSlot">
-      📷 Add a photo (optional) — camera or your gallery
-      <input type="file" accept="image/*" id="wayStopPhotoInput">
-    </label>
+    <div class="photo-slot" id="wayStopPhotoSlot">
+      <div class="photo-slot-label">📷 Add a photo (optional)</div>
+      <div class="photo-choice-row">
+        <label class="photo-choice-btn">📷 Camera<input type="file" accept="image/*" capture="environment" id="wayStopPhotoInputCam"></label>
+        <label class="photo-choice-btn">🖼️ Gallery<input type="file" accept="image/*" id="wayStopPhotoInputLib"></label>
+      </div>
+    </div>
     <div class="modal-btn-row">
       <button class="btn ghost" id="wayStopCancelBtn" type="button">Cancel</button>
       <button class="btn" id="wayStopSaveBtn" type="button">Save stop</button>
@@ -910,27 +924,36 @@
       <div class="prompt-text" id="promptText"></div>
     </div>
     <div class="photo-gate" id="photoGate">
-      <label class="photo-slot" id="slotSelfie">
-        📷 Selfie or a photo of the library, relating to the prompt — camera or gallery
-        <input type="file" accept="image/*" id="fileSelfie">
-      </label>
+      <div class="photo-slot" id="slotSelfie">
+        <div class="photo-slot-label">📷 Selfie or a photo of the library, relating to the prompt</div>
+        <div class="photo-choice-row">
+          <label class="photo-choice-btn">📷 Camera<input type="file" accept="image/*" capture="user" id="fileSelfieCam"></label>
+          <label class="photo-choice-btn">🖼️ Gallery<input type="file" accept="image/*" id="fileSelfieLib"></label>
+        </div>
+      </div>
       <div class="pg-paragraph" id="pgParagraph" style="display:none;">
         <input type="text" class="pg-book-input" id="bookTitleInput" placeholder="Which book? (title)">
         <div class="pg-person">
           <div class="pg-person-label">ETHAN</div>
           <input type="text" class="pg-page-input" id="ethanPageInput" placeholder="page #">
-          <label class="photo-slot" id="slotEthan">
-            📷 Photo of the paragraph Ethan reads — camera or gallery
-            <input type="file" accept="image/*" id="fileEthan">
-          </label>
+          <div class="photo-slot" id="slotEthan">
+            <div class="photo-slot-label">📷 Photo of the paragraph Ethan reads</div>
+            <div class="photo-choice-row">
+              <label class="photo-choice-btn">📷 Camera<input type="file" accept="image/*" capture="environment" id="fileEthanCam"></label>
+              <label class="photo-choice-btn">🖼️ Gallery<input type="file" accept="image/*" id="fileEthanLib"></label>
+            </div>
+          </div>
         </div>
         <div class="pg-person">
           <div class="pg-person-label">VANESSA</div>
           <input type="text" class="pg-page-input" id="vanessaPageInput" placeholder="page #">
-          <label class="photo-slot" id="slotVanessa">
-            📷 Photo of the paragraph Vanessa reads — camera or gallery
-            <input type="file" accept="image/*" id="fileVanessa">
-          </label>
+          <div class="photo-slot" id="slotVanessa">
+            <div class="photo-slot-label">📷 Photo of the paragraph Vanessa reads</div>
+            <div class="photo-choice-row">
+              <label class="photo-choice-btn">📷 Camera<input type="file" accept="image/*" capture="environment" id="fileVanessaCam"></label>
+              <label class="photo-choice-btn">🖼️ Gallery<input type="file" accept="image/*" id="fileVanessaLib"></label>
+            </div>
+          </div>
         </div>
       </div>
       <div class="pg-hint" id="pgHint">📷 Attach the photo(s) above before you continue</div>
@@ -3176,6 +3199,56 @@ async function collectTripPhotos(){
   }
   return items;
 }
+/* ================= auto-save captured photos to the phone =================
+   Every photo already gets saved individually via a real tap (the 💾 on its own thumbnail), but
+   that's an easy step to forget in the moment. This sweeps up anything NOT yet manually saved
+   and downloads it automatically — wired to every "Save …" tap that already exists (the
+   milestone's "Save this moment", "Save today's recap", and the end-of-hunt keepsake), so it
+   always rides along on a real, deliberate gesture rather than firing on its own. A persisted
+   set of already-downloaded photo keys means nothing gets re-downloaded on the next save. */
+const AUTO_SAVE_KEY = 'llth_autosaved_photos_v1';
+function getAutoSavedKeys(){
+  try{ return new Set(JSON.parse(localStorage.getItem(AUTO_SAVE_KEY) || '[]')); }catch(e){ return new Set(); }
+}
+function markAutoSaved(keys){
+  try{
+    const cur = getAutoSavedKeys();
+    keys.forEach(k => cur.add(k));
+    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify([...cur]));
+  }catch(e){}
+}
+async function collectAllCapturedPhotosWithKeys(){
+  const items = [];
+  for(const lib of libraries.filter(l => visitedIds.has(idFor(l)))){
+    const id = idFor(lib);
+    const rec = visitRecords[id] || {};
+    if(rec.hasSelfie){ const key = 'lib_'+id+'_selfie'; const p = await getPhoto(key); if(p) items.push({ key, img:p, caption: `${lib.name} — Selfie` }); }
+    if(rec.hasEthanPhoto){ const key = 'lib_'+id+'_ethanParagraph'; const p = await getPhoto(key); if(p) items.push({ key, img:p, caption: `${rec.bookTitle || lib.name} — Ethan's page` }); }
+    if(rec.hasVanessaPhoto){ const key = 'lib_'+id+'_vanessaParagraph'; const p = await getPhoto(key); if(p) items.push({ key, img:p, caption: `${rec.bookTitle || lib.name} — Vanessa's page` }); }
+  }
+  for(const stop of wayStops){
+    if(stop.hasPhoto){ const key = 'waystop_'+stop.id; const p = await getPhoto(key); if(p) items.push({ key, img:p, caption: stop.note || 'a sweet find' }); }
+  }
+  return items;
+}
+async function autoSaveNewPhotos(){
+  try{
+    const already = getAutoSavedKeys();
+    const items = await collectAllCapturedPhotosWithKeys();
+    const fresh = items.filter(it => !already.has(it.key));
+    if(fresh.length === 0) return 0;
+    // One at a time with a short gap — several downloads fired in the same instant can get
+    // silently blocked by the browser (seen with the paragraph prompt's 3-photos-at-once case).
+    for(let i = 0; i < fresh.length; i++){
+      const it = fresh[i];
+      const filename = `${PHOTO_FOLDER}/library-hunt-${safeFileSlug(it.caption)}-${Date.now()}-${i}.jpg`;
+      downloadDataUrl(it.img, filename);
+      markAutoSaved([it.key]);
+      if(i < fresh.length - 1) await new Promise(r => setTimeout(r, 350));
+    }
+    return fresh.length;
+  }catch(e){ console.warn('[auto-save] failed', e); return 0; }
+}
 function collectTripNotes(){
   const notes = [];
   libraries.filter(l => visitedIds.has(idFor(l))).forEach(lib => {
@@ -3498,6 +3571,7 @@ $('saveRunRecapBtn').onclick = async () => {
     if(!blob) return;
     downloadBlobFile(blob, `${PHOTO_FOLDER}/library-hunt-recap-${Date.now()}.png`);
   }, 'image/png');
+  autoSaveNewPhotos(); // sweep up any captured photos not yet individually saved
   vibrate([20,40,20]);
 };
 $('saveRunRecapOverlayBtn').onclick = async () => {
@@ -3526,6 +3600,9 @@ $('saveTripSummaryBtn').onclick = async () => {
     if(!blob) return;
     downloadBlobFile(blob, `${PHOTO_FOLDER}/library-hunt-${points}pts.png`);
   }, 'image/png');
+  // Every peony milestone: also sweep up any captured photos not yet individually saved to the
+  // phone, so nothing gets left behind in IndexedDB by the end of the day.
+  autoSaveNewPhotos();
   vibrate([20,40,20]);
 };
 $('saveTripSummaryOverlayBtn').onclick = async () => {
@@ -3894,14 +3971,19 @@ $('hintBtn').onclick = () => { $('hintPhoto').classList.toggle('show'); vibrate(
 let capturedPhotos = {}; // slot key -> compressed data URL, held for the CURRENT arrival only
 let gateLib = null; // the library the open photo gate belongs to
 
-function resetGateSlot(slotId, inputId, label){
-  // No `capture` attribute on purpose: it forces straight into the camera app on some phones
-  // with no way back to an existing photo, and on some Android browsers/webviews that flow can
-  // fail to hand the picture back to the page at all. Leaving it off shows the normal native
-  // picker (camera AND photo library), which is both more reliable and gives a real choice.
+/* Two explicit buttons — Camera and Gallery — rather than one input and hoping the phone's
+   picker offers both. Some phones/browsers only show the photo library for a plain file input
+   with no way to reach the camera, and on others a `capture`-only input can fail to hand the
+   photo back to the page at all. Giving each its own input sidesteps both failure modes. */
+function resetGateSlot(slotId, camInputId, camMode, libInputId, label){
   const el = $(slotId);
   el.classList.remove('has-photo');
-  el.innerHTML = `${label}<input type="file" accept="image/*" id="${inputId}">`;
+  el.innerHTML = `
+    <div class="photo-slot-label">${label}</div>
+    <div class="photo-choice-row">
+      <label class="photo-choice-btn">📷 Camera<input type="file" accept="image/*" capture="${camMode}" id="${camInputId}"></label>
+      <label class="photo-choice-btn">🖼️ Gallery<input type="file" accept="image/*" id="${libInputId}"></label>
+    </div>`;
 }
 async function captureGateSlot(slotKey, slotId, label, file, visitFlag){
   try{
@@ -3942,12 +4024,17 @@ function setVisitField(lib, field, value){
   saveState();
 }
 function wireGateSlots(){
-  resetGateSlot('slotSelfie', 'fileSelfie', '📷 Selfie or a photo of the library, relating to the prompt — camera or gallery');
-  $('fileSelfie').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('selfie','slotSelfie','📷 Selfie or a photo of the library, relating to the prompt — camera or gallery', f, 'hasSelfie'); };
-  resetGateSlot('slotEthan', 'fileEthan', '📷 Photo of the paragraph Ethan reads — camera or gallery');
-  $('fileEthan').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('ethanParagraph','slotEthan','📷 Photo of the paragraph Ethan reads — camera or gallery', f, 'hasEthanPhoto'); };
-  resetGateSlot('slotVanessa', 'fileVanessa', '📷 Photo of the paragraph Vanessa reads — camera or gallery');
-  $('fileVanessa').onchange = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('vanessaParagraph','slotVanessa','📷 Photo of the paragraph Vanessa reads — camera or gallery', f, 'hasVanessaPhoto'); };
+  resetGateSlot('slotSelfie', 'fileSelfieCam', 'user', 'fileSelfieLib', '📷 Selfie or a photo of the library, relating to the prompt');
+  const onSelfie = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('selfie','slotSelfie','📷 Selfie or a photo of the library, relating to the prompt', f, 'hasSelfie'); };
+  $('fileSelfieCam').onchange = onSelfie; $('fileSelfieLib').onchange = onSelfie;
+
+  resetGateSlot('slotEthan', 'fileEthanCam', 'environment', 'fileEthanLib', '📷 Photo of the paragraph Ethan reads');
+  const onEthan = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('ethanParagraph','slotEthan','📷 Photo of the paragraph Ethan reads', f, 'hasEthanPhoto'); };
+  $('fileEthanCam').onchange = onEthan; $('fileEthanLib').onchange = onEthan;
+
+  resetGateSlot('slotVanessa', 'fileVanessaCam', 'environment', 'fileVanessaLib', '📷 Photo of the paragraph Vanessa reads');
+  const onVanessa = (ev) => { const f = ev.target.files[0]; if(f) captureGateSlot('vanessaParagraph','slotVanessa','📷 Photo of the paragraph Vanessa reads', f, 'hasVanessaPhoto'); };
+  $('fileVanessaCam').onchange = onVanessa; $('fileVanessaLib').onchange = onVanessa;
 }
 function photoGateSatisfied(){
   if(currentPromptType === 'paragraph') return !!capturedPhotos.selfie && !!capturedPhotos.ethanParagraph && !!capturedPhotos.vanessaParagraph;
@@ -4157,6 +4244,8 @@ $('saveKeepsakeBtn').onclick = () => {
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }, 'image/png');
+  // End of the hunt: last chance to sweep up any captured photos not yet individually saved.
+  autoSaveNewPhotos();
   vibrate([20,40,20]);
 };
 
@@ -4462,8 +4551,14 @@ function openWayStopModal(){
   wayStopPendingPhoto = null;
   const slot = $('wayStopPhotoSlot');
   slot.classList.remove('has-photo');
-  slot.innerHTML = `📷 Add a photo (optional) — camera or your gallery<input type="file" accept="image/*" id="wayStopPhotoInput">`;
-  $('wayStopPhotoInput').onchange = handleWayStopPhotoPick;
+  slot.innerHTML = `
+    <div class="photo-slot-label">📷 Add a photo (optional)</div>
+    <div class="photo-choice-row">
+      <label class="photo-choice-btn">📷 Camera<input type="file" accept="image/*" capture="environment" id="wayStopPhotoInputCam"></label>
+      <label class="photo-choice-btn">🖼️ Gallery<input type="file" accept="image/*" id="wayStopPhotoInputLib"></label>
+    </div>`;
+  $('wayStopPhotoInputCam').onchange = handleWayStopPhotoPick;
+  $('wayStopPhotoInputLib').onchange = handleWayStopPhotoPick;
   $('wayStopOverlay').classList.add('show');
 }
 async function handleWayStopPhotoPick(ev){
